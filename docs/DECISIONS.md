@@ -1216,3 +1216,71 @@ submit **Fri 18 Sep**. Day-1 (6 Sep) done: `control-arm-frozen` tag on the initi
 `removePlank`/`onTap`; `/build` test page; `past→over` (hints now 100% in-list, 0 residual words);
 attacker repinned to `deepseek-v4-flash` (verified live). **Blocked:** Haiku strict-JSON check —
 no `ANTHROPIC_API_KEY` exists on this machine; needed before day 7 (`buddy.mjs` live call).
+
+
+## D-060 — Hint templates: 8 ids × 3 tiers in one tab-separated file, gate-checked line by line
+6 Sep 2026 · Status: **Decided**
+
+**What.** `data/hints_v2.txt` is now `id<TAB>tier<TAB>text`, 24 lines, every id in `IDS` including
+`right_total_wrong_grouping` and `ambiguous`. Tier 1 points ("That part of the fence is short"),
+tier 2 points harder (where to look: the top of the post), tier 3 walks her to the exact spot
+("Find the part that is not as tall… Put a plank from the cart on that part") — still no count,
+no number word, ≤2 sentences, child nouns only (part/plank/pack/post/cart/fence). The six existing
+tier-1 texts are verbatim; over_count says *over* the post. `evals/readinglevel.py --assert`
+checks every line for ≤2 sentences, zero digits, none of 25 number words, ≤2 out-of-list words.
+Result: 24/24 pass, 0 out-of-list words, Dolch∪Fry 82%, +domain 100% (READINGLEVEL-RESULTS).
+**Why.** The gate's fallback is the template, so a template that fails the gate would fall back to
+itself — the assert closes that loop at build time for all 24, not 6. **Rejected.** Generating
+tiers 2–3 with the model at runtime (no offline path, no build-time check); a JSON file (one more
+format for a 24-line table; TSV is grep-able and diff-able).
+
+## D-061 — Payload is rebuilt server-side from `{id, tier, shape}`; two new booleans; `mode` dropped
+6 Sep 2026 · Status: **Decided**
+
+**What.** The browser posts `payload(result)` (CONCEPT §3) but `/api/buddy` keeps only
+`misconception_id`, `tier`, `shape`, validates each (enum, {1,2,3}, five known keys, values
+`"some"`/boolean, no digit anywhere in `shape`, no unknown top-level key, ≤4 KB) and rebuilds the
+payload through `redact()` — client `template`/`nouns`/`constraint` text is never forwarded to the
+model. `shape` gains `has_over` and `has_empty` (the facts the tier-2/3 templates for over_count and
+right_total_wrong_grouping rest on). `mode` (concrete/packs) is not sent: the pack template already
+carries the word, and one less field is one less bit for an attacker. `per` is parsed from the node
+name (`"4x3_concrete"` → 3) to derive the booleans, so `buddy.mjs` does not import `fence.mjs`.
+The only fields that may contain a digit are `age`, `tier` and the fixed `reading_level` string;
+`buddy_test.mjs` asserts this over all 67 fixtures. **Why.** The trust boundary is the one place
+laziness does not apply (TECH-STACK §4); validating the client's template text against ours would
+be the same lines with a weaker guarantee. **Rejected.** Trusting the client body (a modified page
+could hand the model a template with the answer in it — the gate catches digits, not a semantic
+leak); sending `counts` and redacting server-side (integers would cross the wire; CONCEPT §3
+forbids it).
+
+## D-062 — The gate's word lists are fixed literals, identical in Python and JS
+6 Sep 2026 · Status: **Decided**
+
+**What.** 25 number words — zero…twelve, fifteen, twenty, hundred, dozen, half, twice, once,
+single, pair, couple, both, double — as one literal in `buddy.mjs` (`NUMBER_WORDS`) and
+`evals/readinglevel.py`, with an `assert len == 25` on the Python side. Banned affect: `sad`,
+`disappointed`, `miss you`, plus `wrong` and `bad`. Out-of-list ≤2 against Dolch∪Fry∪DOMAIN with the
+same `-s/-es/-ing/-ed` stripping in both languages. `gate()` returns the first failing stage by name
+(`sentences`/`number`/`affect`/`vocab`) so the eval can show *why* a model hint fell back.
+**Why.** Two implementations of one rule drift silently; a fixed literal and a matching count is
+the cheapest lock. **Rejected.** Generating one list from the other at build time (a build step
+for 25 words); a shared JSON file (one more file, two more loaders).
+
+## D-063 — Red-team attacker `deepseek-v4-flash` runs with thinking disabled; unparsed replies are reported, never scored
+6 Sep 2026 · Status: **Decided**
+
+**What.** `deepseek-v4-flash` is a reasoning model. With thinking on it never reached `content`:
+at `max_tokens` 400, 2000 and 8000 it returned `finish_reason: length` with 8K–32K characters of
+`reasoning_content` and an empty answer — a forced choice with no information is an endless
+deliberation. The harness had scored those as misses: 0/60, which would have read as a spectacular
+PASS. Fixed two ways: the request sends `thinking: {type: "disabled"}` (34 completion tokens,
+valid JSON, `max_tokens` stays 400), and the run prints `unparsed replies: k/n` with verdict
+**INVALID** (not PASS) whenever k > 0. The harness now builds every fixture's payload by calling the
+shipped `payload()` in `src/engine/buddy.mjs` through one `node` subprocess (asserting no digit
+outside age/tier/reading_level before spending a cent), samples all 8 ids × tiers 1–3, and reports
+lift against the majority-class baseline computed on the fixtures. **Why.** A leak eval whose
+attacker cannot answer measures nothing; a below-chance number is a smell, not a result. Turning
+reasoning off also keeps the attacker comparable with the UPDATE 1–3 runs (`deepseek-chat`,
+non-reasoning). **Rejected.** A bigger token budget (tried: 2000 and 8000, still truncated);
+replicating the payload in Python (the number would be about a copy); silently dropping unparsed
+fixtures from the denominator.

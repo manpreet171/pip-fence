@@ -1,6 +1,24 @@
-That part of the fence is short. Count a full part again.
-Every part of the fence is a little short. Look at how tall a full part is.
-Each part needs the same planks. Look at what is in a full part.
-Only the first part is built. The other parts are still empty.
-That part has a plank sticking out over the post. Take it back to the cart.
-A pack holds many planks. Look inside a pack.
+off_by_one_in_one_group	1	That part of the fence is short. Count a full part again.
+off_by_one_in_one_group	2	Look at the top of every part. Which part is not as tall as the other parts?
+off_by_one_in_one_group	3	Find the part that is not as tall as the other parts. Put a plank from the cart on that part.
+off_by_one_per_group	1	Every part of the fence is a little short. Look at how tall a full part is.
+off_by_one_per_group	2	Look at the top of each post. Every part stops before the top of its post.
+off_by_one_per_group	3	Each part needs a plank more. Put a plank on every part, up to the top of its post.
+counted_groups_as_group_size	1	Each part needs the same planks. Look at what is in a full part.
+counted_groups_as_group_size	2	How many parts there are is not how many planks go in a part. Look at how tall a post is.
+counted_groups_as_group_size	3	Put planks on a part up to the top of its post. Then make every part look just like it.
+one_group_only	1	Only the first part is built. The other parts are still empty.
+one_group_only	2	Each part needs planks. Look at the empty posts next to the built part.
+one_group_only	3	Put planks on the empty part next to the built part. Make it look just like the first part.
+over_count	1	That part has a plank sticking out over the post. Take it back to the cart.
+over_count	2	Look at the top of each post. A plank over the top of the post does not go there.
+over_count	3	Find the plank that sticks out over the post. Take that plank off and put it back in the cart.
+right_total_wrong_grouping	1	A part is still empty, but some parts are too tall. Look at the top of each post.
+right_total_wrong_grouping	2	Each part stops at the top of its post. The planks over the top need to go to the empty part.
+right_total_wrong_grouping	3	Take a plank that sticks out over a post. Put it on the empty part.
+pack_unit_confusion	1	A pack holds many planks. Look inside a pack.
+pack_unit_confusion	2	Open a pack and count the planks inside. A pack is more than a plank.
+pack_unit_confusion	3	Count the planks in a pack. Then count the planks a part needs, and get packs for that.
+ambiguous	1	Show me a part that looks finished.
+ambiguous	2	Point to a part you think is done. Look at the top of its post.
+ambiguous	3	Point to the part you think is done. Does its top plank come up to the top of the post?

@@ -1,6 +1,7 @@
 // Deterministic eval of classify(): fixtures -> confusion matrix, accuracy-when-committed,
 // silence rate. Exit 1 on any mismatch. Run: node evals/classifier_eval.mjs
 import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { classify, shape } from "../src/public/fence.mjs";
 
 const { fixtures } = JSON.parse(readFileSync(new URL("./classifier_fixtures.json", import.meta.url), "utf8"));
@@ -32,6 +33,8 @@ export function expand(node, seq) {
   return ev;
 }
 
+// Runs only when executed directly; buddy_test.mjs imports expand() without triggering the eval.
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 const labels = [...new Set(fixtures.map(f => f.expect))].sort();
 const M = Object.fromEntries(labels.map(a => [a, {}]));
 let fails = 0, silent = 0, rightCommitted = 0, committed = 0;
@@ -54,3 +57,4 @@ console.log("\nCONFUSION (rows = expected, cols = predicted)\n" + " ".repeat(28)
 for (const a of labels) console.log(a.padEnd(28) + cols.map(b => String(M[a][b] || 0).padStart(6)).join(""));
 console.log(`\nfixtures ${fixtures.length} | committed ${committed} | right when committed ${rightCommitted}/${committed} = ${(100 * rightCommitted / committed).toFixed(1)}% | silent ${silent} (${(100 * silent / fixtures.length).toFixed(1)}%) | mismatches ${fails}`);
 process.exit(fails ? 1 : 0);
+}

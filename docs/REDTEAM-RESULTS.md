@@ -115,3 +115,36 @@ answer set {6, 9, 10, 12, 20}:
 Modal guess 12 on 55/60 fixtures — the attacker is still leaning on a prior, and now the prior
 is weaker. **PASS.** The "rebalanced-shape rerun" residual (v3.2 §3, §10.4) is closed. Standing
 residual: one attacker family only.
+
+
+---
+
+## UPDATE 4 — the SHIPPED payload (`buddy.mjs payload()`), all 8 ids, tiers 1–3, thinking-off attacker (6 Sep 2026)
+
+The harness no longer replicates the payload: each fixture's classify()-shaped result is handed to
+`payload()` in `src/engine/buddy.mjs` through one `node` call, so this number is about the object
+the browser actually posts (five booleans/`"some"` under `shape`, nouns, the tier's template,
+constraint, age, reading level — `mode` is no longer sent). Fixtures now cover all eight ids
+including `right_total_wrong_grouping` and `ambiguous`, and **tiers 1–3** — the tier-2/3 templates
+are longer and point harder, so they are the most likely place for a new leak. Attacker
+`deepseek-v4-flash` (≠ coach family), forced choice from {6, 9, 10, 12, 20}, `thinking` disabled
+(see the infrastructure note below), 60 fixtures:
+
+**total 18/60 = 30.0% vs always-12 baseline 31.7% (lift −1.7%); shape 9/60 = 15.0% vs floor 16.7% /
+majority-shape 20.0% (lift −5.0%); totals on these fixtures {6: 11, 9: 9, 10: 9, 12: 19, 20: 12}.**
+
+Modal guess 12 on 57/60 fixtures — pure prior. By tier: 6/21, 9/18, 3/21 — the walk-her-there
+tier-3 templates leak nothing extra. By id, the only cell above the baseline is
+`counted_groups_as_group_size` 4/6; at n=6 with a 31.7% prior that is P≈0.10 under no-leak, and the
+attacker's guess there was 12 in every case — the prior again, not the template. **PASS.** Raw:
+`evals/redteam_leak_results_tiers.json`.
+
+**Infrastructure note, so nobody repeats it.** `deepseek-v4-flash` is a reasoning model. The first
+two runs today returned `finish_reason: length` with 8K–32K characters of `reasoning_content` and an
+*empty* answer on 60/60 fixtures (at `max_tokens` 400, 2000 and 8000 alike) — the harness scored
+those as misses and printed **0/60**, which would have read as a spectacular PASS. Two fixes, both
+now in the file: the request sends `thinking: {type: "disabled"}` (34 completion tokens, valid
+JSON), and the run counts `unparsed replies` and prints **INVALID** instead of a verdict when any
+reply failed to parse. The 0/60 numbers were never published; this paragraph is the record (D-063).
+
+Standing residual: one attacker family only.

@@ -82,3 +82,56 @@ The residual-word question the critic raised is closed by a named list, not by r
 *other, still, same* are Fry words; *needs* → *need* is Fry once inflection is handled per spec.
 `past` is the single honest residual and is published as such (or the over-count hint becomes
 "…sticking out *over* the post" — *over* is Dolch — which is the cheaper fix).
+
+
+---
+
+## TIERED RUN — 8 ids × 3 tiers, `id<TAB>tier<TAB>text` (6 Sep 2026)
+
+`data/hints_v2.txt` now carries all 24 templates the buddy can ship (tier 1 = point, tier 2 =
+point harder, tier 3 = walk her to the spot; never a count). The six existing tier-1 texts are
+verbatim (over_count says *over* the post — `past` was the last residual). `evals/readinglevel.py
+--assert` now checks **every line**: ≤2 sentences, zero digits, none of the **25 number words**
+(the same literal list `gate()` in `buddy.mjs` uses, incl. *one/once/single/pair/couple/both/twice/
+half/double*), and ≤2 out-of-list words. Scorer unchanged otherwise: Dolch ∪ Fry BASE, 28-word
+DOMAIN reported separately, `-s/-es/-ing/-ed` stripped before lookup.
+
+| id | tier | Sent. | Words/sent | Base | +Domain | Out-of-list | Number word? |
+|---|---|---|---|---|---|---|---|
+| `off_by_one_in_one_group` | 1 | 2 | 6.0 | 75% | 100% | — | no |
+| `off_by_one_in_one_group` | 2 | 2 | 8.5 | 94% | 100% | — | no |
+| `off_by_one_in_one_group` | 3 | 2 | 10.5 | 86% | 100% | — | no |
+| `off_by_one_per_group` | 1 | 2 | 8.5 | 82% | 100% | — | no |
+| `off_by_one_per_group` | 2 | 2 | 8.0 | 88% | 100% | — | no |
+| `off_by_one_per_group` | 3 | 2 | 9.5 | 84% | 100% | — | no |
+| `counted_groups_as_group_size` | 1 | 2 | 7.0 | 93% | 100% | — | no |
+| `counted_groups_as_group_size` | 2 | 2 | 10.5 | 86% | 100% | — | no |
+| `counted_groups_as_group_size` | 3 | 2 | 10.0 | 90% | 100% | — | no |
+| `one_group_only` | 1 | 2 | 6.0 | 83% | 100% | — | no |
+| `one_group_only` | 2 | 2 | 7.0 | 71% | 100% | — | no |
+| `one_group_only` | 3 | 2 | 9.5 | 84% | 100% | — | no |
+| `over_count` | 1 | 2 | 8.0 | 81% | 100% | — | no |
+| `over_count` | 2 | 2 | 9.5 | 84% | 100% | — | no |
+| `over_count` | 3 | 2 | 10.0 | 80% | 100% | — | no |
+| `right_total_wrong_grouping` | 1 | 2 | 9.0 | 83% | 100% | — | no |
+| `right_total_wrong_grouping` | 2 | 2 | 10.5 | 86% | 100% | — | no |
+| `right_total_wrong_grouping` | 3 | 2 | 7.5 | 80% | 100% | — | no |
+| `pack_unit_confusion` | 1 | 2 | 4.5 | 56% | 100% | — | no |
+| `pack_unit_confusion` | 2 | 2 | 7.5 | 60% | 100% | — | no |
+| `pack_unit_confusion` | 3 | 2 | 9.0 | 67% | 100% | — | no |
+| `ambiguous` | 1 | 1 | 7.0 | 86% | 100% | — | no |
+| `ambiguous` | 2 | 2 | 7.5 | 93% | 100% | — | no |
+| `ambiguous` | 3 | 2 | 10.0 | 90% | 100% | — | no |
+
+**Overall (24 templates):** max 2 sentences ✅ · mean **8.3 words/sentence** (tier 3 is longer by
+design — it walks) · Dolch ∪ Fry coverage **82%** · **Dolch ∪ Fry ∪ domain 100%** · out-of-list
+words: **none** · **number words: 0 of 24** ✅.
+
+Output of `python evals/readinglevel.py --assert`:
+`gate assert OK: 24 templates, 0 number words, <=2 sentences, <=2 out-of-list words each`.
+One rewrite during scoring: ambiguous t3 *"…reach the top of the post"* → *"…come up to the top of
+the post"* (*reach* was the only out-of-list word; *come*, *up* are Dolch).
+
+Caveat the number does not hide: coverage measures vocabulary, not comprehension. Whether the
+tier-2 `counted_groups_as_group_size` sentence ("How many parts there are is not how many planks go
+in a part") lands with an 8-year-old is a pilot question (day 13 Sep), not a wordlist question.

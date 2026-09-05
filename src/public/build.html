@@ -2,65 +2,242 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rung — build</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rung</title>
 <style>
-  :root{--ink:#22303a;--paper:#f6f1e6;--wood:#a9713d}
-  html,body{margin:0;height:100%;font:16px/1.4 system-ui,sans-serif;color:var(--ink);background:var(--paper)}
-  body{display:grid;grid-template-rows:auto 1fr auto;height:100dvh}
-  header{padding:10px 16px;display:flex;justify-content:space-between;align-items:baseline}
-  header b{font-size:18px}
-  #scene{position:relative;overflow:hidden}
-  .scene{background:linear-gradient(180deg,#8fd0f0 0%,#bfe6f7 55%,#dff0d8 100%)}
-  footer{display:flex;gap:16px;align-items:center;padding:12px 16px;background:#fff;border-top:1px solid #e3ddd0}
-  #cart{display:flex;gap:6px;align-items:center;padding:8px 12px;border:2px solid #d9cdb8;border-radius:12px;background:#fbf8f1;cursor:pointer;user-select:none}
-  #cart.held{border-color:var(--wood);box-shadow:0 0 0 3px #f1dfc8}
-  #cart img{height:26px}
-  #log{margin-left:auto;font:12px/1.3 ui-monospace,monospace;color:#6b7480;max-height:48px;overflow:auto;width:40%}
+  :root{--ink:#22303a;--muted:#6f655a;--paper:#efe3cd;--paper2:#f8f1e3;--wood:#a9702f;--wood2:#7d5122;--line:#dccfb6}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html,body{margin:0;height:100%}
+  body{display:grid;grid-template-rows:auto 1fr auto;height:100dvh;font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color:var(--ink);background:var(--paper);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  header{display:flex;align-items:baseline;gap:14px;padding:12px 18px 10px;flex-wrap:wrap}
+  header .brand{font-weight:800;font-size:20px;color:var(--wood2)}
+  #task{font-size:18px;font-weight:600}
+  #stage{position:relative;overflow:hidden;min-height:180px}
+  #scene{position:absolute;inset:0}
+  footer{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--paper2);border-top:1px solid var(--line)}
+  button{font:inherit;cursor:pointer}
+  .btn{min-height:44px;min-width:44px;padding:0 16px;border:0;border-radius:12px;background:var(--wood);color:#fff;font-weight:700;font-size:16px;box-shadow:0 3px 0 var(--wood2)}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wood2)}
+  .btn.quiet{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 3px 0 var(--line)}
+  #cart,#slip{flex:1 1 180px;display:flex;align-items:center;gap:10px;min-height:56px;padding:6px 10px;border:2px solid var(--line);border-radius:14px;background:#fff;user-select:none}
+  #cart{cursor:pointer}
+  #cart.held{border-color:var(--wood);box-shadow:0 0 0 3px #efdcc0}
+  .lbl{font-size:13px;color:var(--muted);min-width:40px;line-height:1.2}
+  #pile,#slipn{display:flex;flex-wrap:wrap;gap:3px 5px;align-items:flex-end;flex:1}
+  .plank{width:24px;height:14px;display:block}
+  .pack{position:relative;display:inline-block;width:28px;height:26px;cursor:pointer}
+  .pack img{position:absolute;left:0;width:24px;height:14px}
+  #addpack{width:44px;height:44px;border:2px dashed var(--wood);border-radius:10px;background:#fbf6ea;display:grid;place-items:center;padding:0}
+  #addpack .pack{opacity:.45;cursor:inherit}
+  #grown{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;padding:12px 4px}
+  #grown:hover{text-decoration:underline}
+  #bubble{position:absolute;z-index:6;background:#fff;border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.35;box-shadow:0 4px 16px rgba(20,30,40,.18);animation:fade .25s both}
+  #bubble::after{content:"";position:absolute;left:var(--tx,50%);bottom:-8px;width:16px;height:16px;background:#fff;transform:translateX(-50%) rotate(45deg)}
+  #bsrc{display:block;margin-top:6px;font:11px/1 ui-monospace,monospace;color:var(--muted)}
+  #bsrc:empty{display:none}
+  .pip{position:absolute;z-index:7;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#fff;color:var(--ink);
+    font-weight:800;font-size:17px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pip 2s both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes pip{0%{opacity:0;scale:.5}15%{opacity:1;scale:1}80%{opacity:1}100%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){#bubble,.pip{animation-duration:.01s}}
 </style>
 </head>
 <body>
-<header><b>Build the fence</b><span id="task"></span></header>
-<div id="scene" class="scene"></div>
+<header><span class="brand">Rung</span><span id="task"></span></header>
+<div id="stage">
+  <div id="scene" class="scene"></div>
+  <div id="bubble" hidden><span id="btext"></span><span id="bsrc"></span></div>
+</div>
 <footer>
-  <div id="cart" title="tap to hold a plank"><img src="/assets/fence/rail.png" alt=""><span id="cartn"></span></div>
-  <pre id="log"></pre>
+  <div id="cart"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
+  <div id="slip" hidden><button id="addpack" title="add a pack"></button><div id="slipn"></div><button class="btn" id="deliver">Deliver</button></div>
+  <button class="btn quiet" id="again" hidden>Order again</button>
+  <button class="btn" id="done">Done</button>
+  <a id="grown" href="/public/parent.html">For grown-ups</a>
 </footer>
 <script type="module">
-  import { mountScene, appendPlank, removePlank, onTap, FENCE_CSS, shape } from "/fence.mjs";
+  import { IDS, shape, next, classify, mountScene, appendPlank, removePlank, onTap, partTop, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
+  import { TEMPLATES, hint } from "/buddy.mjs";
   document.head.insertAdjacentHTML("beforeend", `<style>${FENCE_CSS}</style>`);
 
-  // Test harness for the scene primitives (mount / append / remove / one delegated tap).
-  const node = new URLSearchParams(location.search).get("node") || "3x4_concrete";
-  const s = shape(node);
-  const scene = document.getElementById("scene");
-  const g = mountScene(scene, s);
-  document.getElementById("task").textContent = `${s.groups} parts, ${s.per} planks each`;
+  const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
+  const Q = new URLSearchParams(location.search), DEBUG = Q.has("debug");
+  const IDLE_MS = 45000, KEY = "rung.v1", RAIL = "/assets/fence/rail.png";
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart }, events: S.events })); } catch {} };
 
-  const state = { cart: s.groups * s.per, parts: Array(s.groups).fill(0), held: false, events: [{ t: 0, e: "level_start", node }] };
-  const t0 = performance.now(), log = (e) => { state.events.push({ t: Math.round(performance.now() - t0), ...e }); render(); };
-  const cart = document.getElementById("cart");
-  const render = () => {
-    document.getElementById("cartn").textContent = `${state.cart} in cart`;
-    cart.classList.toggle("held", state.held);
-    document.getElementById("log").textContent = state.events.slice(-4).map(e => JSON.stringify(e)).join("\n");
-  };
-  cart.onclick = () => { if (state.cart > 0) { state.held = !state.held; if (state.held) log({ e: "plank_held" }); else render(); } };
+  // One plain object. The event log is the state history; `events` is a ring across levels and
+  // lvl() is the slice classify() reads.
+  const S = { mastery: {}, node: null, parts: [], cart: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, retry: false, idle: 0, tok: 0, last: null };
+  const scene = $("scene");
+  const sh = () => shape(S.node);
+  const lvl = () => S.events.slice(S.events.findLastIndex(e => e.e === "level_start"));
+  const delivered = () => sh().mode !== "packs" || lvl().some(e => e.e === "order");
 
-  onTap(scene, (part, i) => {
-    if (part === null) { if (state.held) log({ e: "place_failed", held: "plank" }); return; }
-    if (i !== null && !state.held) {               // empty hand on a placed plank: it goes back to the cart
-      removePlank(scene, part, i); state.parts[part]--; state.cart++;
-      // keep indices dense: re-lay the rails above the removed one
-      for (let k = i + 1; k <= state.parts[part]; k++) { removePlank(scene, part, k); appendPlank(scene, part, k - 1); }
-      log({ e: "remove", unit: "plank", group: part, n_in_group: state.parts[part] }); return;
+  function log(e) {
+    S.events.push({ t: Date.now() - S.at, ...e }); save();
+    if (e.e !== "commit" && e.e !== "hint") arm();
+  }
+  function arm() { clearTimeout(S.idle); S.idle = setTimeout(() => { if (!S.done) { log({ e: "commit", reason: "idle" }); onCommit(); } }, IDLE_MS); }
+
+  function start(node) {
+    if (node !== S.node) S.retry = false;
+    const s = shape(node);
+    Object.assign(S, { node, parts: Array(s.groups).fill(0), cart: s.mode === "packs" ? 0 : s.groups * s.per, held: null, slip: 0, pre: null, probe: false, done: false, at: Date.now() });
+    S.events = S.events.slice(-500);
+    log({ e: "level_start", node, at: S.at });
+    mount();
+  }
+  function mount() {
+    const s = sh();
+    mountScene(scene, s);
+    S.parts.forEach((n, p) => { for (let i = 0; i < n; i++) appendPlank(scene, p, i); });
+    $("task").textContent = `${s.groups} parts. ${s.per} planks in each part.` + (s.mode === "packs" ? ` Packs of ${s.pack}.` : "");
+    hideBubble(); render();
+  }
+
+  const plank = () => `<img class="plank" src="${RAIL}" alt="">`;
+  const pack = n => `<span class="pack">${Array.from({ length: n }, (_, i) => `<img src="${RAIL}" alt="" style="top:${(n - 1 - i) * 4}px">`).join("")}</span>`;
+  function render() {
+    const s = sh(), d = delivered(), packs = s.mode === "packs";
+    $("cart").hidden = !d; $("slip").hidden = d; $("done").hidden = !d;
+    $("again").hidden = !(packs && d && lvl().some(e => e.e === "hint") && !S.done);
+    if (d) {
+      $("pile").innerHTML = Array.from({ length: S.cart }, () => packs ? pack(s.pack) : plank()).join("");
+      $("cart").classList.toggle("held", !!S.held);
+      $("cartl").textContent = !S.cart ? "Cart is empty" : S.held ? "In hand. Tap a part." : "Cart";
+    } else {
+      $("addpack").innerHTML = pack(s.pack);
+      $("slipn").innerHTML = Array.from({ length: S.slip }, () => pack(s.pack)).join("");
     }
-    if (!state.held) { log({ e: "tap_count", group: part }); return; }
-    appendPlank(scene, part, state.parts[part]); state.parts[part]++; state.cart--;
-    if (state.cart === 0) state.held = false;
-    log({ e: "place", unit: "plank", group: part, n_in_group: state.parts[part] });
+    $("done").textContent = S.done ? "Next plot" : "Done";
+  }
+
+  // --- input -----------------------------------------------------------------------------------
+  $("cart").onclick = () => {
+    if (S.done || !S.cart) return;
+    S.held = S.held ? null : (sh().mode === "packs" ? "pack" : "plank");
+    if (S.held) log({ e: "plank_held", held: S.held });
+    render();
+  };
+  $("addpack").onclick = () => { const s = sh(); if (S.slip < s.groups * s.per) { S.slip++; render(); } };
+  $("slipn").onclick = e => { if (e.target.closest(".pack")) { S.slip--; render(); } };
+  $("deliver").onclick = () => { if (!S.slip) return; S.cart = S.slip; log({ e: "order", packs: S.slip }); render(); };
+  $("again").onclick = () => { S.retry = true; start(S.node); };
+  $("done").onclick = () => {
+    if (S.done) return advance();
+    if (!delivered()) return;
+    log({ e: "commit", reason: "left_plot" }); onCommit();
+  };
+  onTap(scene, (part, i, e) => {
+    if (S.done || !delivered()) return;
+    if (part === null) {
+      if (!S.held) return log({ e: "tap_idle" });
+      // nearest part by distance to the hit-region centres — cheap, and only for the record
+      const near = [...scene.querySelectorAll(".hit")].map(h => { const r = h.getBoundingClientRect();
+        return [Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY), +h.dataset.part]; }).sort((a, b) => a[0] - b[0])[0];
+      return log({ e: "place_failed", nearest_group: near[1], held: S.held });
+    }
+    if (S.held) return place(part);          // a held plank always places, even on an existing rail
+    if (i !== null) return remove(part);
+    count(part);
   });
-  render();
+
+  function place(part) {
+    const s = sh(), unit = S.held, n = unit === "pack" ? s.pack : 1, from = S.parts[part];
+    for (let k = 0; k < n; k++) appendPlank(scene, part, from + k);
+    S.parts[part] += n; S.cart--; if (!S.cart) S.held = null;
+    hideBubble(); S.probe = false;
+    log({ e: "place", unit, ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
+    const r = classify(lvl());
+    if (r.id === "correct") { log({ e: "commit", reason: "left_plot" }); return finish(r); }
+    // Prefetch: the build is complete-and-wrong (cart empty) or a part overflows. Held until commit.
+    if (!S.cart || S.parts[part] > s.per) {
+      const p = classify([...lvl(), { t: Date.now() - S.at, e: "commit", reason: "left_plot" }]);
+      if (IDS.includes(p.id) && p.id !== "ambiguous" && S.pre?.key !== p.id + p.tier) S.pre = { key: p.id + p.tier, h: hint(p) };
+    }
+    render();
+  }
+  function remove(part) {
+    const s = sh(), n = s.mode === "packs" ? s.pack : 1;
+    if (S.parts[part] < n) return;
+    for (let k = 1; k <= n; k++) removePlank(scene, part, S.parts[part] - k);   // the top rail(s) go back
+    S.parts[part] -= n; S.cart++;
+    S.pre = null; hideBubble(); S.probe = false;
+    log({ e: "remove", unit: n > 1 ? "pack" : "plank", ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
+    render();
+  }
+  // Tap-to-count: code walks the rails that are on screen with a pip. Never what should be there.
+  function count(part) {
+    log({ e: "tap_count", group: part });
+    const n = S.parts[part];
+    for (let i = 0; i < n; i++) {
+      const p = railPoint(scene, part, i), el = document.createElement("span");
+      el.className = "pip"; el.textContent = i + 1;
+      el.style.cssText = `left:${px(p.x)};top:${px(p.y)};animation-delay:${i * .45}s`;
+      $("stage").appendChild(el); setTimeout(() => el.remove(), i * 450 + 2100);
+    }
+    if (S.probe) { S.probe = false; const r = classify(lvl()); if (r.id !== "ambiguous" && IDS.includes(r.id)) setTimeout(() => showHint(r), n * 450 + 400); }
+  }
+
+  // --- commit → classify → hint on the gap ------------------------------------------------------
+  function onCommit() {
+    const r = classify(lvl()), s = sh(), c = r.counts;
+    if (r.id === "correct") return finish(r);
+    const gap = c.findIndex(n => n < s.per);
+    if (gap >= 0 && c.some(n => n > 0)) goatWalk(scene, gap, true);
+    if (IDS.includes(r.id)) showHint(r);
+    render();
+  }
+  async function showHint(r) {
+    log({ e: "hint", id: r.id, tier: r.tier });
+    const s = sh(), at = Math.max(0, r.counts.findIndex(n => n !== s.per));
+    if (r.id === "ambiguous") { S.probe = true; return bubble(TEMPLATES.ambiguous[1], "template", at); }
+    const tok = ++S.tok, key = r.id + r.tier;
+    const h = await (S.pre?.key === key ? S.pre.h : hint(r)); S.pre = null;
+    if (tok === S.tok) bubble(h.text, h.source, at);
+    render();
+  }
+  function finish(r) {
+    S.done = true; S.last = r; clearTimeout(S.idle);
+    const hinted = S.retry || lvl().some(e => e.e === "hint");
+    S.mastery[S.node] = hinted ? 0.5 : 1; save();
+    goatWalk(scene, scene.geom.goat.part, false);
+    bubble("The fence is done.", "", Math.floor(sh().groups / 2));
+    render();
+  }
+  function advance() {
+    const amb = lvl().some(e => e.e === "hint" && e.id === "ambiguous");
+    const n = next(S.mastery, amb ? { id: "ambiguous", node: S.node } : S.last);
+    if (n) return start(n);
+    S.mastery = {}; save(); start("3x4_concrete");   // every plot fenced: begin again
+  }
+
+  // --- bubble ----------------------------------------------------------------------------------
+  function bubble(text, source, part) {
+    const b = $("bubble"); S.bpart = part;
+    $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
+    b.hidden = false; placeBubble();
+  }
+  function placeBubble() {
+    const b = $("bubble"); if (b.hidden) return;
+    const p = partTop(scene, S.bpart), W = scene.clientWidth, w = Math.min(280, W - 16);
+    const left = Math.max(8, Math.min(W - w - 8, p.x - w / 2));
+    b.style.cssText = `width:${px(w)};left:${px(left)};top:${px(Math.max(8, p.y - b.offsetHeight - 14))};--tx:${px(Math.max(14, Math.min(w - 14, p.x - left)))}`;
+  }
+  function hideBubble() { $("bubble").hidden = true; S.tok++; }
+  addEventListener("resize", placeBubble);
+
+  // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
+  const saved = load(); S.mastery = saved.mastery || {};
+  const ls = saved.events?.findLast?.(e => e.e === "level_start");
+  if (Q.get("node") && shape(Q.get("node"))) start(Q.get("node"));
+  else if (saved.build?.node && ls?.node === saved.build.node && shape(saved.build.node)) {
+    Object.assign(S, { events: saved.events, node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, at: ls.at || Date.now() });
+    mount(); S.done = classify(lvl()).id === "correct"; render(); arm();
+  } else start(Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : "3x4_concrete");
 </script>
 </body>
 </html>

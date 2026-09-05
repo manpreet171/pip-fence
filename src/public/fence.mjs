@@ -57,6 +57,15 @@ export function classify(events) {
   if (ci < 0) return out("in_progress", false);
   const commit = events[ci], prev = events[ci - 1];
 
+  const filled = c.filter(n => n > 0);
+  // Each filled part holds exactly `groups` planks. With a finite cart this is [4,4,4,0] on 4x3,
+  // not [4,4,4,4]: when groups > per the cart runs dry before the last part.
+  const asGroups = s.groups !== s.per && filled.every(n => n === s.groups) && (filled.length === s.groups || sum === T);
+  const perGroup = c.every(n => n === s.per - 1);
+  // The probe was shown for the collision: its outcome (tap, or silence past 20 s) outranks the idle rule,
+  // otherwise the 45 s idle commit would always land on idle_off_task and the escalation could never fire.
+  if (asGroups && perGroup && hints.some(h => h.id === "ambiguous")) return resolveAmbiguous(events, hints, c, s, out);
+
   // Interface, not maths: the last act was a failed tap, while holding, aimed at a part that is short.
   if (prev?.e === "place_failed" && c[prev.nearest_group] < s.per) return out("interface_failure");
   // Disengagement, not maths: the commit came from idle, or >30 s after her last act.
@@ -64,11 +73,6 @@ export function classify(events) {
   // Packs: one pack per part, when a pack is not a part.
   if (s.mode === "packs" && ordered === s.groups && s.pack !== s.per) return out("pack_unit_confusion");
 
-  const filled = c.filter(n => n > 0);
-  // Each filled part holds exactly `groups` planks. With a finite cart this is [4,4,4,0] on 4x3,
-  // not [4,4,4,4]: when groups > per the cart runs dry before the last part.
-  const asGroups = s.groups !== s.per && filled.every(n => n === s.groups) && (filled.length === s.groups || sum === T);
-  const perGroup = c.every(n => n === s.per - 1);
   if (asGroups && perGroup) return resolveAmbiguous(events, hints, c, s, out);
   if (asGroups) return out("counted_groups_as_group_size");
   if (sum === T && c.includes(0)) return out("right_total_wrong_grouping");
@@ -97,13 +101,15 @@ function resolveAmbiguous(events, hints, c, s, out) {
 // Part 2: DOM. Runs only inside exported functions, so `node` imports stay clean.
 // Sprites are the Kenney cut-outs from scripts/make_parts.py. Geometry is in source px, scaled by
 // K so one fence part (122 source px between post centres) spans one tile edge (66 world px).
-import { iso, VILLAGE_CSS } from "./village.mjs";
+import { iso, BB, VILLAGE_CSS } from "./village.mjs";
 
 const TW = 132, TH = 66, GRASS = "/assets/iso/landscapeTiles_015.png";
-const K = 66 / 122;
+const K = 66 / 122, KF = TW / 256;                    // KF: farm sprites (256-wide canvas) onto a 132 tile
 const POST_W = 14, RAIL_W = 108, RAIL_H = 65, SLAB = 11, PITCH = 24;
 const postH = per => 65 + PITCH * (per - 1);          // the post height encodes how tall a full part is
-const SPRITE = { post: "/assets/fence/post.png", rail: "/assets/fence/rail.png" };
+const SPRITE = { post: "/assets/fence/post.png", rail: "/assets/fence/rail.png", goat: "/assets/animals/goat.png",
+  dirtFarmland: "/assets/farm/dirtFarmland_E.png", cornYoungDouble: "/assets/farm/cornYoungDouble_E.png" };
+const GOAT_W = 46, GOAT_H = 46 * 171 / 184;
 const px = n => n.toFixed(1) + "px";
 
 // Post feet (bottom-centre, world px) for part p. The fence runs along the back-left edge of
@@ -118,26 +124,35 @@ function railBox(p, i, g) {
   const f = feet(p, g);
   return { l: f.lx + (POST_W / 2) * K, t: f.ly - (40 + i * PITCH + (RAIL_H - SLAB)) * K, w: RAIL_W * K, h: RAIL_H * K };
 }
+// Goat feet (bottom-centre, world px): outside = centre of the tile beyond the fence, inside = centre
+// of the tile just behind it. The straight line between them crosses the fence at the part's middle.
+function goatFeet(p, inside, g) {
+  const { x, y } = iso(g.rows - 1 - p, 0, g.originX, g.originY);
+  return inside ? { x, y: y + TH / 2 } : { x: x - TW / 2, y };
+}
 const at = (b, g) => `left:${px(b.l - g.bx.l)};top:${px(b.t - g.bx.t)};width:${px(b.w)};height:${px(b.h)}`;  // explicit height: the box is hittable before the image decodes
 
-// Draws ground + posts + one transparent hit region per part, and pins bbox and scale from the
-// FINISHED fence (every rail present) so the camera never moves as planks land. Returns geometry.
+// Draws ground + corn + posts + goat + one transparent hit region per part, and pins bbox and scale
+// from the FINISHED fence (every rail present, goat at every rest spot) so the camera never moves as
+// planks land. Returns geometry.
 export function mountScene(el, plan) {
-  const g = { rows: plan.groups, cols: 2, per: plan.per, originX: 400, originY: 400 };
+  const g = { rows: plan.groups, cols: 2, per: plan.per, originX: 400, originY: 400, goat: { part: Math.floor(plan.groups / 2), inside: false } };
   const W = el.clientWidth || 900, H = el.clientHeight || 420;
   const vis = [], cells = [];
   for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) {
     const { x, y } = iso(r, c, g.originX, g.originY);
-    cells.push({ l: x - TW / 2, t: y, z: 1 + r + c });
+    cells.push({ x, y, l: x - TW / 2, t: y, z: 1 + r + c, r, c });
     vis.push({ l: x - TW / 2, t: y, r: x + TW / 2, b: y + 83 });
   }
   for (let p = 0; p < g.rows; p++) {
     const f = feet(p, g);
     for (const b of [postBox(f.lx, f.ly, g.per), postBox(f.rx, f.ry, g.per)]) vis.push({ l: b.l, t: b.t, r: b.l + b.w, b: b.t + b.h });
     for (let i = 0; i < g.per; i++) { const b = railBox(p, i, g); vis.push({ l: b.l, t: b.t, r: b.l + b.w, b: b.t + b.h }); }
+    const q = goatFeet(p, false, g); vis.push({ l: q.x - GOAT_W / 2, t: q.y - GOAT_H, r: q.x + GOAT_W / 2, b: q.y });
   }
   g.bx = { l: Math.min(...vis.map(v => v.l)), t: Math.min(...vis.map(v => v.t)), r: Math.max(...vis.map(v => v.r)), b: Math.max(...vis.map(v => v.b)) };
   const cw = g.bx.r - g.bx.l, ch = g.bx.b - g.bx.t;
+  g.cw = cw; g.ch = ch;
   g.scale = Math.min(W / cw, H / ch) * 0.94;
   // bbox is pinned for the life of the level; only the scale follows the viewport.
   const fit = () => { const f = el.querySelector(".isofit"); if (!f) return;
@@ -146,6 +161,11 @@ export function mountScene(el, plan) {
   new ResizeObserver(fit).observe(el);
 
   const tiles = cells.map(c => `<img class="tile" src="${GRASS}" alt="" style="z-index:${c.z};left:${px(c.l - g.bx.l)};top:${px(c.t - g.bx.t)};width:${TW}px">`).join("");
+  // Something to protect: the inner column is a planted strip. Farm art is anchored by the
+  // bottom-centre of its measured opaque bounds (BB), the same way village.mjs seats buildings.
+  const farm = (key, c, z) => { const bb = BB[key];
+    return `<img class="bld" src="${SPRITE[key]}" alt="" style="z-index:${z};left:${px(c.x - ((bb[0] + bb[2]) / 2) * KF - g.bx.l)};top:${px(c.y + TH - bb[3] * KF - g.bx.t)};width:${TW}px">`; };
+  const corn = cells.filter(c => c.c === 1).map(c => farm("dirtFarmland", c, 10 + c.r) + farm("cornYoungDouble", c, 150 + c.r)).join("");
   let frame = "";
   for (let p = 0; p <= g.rows; p++) {
     const f = p < g.rows ? feet(p, g) : (() => { const q = feet(g.rows - 1, g); return { lx: q.rx, ly: q.ry }; })();
@@ -157,36 +177,81 @@ export function mountScene(el, plan) {
         `clip-path:polygon(6px ${px(TH / 2)},72px 0,72px ${px(H2)},6px ${px(H2 + TH / 2)})"></div>`;
     }
   }
-  el.innerHTML = `<div class="isoworld"><div class="isofit" style="width:${px(cw)};height:${px(ch)};transform:translate(-50%,-50%) scale(${g.scale.toFixed(3)})">${tiles}${frame}</div></div>`;
+  const gf = goatFeet(g.goat.part, false, g);
+  const goat = `<img class="goat" src="${SPRITE.goat}" alt="" style="left:${px(gf.x - GOAT_W / 2 - g.bx.l)};top:${px(gf.y - GOAT_H - g.bx.t)};width:${px(GOAT_W)}">`;
+  el.innerHTML = `<div class="isoworld"><div class="isofit" style="width:${px(cw)};height:${px(ch)};transform:translate(-50%,-50%) scale(${g.scale.toFixed(3)})">${tiles}${corn}${frame}${goat}</div></div>`;
   el.geom = g;
   return g;
 }
 
 // One rail lands. Appended, never re-rendered, so existing sprites keep their state and `plop`
-// fires once per plank. i >= per is the over-count rail: it sits above the post, tilted.
+// fires once per plank. i >= per is the over-count rail: it sits above the post, tilted; --o is
+// how far over, so a stack of them leans further the higher it goes.
 export function appendPlank(el, part, i) {
-  const g = el.geom, b = railBox(part, i, g);
+  const g = el.geom, b = railBox(part, i, g), over = i >= g.per;
   el.querySelector(".isofit").insertAdjacentHTML("beforeend",
-    `<img class="rail${i >= g.per ? " over" : ""}" data-part="${part}" data-i="${i}" src="${SPRITE.rail}" alt="" style="z-index:${100 + part};${at(b, g)}">`);
+    `<img class="rail${over ? " over" : ""}" data-part="${part}" data-i="${i}" src="${SPRITE.rail}" alt="" style="z-index:${100 + part};${over ? `--o:${i - g.per};` : ""}${at(b, g)}">`);
 }
 export function removePlank(el, part, i) {
   el.querySelector(`.rail[data-part="${part}"][data-i="${i}"]`)?.remove();
 }
 
-// One delegated listener for the whole scene. fn(part, railIndex|null) on a part; fn(null) when the
-// tap lands in the world on no part (the caller decides whether that is place_failed or tap_idle).
+// World px -> px inside `el` (the .isofit is centred at 50%/57% and scaled about its centre).
+function toScene(el, wx, wy) {
+  const g = el.geom;
+  return { x: el.clientWidth / 2 + (wx - g.bx.l - g.cw / 2) * g.scale, y: el.clientHeight * 0.57 + (wy - g.bx.t - g.ch / 2) * g.scale };
+}
+// Where a speech bubble points: just above the middle of part p.
+export function partTop(el, part) {
+  const g = el.geom, f = feet(part, g);
+  return toScene(el, (f.lx + f.rx) / 2, (f.ly + f.ry) / 2 - postH(g.per) * K - 8);
+}
+// Centre of rail i of part p, for the counting pips.
+export function railPoint(el, part, i) {
+  const b = railBox(part, i, el.geom);
+  return toScene(el, b.l + b.w / 2, b.t + b.h * 0.55);
+}
+
+// The goat walks, one leg at a time: along the outside to the part, then through it. CSS does the
+// moving (a transition on transform); this only sets waypoints. Reduced motion: it steps.
+export function goatWalk(el, part, inside) {
+  const g = el.geom, s = g.goat, img = el.querySelector(".goat"), base = goatFeet(Math.floor(g.rows / 2), false, g);
+  const legs = [];
+  if (s.inside && s.part !== part) legs.push([s.part, false]);
+  if (inside) legs.push([part, false]);
+  legs.push([part, inside]);
+  clearTimeout(s.timer);
+  const dur = matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : 1400;
+  const step = () => {
+    const l = legs.shift(); if (!l) return;
+    if (l[0] === s.part && l[1] === s.inside) return step();
+    const p = goatFeet(l[0], l[1], g);
+    img.style.transform = `translate(${px(p.x - base.x)},${px(p.y - base.y)})`;
+    img.classList.toggle("in", l[1]);
+    s.part = l[0]; s.inside = l[1];
+    s.timer = setTimeout(step, dur + 60);
+  };
+  step();
+}
+
+// One delegated listener for the whole scene. fn(part, railIndex|null, event) on a part; fn(null)
+// when the tap lands in the world on no part (the caller decides whether that is place_failed or
+// tap_idle).
 export function onTap(el, fn) {
   el.addEventListener("click", e => {
     const h = e.target.closest("[data-part]");
-    fn(h ? +h.dataset.part : null, h && h.dataset.i !== undefined ? +h.dataset.i : null);
+    fn(h ? +h.dataset.part : null, h && h.dataset.i !== undefined ? +h.dataset.i : null, e);
   });
 }
 
 export const FENCE_CSS = VILLAGE_CSS + `
 .isoworld{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 .isoworld .hit{position:absolute;z-index:50}
+.isoworld .bld{animation:none}
 .isoworld .rail{animation:plop .45s cubic-bezier(.2,1.5,.4,1) both;transform-origin:left bottom}
-.isoworld .rail.over{transform:rotate(-12deg) translate(4px,-6px);filter:drop-shadow(3px 5px 3px rgba(0,0,0,.35))}
-@keyframes plop{0%{opacity:0;transform:translateY(-22px) scale(.86)}100%{opacity:1}}
-@media (prefers-reduced-motion:reduce){.isoworld .rail{animation:none}}
+.isoworld .rail.over{--o:0;transform:rotate(calc(-12deg - var(--o) * 2deg)) translate(calc(4px + var(--o) * 3px),-6px);filter:drop-shadow(3px 5px 3px rgba(0,0,0,.35))}
+.isoworld .goat{z-index:90;transition:transform 1.4s ease-in-out,z-index 0s .7s}
+.isoworld .goat.in{z-index:300}
+@keyframes plop{0%{opacity:0;translate:0 -22px;scale:.86}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.isoworld .rail{animation:none}.isoworld .goat{transition:none}}
 `;

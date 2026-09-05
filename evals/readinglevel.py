@@ -1,16 +1,24 @@
 """
 READING-LEVEL CHECK for buddy hints (CRITIC-R2 #13: "reading level is asserted, never measured").
 
-Scores each hint against data/wordlist.txt:
-  - BASE   = Dolch 220 service words + 95 nouns (named, public-domain list)
+Scores each template in data/hints_v2.txt (id<TAB>tier<TAB>text) against data/wordlist.txt:
+  - BASE   = Dolch 315 U Fry first 300 (named, public-domain lists)
   - DOMAIN = the game's own screen vocabulary (reported separately, never counted as Dolch)
-Reports, per hint and overall: sentence count, mean sentence length (words), % words in
-Dolch, % in Dolch+Domain, and the exact out-of-list words. No LLM involved — pure code.
+Per hint: sentence count, words/sentence, % in BASE, % in BASE+DOMAIN, out-of-list words,
+number-word flag. Inflections -s/-es/-ing/-ed are stripped before lookup (CONCEPT-V3.2 s3).
+No LLM involved - pure code. NUMBER_WORDS is the same 25-word list as gate() in buddy.mjs.
 
-Run:  python evals/readinglevel.py            (scores the six current hint templates)
-      python evals/readinglevel.py hints.txt  (one hint per line)
+Run:  python evals/readinglevel.py            (table for every template)
+      python evals/readinglevel.py hints.txt  (same format, another file)
+      python evals/readinglevel.py --assert   (build gate: <=2 sentences, 0 digits/number words,
+                                               <=2 out-of-list words on EVERY line; exit 1 otherwise)
 """
 import re, sys, io, statistics
+
+NUMBER_WORDS = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+    "eleven", "twelve", "fifteen", "twenty", "hundred", "dozen", "half", "twice", "once", "single",
+    "pair", "couple", "both", "double"}
+assert len(NUMBER_WORDS) == 25
 
 def load_list(path="data/wordlist.txt"):
     base, dom, sect = set(), set(), None
@@ -23,13 +31,21 @@ def load_list(path="data/wordlist.txt"):
         (base if sect == "base" else dom).add(line.lower())
     return base, dom
 
+def load_hints(path="data/hints_v2.txt"):
+    rows = []
+    for raw in io.open(path, encoding="utf-8"):
+        if not raw.strip(): continue
+        mid, tier, text = raw.rstrip("\n").split("\t")
+        rows.append((mid, int(tier), text))
+    return rows
+
 WORD = re.compile(r"[a-z']+")
 SENT = re.compile(r"[.!?]+")
 
 def score(hint, base, dom):
     sents = [s for s in SENT.split(hint.strip()) if s.strip()]
     words = WORD.findall(hint.lower())
-    def stem(w):                      # v3.2 §3: "-s, -ing, -ed" removed before lookup
+    def stem(w):
         for suf in ("ing", "ed", "es", "s"):
             if w.endswith(suf) and len(w) - len(suf) >= 3:
                 yield w[: -len(suf)]
@@ -38,34 +54,43 @@ def score(hint, base, dom):
     in_base = [w for w in words if known(w, base)]
     in_any  = [w for w in words if known(w, base) or known(w, dom)]
     out     = [w for w in words if not known(w, base) and not known(w, dom)]
-    has_num = bool(re.search(r"\d", hint)) or any(w in {"zero","one","two","three","four","five","six",
-        "seven","eight","nine","ten","eleven","twelve","twenty","hundred","dozen","half","twice"} for w in words)
+    has_num = bool(re.search(r"\d", hint)) or any(w in NUMBER_WORDS for w in words)
     return dict(sentences=len(sents), mean_len=(len(words)/max(1,len(sents))), n=len(words),
                 pct_dolch=len(in_base)/max(1,len(words)), pct_any=len(in_any)/max(1,len(words)),
                 out=out, has_number=has_num)
 
-DEFAULT_HINTS = [l.strip() for l in io.open("data/hints_v2.txt", encoding="utf-8") if l.strip()]
-
 if __name__ == "__main__":
     base, dom = load_list()
-    if "--assert" in sys.argv:            # build-time gate check on the committed templates (CONCEPT-V3.2 §3)
-        hints=[l.strip() for l in io.open("data/hints_v2.txt",encoding="utf-8") if l.strip()]
-        bad=[h for h in hints if (r:=score(h,base,dom))["has_number"] or r["sentences"]>2]
-        assert not bad, f"templates violate the gate: {bad}"
-        print(f"gate assert OK: {len(hints)} templates, 0 number words, <=2 sentences"); sys.exit(0)
-    hints = [l.strip() for l in io.open(sys.argv[1], encoding="utf-8") if l.strip()] if len(sys.argv) > 1 else DEFAULT_HINTS
-    rows = [score(h, base, dom) for h in hints]
-    print(f"wordlist: Dolch base {len(base)} words | domain {len(dom)} words\n")
-    for h, r in zip(hints, rows):
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    hints = load_hints(args[0]) if args else load_hints()
+    rows = [(mid, tier, h, score(h, base, dom)) for mid, tier, h in hints]
+    if "--assert" in sys.argv:            # build-time gate check on the committed templates (CONCEPT-V3.2 s3)
+        bad = 0
+        for mid, tier, h, r in rows:
+            why = []
+            if r["sentences"] > 2: why.append(f"{r['sentences']} sentences")
+            if r["has_number"]:    why.append("digit/number word")
+            if len(r["out"]) > 2:  why.append(f"{len(r['out'])} out-of-list")
+            print(f"{'FAIL' if why else 'ok  '} {mid:30} t{tier}  out-of-list: {r['out'] or '-'}" + (f"  <- {', '.join(why)}" if why else ""))
+            bad += bool(why)
+        ids = {mid for mid, *_ in hints}
+        if len(hints) != 24 or len(ids) != 8 or any((m, t) not in {(a, b) for a, b, *_ in hints} for m in ids for t in (1, 2, 3)):
+            print(f"FAIL: expected 8 ids x 3 tiers, got {len(hints)} lines over {len(ids)} ids"); bad += 1
+        if bad: print(f"gate assert FAILED: {bad} violation(s)"); sys.exit(1)
+        print(f"gate assert OK: {len(hints)} templates, 0 number words, <=2 sentences, <=2 out-of-list words each"); sys.exit(0)
+    print(f"wordlist: BASE (Dolch U Fry) {len(base)} words | domain {len(dom)} words\n")
+    for mid, tier, h, r in rows:
         flag = " NUMBER!" if r["has_number"] else ""
-        print(f"[{r['sentences']} sent, {r['mean_len']:.1f} w/sent, Dolch {r['pct_dolch']:.0%}, +domain {r['pct_any']:.0%}]{flag}")
+        print(f"{mid} t{tier} [{r['sentences']} sent, {r['mean_len']:.1f} w/sent, base {r['pct_dolch']:.0%}, +domain {r['pct_any']:.0%}]{flag}")
         print(f"   {h}")
         print(f"   out-of-list: {r['out'] or '-'}")
+    R = [r for *_, r in rows]
     print("\nOVERALL")
-    print(f"  sentences per hint : max {max(r['sentences'] for r in rows)}  (limit 2)")
-    print(f"  mean words/sentence: {statistics.mean(r['mean_len'] for r in rows):.1f}")
-    print(f"  Dolch coverage     : {statistics.mean(r['pct_dolch'] for r in rows):.0%}")
-    print(f"  Dolch+domain       : {statistics.mean(r['pct_any'] for r in rows):.0%}")
-    allout = sorted({w for r in rows for w in r['out']})
+    print(f"  templates          : {len(R)}")
+    print(f"  sentences per hint : max {max(r['sentences'] for r in R)}  (limit 2)")
+    print(f"  mean words/sentence: {statistics.mean(r['mean_len'] for r in R):.1f}")
+    print(f"  base coverage      : {statistics.mean(r['pct_dolch'] for r in R):.0%}")
+    print(f"  base+domain        : {statistics.mean(r['pct_any'] for r in R):.0%}")
+    allout = sorted({w for r in R for w in r['out']})
     print(f"  out-of-list words  : {allout or 'none'}")
-    print(f"  hints with a number: {sum(r['has_number'] for r in rows)}  (must be 0)")
+    print(f"  hints with a number: {sum(r['has_number'] for r in R)}  (must be 0)")

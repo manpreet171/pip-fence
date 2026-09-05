@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rung — for grown-ups</title>
+<style>
+  :root{--ink:#22303a;--muted:#6f655a;--paper:#efe3cd;--wood:#a9702f;--wood2:#7d5122;--line:#dccfb6}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{min-height:100dvh;font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--paper);padding:20px 18px 40px}
+  main{max-width:560px;margin:0 auto;display:grid;gap:16px}
+  h1{font-size:22px;margin:0 0 4px;color:var(--wood2)}
+  .sub{color:var(--muted);margin:0 0 8px;font-size:15px}
+  section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px;font-weight:700}
+  .big{font-size:40px;font-weight:800;line-height:1.1;color:var(--wood2)}
+  .big small{font-size:16px;font-weight:600;color:var(--ink);margin-left:8px}
+  p{margin:6px 0}
+  .ask{margin-top:12px;padding:14px 16px;border-radius:12px;background:#fbf6ea;border-left:4px solid var(--wood);font-size:19px;font-weight:600}
+  .ask .k{display:block;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  ul{margin:6px 0 0;padding-left:18px}
+  li{margin:2px 0}
+  a{color:var(--wood2)}
+  .foot{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <div><h1>For grown-ups</h1><p class="sub">What happened on the plots, and one thing to ask out loud. Everything here stays on this device.</p></div>
+  <section><h2>This week</h2><div class="big" id="n"></div><p id="mastered" class="foot"></p></section>
+  <section id="open"><h2>Worth a look</h2><p id="what"></p><div class="ask" id="ask" hidden><span class="k">Ask out loud</span><div id="q"></div></div></section>
+  <p class="foot"><a href="/build">Back to the plots</a></p>
+</main>
+<script type="module">
+  import { classify, shape, IDS } from "/fence.mjs";
+  // Plain words for each misconception, and the one question to ask. Same register as the hints:
+  // short, no blame, points at the fence rather than at the child.
+  const WORDS = {
+    off_by_one_in_one_group: ["One part of the fence comes out a plank short. The counting is nearly there; it stops one early on a single part.", "Show me one full part. Now count it out loud for me."],
+    off_by_one_per_group: ["Every part comes out one plank short. The number for each part is being remembered as one less than it is.", "How many planks does one part need? Show me with your fingers."],
+    counted_groups_as_group_size: ["Each part gets as many planks as there are parts. The two numbers in the job are getting swapped.", "Which number says how many parts? Which one says how many go in each part?"],
+    one_group_only: ["One part is built and then the job stops, as if one part were the whole fence.", "Is the fence finished? Walk along it with your finger."],
+    over_count: ["A part gets too many planks, so one sticks out over the post.", "Show me where one part stops and the next one starts."],
+    right_total_wrong_grouping: ["All the wood gets used, but it is piled into fewer parts than the job asked for.", "How many parts does this fence need? Point to each one."],
+    pack_unit_confusion: ["A pack is being treated as one plank, so far too many packs get ordered.", "Open a pack in your head. What is inside it?"],
+    ambiguous: ["Every part came out short by the same amount. It is not clear yet whether the size of a part was miscounted or the two numbers were mixed up.", "Show me one part that looks finished."],
+  };
+  const name = node => { const s = shape(node); return `${s.groups} parts of ${s.per}${s.mode === "packs" ? " (packs)" : ""}`; };
+  let d = {}; try { d = JSON.parse(localStorage.getItem("rung.v1")) || {}; } catch {}
+  const levels = [];
+  for (const e of d.events || []) { if (e.e === "level_start") levels.push([]); if (levels.length) levels.at(-1).push(e); }
+  const res = levels.flatMap(L => { try { return [{ node: L[0].node, at: L[0].at || 0, r: classify(L), hints: L.filter(e => e.e === "hint") }]; } catch { return []; } });
+  const week = Date.now() - 7 * 864e5;
+  const done = res.filter(x => x.r.id === "correct" && x.at >= week);
+  document.getElementById("n").innerHTML = `${done.length}<small>${done.length === 1 ? "fence finished" : "fences finished"}</small>`;
+  const m = d.mastery || {}, solo = Object.keys(m).filter(k => m[k] >= 1), helped = Object.keys(m).filter(k => m[k] === 0.5);
+  document.getElementById("mastered").textContent =
+    (solo.length ? `Finished without a hint: ${solo.map(name).join(", ")}. ` : "") + (helped.length ? `Finished with a hint: ${helped.map(name).join(", ")}.` : "");
+  // The most recent level that needed a hint or ended on a named misconception is the one to talk about.
+  const recent = [...res].reverse().find(x => x.hints.length || IDS.includes(x.r.id));
+  const id = recent && (IDS.includes(recent.r.id) ? recent.r.id : recent.hints.at(-1).id);
+  const what = document.getElementById("what");
+  if (!res.length) what.textContent = "No fences yet. The first plot is waiting.";
+  else if (!id || (recent !== res.at(-1) && res.at(-1).r.id === "correct")) what.textContent = "Nothing open. The last fence went up without a hint.";
+  else {
+    what.textContent = WORDS[id][0]; document.getElementById("ask").hidden = false; document.getElementById("q").textContent = WORDS[id][1];
+  }
+</script>
+</body>
+</html>
