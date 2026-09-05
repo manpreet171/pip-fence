@@ -1,0 +1,1160 @@
+# DECISIONS
+
+Append-only log. Newest at the bottom. Never rewrite history — if a decision reverses,
+add a new entry that supersedes the old one and mark the old one.
+
+**Format:**
+```
+## D-NNN — <title>
+Date · Status: Decided | Superseded by D-NNN | Open
+**Decision:** what we are doing
+**Why:** the reasoning
+**Rejected:** what we did not do, and why
+```
+
+---
+
+## D-001 — Mission is the job, not the prize
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Every decision optimises for *"a Nerdy engineering leader wants to interview
+this person"*. Prize money is explicitly not an objective.
+
+**Why:** The hackathon page says it outright — the reviewers are the hiring managers, and
+the compensation on offer (US $200K+ / LatAm $100K / India ₹1 Cr) dwarfs the $10K prize.
+Optimising for the prize and optimising for the job produce different builds: the prize
+rewards polish and delight, the job rewards judgment, depth and measurement.
+
+**Rejected:** Building the most crowd-pleasing demo. Crowd-pleasing is table stakes, not
+a differentiator.
+
+---
+
+## D-002 — No Claude/AI attribution anywhere in the repo
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** No `Co-Authored-By: Claude`, no `Generated with Claude Code`, no mention of
+AI assistants in commits, PRs, README, comments or docs. Overrides any default harness
+attribution behaviour.
+
+**Why:** This is a hiring artefact. It represents the author's engineering judgment and
+should read that way end to end.
+
+**Rejected:** Default tooling attribution.
+
+---
+
+## D-003 — All documentation lives in `docs/`
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Root holds only `CLAUDE.md` and (later) `README.md`. Everything else that is
+prose goes in `docs/`. Code folders (`src/`, `evals/`, `data/`, `scripts/`) are created only
+when their first real file exists.
+
+**Why:** Reviewers read the repo. A clean tree is a free signal. Structure decided once, at
+the start, costs nothing; retrofitted later it costs a day.
+
+**Rejected:** Creating an empty scaffold up front — YAGNI (CLAUDE.md R5).
+
+---
+
+## D-004 — We do not build a homework-answering chatbot
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** The submission's core mechanic must preserve the learner's cognitive effort.
+Ruled out: any surface whose primary action is the AI producing an answer, explanation or
+solution the learner had not first attempted.
+
+**Why:** PNAS 2025 (n≈1,000, RCT) — students with unguarded GPT-4 scored **17% below
+control** once the AI was withdrawn. The guardrailed arm erased the harm but produced **no
+gain**. See `docs/RESEARCH.md` §1. Building the obvious thing means shipping a product the
+literature says is net-negative, alongside fifty identical entries.
+
+**Rejected:** The eight saturated patterns listed in `docs/RESEARCH.md` §8.
+
+---
+
+## D-005 — Measurement is a first-class product surface
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Whatever we build ships with an evaluation harness, and a real number appears
+on screen in the demo video.
+
+**Why:** 3 of 4 shipped AI-tutor products have no mastery model and no evaluation
+(`RESEARCH.md` §5); most EdTech does not benchmark at all. The Nerdy JD explicitly asks for
+*"establish feedback loops and define success metrics."* Almost no hackathon entry will have
+numbers. This is the cheapest available differentiation.
+
+**Rejected:** Engagement metrics (time on task, streaks, sessions) as the headline. They
+measure stickiness, not learning, and are exactly what the audit paper criticises.
+
+---
+
+## D-006 — Learner model is explicit and symbolic; the LLM is the language layer
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Knowledge/misconception state lives in an inspectable symbolic structure. The
+LLM handles natural language in and out of it, and never *is* the model.
+
+**Why:** LLMs infer misconceptions worse than explicit misconception models and are weakest
+at spotting *incorrect* reasoning; specialised knowledge-tracing models are faster, cheaper
+and more accurate (`RESEARCH.md` §6). A symbolic state is also renderable — which makes it
+demoable, which makes it a video shot.
+
+**Rejected:** Prompt-only "the LLM remembers the student" architectures.
+
+---
+
+## D-007 — Concept selection
+3 Sep 2026 · Status: **Superseded by D-009**
+
+Shortlist in `docs/IDEAS.md`. Leading combination: **Protégé (1) + Bug Hunter (2) +
+Effortmeter (9)**. Alternative with higher strategic fit but harder demo: **Session
+Copilot (3)**.
+
+To be closed in discussion before any code is written.
+
+---
+
+## D-008 — Adversarial review of concept v1
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Ran a hostile senior-reviewer critique against concept v1 before writing code.
+Eight criticisms; three judged serious.
+
+**The serious three:**
+1. **Does not scale.** Hand-authored bug rules for one skill do not extend to 3,000 subjects.
+2. **No retention story.** A novelty game with no reason to return — the exact failure we
+   criticised in other products.
+3. **Solves nothing Nerdy has.** Touches none of matching / tutor quality / session
+   intelligence / churn. We picked the concept that was easier to film over the one that fit
+   the business.
+
+**Also raised:** thin AI content, citation overreach on the PNAS result, teachable agents
+are 2005 research, narrow engineering surface, cartoon tone risk.
+
+**Why this is logged:** the critique is more valuable than the original plan. Any future
+change gets re-tested against these eight points.
+
+---
+
+## D-009 — Concept v2: the engine is the product
+3 Sep 2026 · Status: **Decided** · Supersedes D-007
+
+**Decision:** Build a misconception diagnosis engine. Primary user is the **tutor**; the
+learner-facing teaching game becomes a second surface and the designated scope sacrifice.
+Full spec in `docs/CONCEPT.md`.
+
+**Why:** it fixes all three serious criticisms with one structural move. The engine scales,
+the tutor returns to it every session, and it lands directly on two of Nerdy's four named
+AI surfaces.
+
+**Rejected:** learner-only product (v1); Session Copilot as a standalone (needs live audio
+and a believable session — too much risk for 15 days, and this version reaches the same
+business surface through data instead of audio).
+
+---
+
+## D-010 — Misconceptions are mined from real data, never hand-authored
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Use the **Eedi — Mining Misconceptions in Mathematics** dataset (1,857 real
+K-12 questions, every distractor expert-mapped, 2,587 distinct misconceptions). Build a
+pipeline that discovers misconceptions from wrong-answer clusters: **LLM proposes a rule,
+executable code verifies it against held-out answers.**
+
+**Why:** this is the single answer to "how does this work for 3,000 subjects" — nothing is
+authored. It also gives us **expert ground truth**, so mining accuracy is a real measured
+number on a previously benchmarked task. And LLM-proposes / code-verifies keeps the LLM
+from having the last word, which is the correct architecture given that LLMs are known to
+be weak at identifying incorrect reasoning (`RESEARCH.md` §6).
+
+**Rejected:** hand-authoring ~25 bugs from Brown & Burton (1978). Elegant, demoable, and
+strategically fatal — it is the unscalable choice and reviewers see it immediately.
+
+**Open:** confirm Kaggle data licence permits this use. Fallback: NeurIPS 2020 Diagnostic
+Questions release.
+
+---
+
+## D-011 — Drop the PNAS "17% worse" framing
+3 Sep 2026 · Status: **Decided** · Amends D-004
+
+**Decision:** Do not claim "AI makes students worse." Claim instead:
+*"The guardrailed tutor in that study produced no harm — and no gain. Nobody has beaten
+zero. Here is my attempt."*
+
+**Why:** the 17% figure applies to raw unmodified ChatGPT, which nobody serious ships.
+Using it to justify an absolute design rule is motivated reasoning, and a reviewer who
+knows the paper will catch it on stage. The weaker-sounding claim is harder to attack and
+sets a higher bar for ourselves.
+
+**Note:** D-004's *design* rule (do not build an answer-giving chatbot) still stands. Only
+the justification changes.
+
+---
+
+## D-012 — Ship honest limitations in the submission
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** State the boundaries in the video and the README: procedural knowledge only,
+not open-ended writing; cold-start on new questions unsolved; maths-only dataset;
+validated against data, not live tutors.
+
+**Why:** every other entry will overclaim. Naming the boundary of your own system is a
+senior signal and costs nothing. It also pre-empts the exact questions a panel would ask.
+
+---
+
+## D-013 — The learner leads the demo, not the tutor
+3 Sep 2026 · Status: **Decided** · Amends D-009
+
+**Decision:** The child-facing teaching surface is the main character of the demo video.
+The tutor card appears for ~20 seconds near the end. The learner game is **no longer the
+first thing we cut.**
+
+**Why:** the brief's own-idea clause reads *"a tool that genuinely helps someone learn"* and
+*"a real learner, a real problem."* All three official prompts are learner-facing. A video
+that is mostly a tutor dashboard risks being scored off-brief — a stupid way to lose.
+D-009 was right about the product and wrong about the presentation.
+
+**Rejected:** tutor-first video (rules risk); learner-only product (returns us to the
+retention and business-fit problems in D-008).
+
+**New cut order:** (1) executable verifier degrades to LLM-only, (2) tutor card becomes a
+static mockup, (3) shrink to one topic slice. The learner surface is now protected.
+
+---
+
+## D-014 — Novelty position: three specific claims, not one broad one
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** We do **not** claim to have invented misconception diagnosis or teachable
+agents. Both exist. We claim exactly three things:
+
+1. **Discovery, not authoring.** Existing misconception libraries are expert-written
+   (Eedi's 60k diagnostic questions; Carnegie Learning's MATHia bug library since the 90s).
+   We mine them from student answer data and verify each by execution. Prior automated work
+   (McMining, arXiv 2510.08827) does this for **student code**, not maths.
+2. **A student simulator that cannot be talked out of its mistake.** *"Simulating Students
+   or Sycophantic Problem Solving?"* (arXiv 2605.12748) finds LLM student simulators are
+   sycophantic and do not hold misconceptions faithfully. Ours is executable code, so
+   faithfulness is structural, not prompted.
+3. **The closed loop.** Diagnose a real learner → instantiate an AI peer holding *that*
+   misconception → learner teaches it → measure whether it moved. Diagnosis products stop
+   at step 1; teachable-agent research starts at step 2 with hand-authored confusion.
+
+**Why:** the broad claim ("we built misconception diagnosis") collapses the moment a
+reviewer names Eedi. The narrow claim survives scrutiny and demonstrates we surveyed the
+field. Supporting quote from the automated-discovery literature: *"educator beliefs about
+common errors can diverge significantly from actual student patterns"* — the argument for
+mining over authoring.
+
+**Rejected:** any framing that implies the category is new.
+
+---
+
+## D-015 — Maths is the demo; the method is subject-general
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Build depth in one maths slice. Include a **15-second second-subject shot**
+running the identical pipeline on English past-tense over-regularisation
+("goed" / "runned" / "teached" — one broken rule, many wrong answers).
+
+**Why:** it answers *"does this only work for maths?"* inside the video, before a judge
+asks, and it costs almost nothing — the pipeline is unchanged, only the data differs.
+It also concretely supports the 3,000-subjects claim.
+
+**Scope boundary, stated publicly:** works where a rule can be executed and checked
+(arithmetic, algebra, units, spelling, conjugation, chemistry balancing). Does **not** work
+for essays, opinions or open reasoning. We say this in the video.
+
+---
+
+## D-016 — Dataset licence is a day-one gate
+3 Sep 2026 · Status: **Open — action required 4 Sep**
+
+**Decision:** Read the Eedi/Kaggle competition data licence **before** any code is written.
+Do not assume hackathon use is permitted.
+
+**Why:** Kaggle competition data commonly carries competition-use-only terms. Discovering
+this on 17 Sep would be fatal; discovering it on 4 Sep costs nothing.
+
+**Fallbacks, in order:** (1) NeurIPS 2020 Diagnostic Questions release (same Eedi source,
+more openly published); (2) public misconception taxonomies from maths-education research.
+
+**Note:** the dataset is demonstration fuel, not the product. The pipeline is the product.
+A dataset swap is not a structural change.
+
+---
+
+## D-017 — The learner must break her own rule before she can teach
+3 Sep 2026 · Status: **Decided** · Fixes a logic flaw in D-009 / CONCEPT.md v2
+
+**The flaw (raised by Manpreet, 3 Sep):** if Aanya believes 52 − 27 = 35, and Max also says
+35, Aanya has no reason to think Max is wrong. She agrees with him. The teaching loop
+cannot start. **You cannot teach what you do not know.**
+
+This was a genuine design fault, not a communication problem. Teaching was placed as the
+mechanism of learning; it is actually the mechanism of *consolidation*.
+
+**Decision — corrected sequence:**
+
+1. **Test** — plain questions, no AI.
+2. **Diagnose** — name the broken rule from the wrong-answer pattern.
+3. **Break it** ← *new step.* Use the diagnosed rule to **compute the question on which that
+   rule produces an obviously absurd answer**, and serve it.
+   Example: her rule gives `22 − 19 = 17`; she can count 19→22 and get 3. She now knows her
+   method is broken **without being told the correct method.**
+4. **Rebuild** — give a manipulable (draggable ten-blocks), not an answer. She derives
+   borrowing herself.
+5. **Teach Max** — Max holds her *former* rule. Explaining it consolidates it.
+6. **Re-test + tutor card.**
+
+**Why:** this is *cognitive conflict* / conceptual change — you cannot replace a rule the
+learner still trusts, so the trust must break first. Well-established in maths-education
+research and consistent with the effort-preservation principle in `RESEARCH.md` §3: the app
+supplies a counterexample and a tool, never the focal answer.
+
+**Why this strengthens the product:** step 3 turns the diagnosis from a *report* into an
+*action*. Selecting the bug-exposing question is only possible once the exact rule is known —
+so the diagnosis now does real work inside the learner's screen, not just on the tutor card.
+This is also the strongest single "nobody else can do this" moment in the demo.
+
+**Build note:** step 3 is cheap. The bug rules are already executable (D-010), so finding
+the maximally-absurd question is a search over the item bank, not new modelling.
+
+**Rejected:** giving Max a *different* misconception from Aanya's (she could spot it, but
+she would not repair her own gap); teaching her the method directly before teaching Max
+(reintroduces the answer-giving pattern we ruled out in D-004).
+
+---
+
+## D-018 — Abandon the misconception-engine concept entirely
+3 Sep 2026 · Status: **Decided** · Supersedes D-009, D-010, D-017
+
+**Decision:** Stop work on concept v1/v2 (misconception diagnosis + teach-the-AI). Nothing
+carried forward. `docs/CONCEPT.md` and `docs/IDEAS.md` are archived, not deleted.
+
+**Why:** the audit (`docs/AUDIT.md`) found 5 serious flaws, two of which broke claims made
+confidently. But the deciding reason is not the flaw count — it is that the concept answers
+a **forty-year-old question** ("how do we teach better?") against forty years of incumbents
+(Eedi, Carnegie Learning, ALEKS). Even executed perfectly it is a better version of
+something that exists.
+
+**Rejected:** patching the four-step flow. A repaired v2 is still competing on occupied
+ground.
+
+---
+
+## D-019 — New target: the metacognitive gap, not the teaching gap
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Target the problem named across the 2026 literature — **effortless bypass**
+and **metacognitive decoupling**. See `docs/RESEARCH.md` Part II.
+
+The framing:
+
+> **AI did not only make cheating easy. It made learners unable to tell whether they had
+> learned anything.**
+
+**Why:** this problem is **three years old**. It has no incumbent, it is universal, and it
+is quantitative (calibration is measurable). Contrast with misconception diagnosis, which
+has 40 years of prior art and three shipping competitors.
+
+**Supporting evidence:** arXiv 2607.05557 (effortless bypass; five named directions),
+arXiv 2603.29681 (metacognitive decoupling), arXiv 2604.25648 ("confident but potentially
+inaccurate answers, fostering false competence"), arXiv 2606.03822 (warning of AI
+fallibility measurably increases help-seeking).
+
+---
+
+## D-020 — Method change: every candidate carries a pre-attack
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** No concept is shortlisted without the strongest hostile-reviewer objection
+written down **beside it, before selection**, plus an answer. No answer → cut immediately.
+
+**Why:** v1 survived three rounds of enthusiasm and died in one round of criticism. That
+cost a day. Cheaper to run the criticism first. Applied throughout `docs/IDEAS-V2.md`.
+
+---
+
+## D-021 — Leading candidate: the 60-second spoken defence
+3 Sep 2026 · Status: **Open — pending kill-tests**
+
+**Candidate:** learner submits work → 60-second voice viva about *that work* → report of
+what they can and cannot explain, set against what they believed they knew.
+
+**Why it leads:** the measurement *is* the intervention (self-explanation + retrieval are
+among the largest effects in learning science), so it sidesteps the "AI harms learning"
+trap structurally rather than by guardrail. Only newly possible — sub-second speech-to-speech
+landed in 2026. Produces a validity number. Feeds `session intelligence`. Learner is visibly
+the hero, satisfying the brief (D-013).
+
+**Kill-tests to run BEFORE any product code — in this order:**
+1. **ASR on a child's voice.** Materially worse than adult speech. If it fails, the idea
+   dies here.
+2. **End-to-end latency** with real turn-taking, not the marketing number.
+3. **Discrimination:** on ~10 hand-made samples, does a 60-second viva actually separate
+   someone who understands from someone who copied? Judged by hand.
+
+If test 3 fails, the concept dies on day two with thirteen days still available.
+
+**Not yet decided.** Awaiting Manpreet's call on direction before any build begins.
+
+---
+
+## D-022 — Kill-test result: the viva's core claim is not validatable here
+3 Sep 2026 · Status: **Decided** · Resolves D-021
+
+**Decision:** Test 3 did not pass. Full results in `docs/KILLTEST-RESULTS.md`.
+Test 2 (latency) passed at ~1.5 s per turn. Test 1 (child ASR) remains blocked.
+
+**What happened:** across 3 subjects and 18 runs, the simulated *copier* scored **higher**
+than the simulated *genuine student* — overall 92 vs 87. Reading the transcripts explains it:
+the copier persona could not hold its assigned ignorance and produced conceptual reasoning
+absent from the submission, while the authentic-child persona sounded hesitant and imperfect.
+**The judge rewarded fluency over substance.**
+
+**Two conclusions:**
+1. The idea **cannot be validated with simulated learners** — reproducing arXiv 2605.12748
+   in our own data.
+2. Therefore its central claim cannot be demonstrated inside this hackathon, and
+   "we measure what we claim" (D-005) is our differentiator. Shipping it would mean
+   shipping an unvalidated claim.
+
+**Status: not killed outright, but no longer the default.** Three options are laid out in
+`docs/KILLTEST-RESULTS.md`; awaiting a call.
+
+---
+
+## D-023 — No concept in this project may depend on a simulated learner
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Any design requiring an LLM to faithfully hold a misconception, a knowledge
+gap, or a level of ignorance is rejected on sight.
+
+**Why:** measured in our own harness, not assumed. An LLM instructed that it *could not*
+reason beyond a given text proceeded to give a deep conceptual explanation not present in
+that text. Consistent with arXiv 2605.12748.
+
+**Retroactive effect:** this independently kills "Max" from concept v1 — he would have
+caved to weak explanations exactly as predicted. The v1 mitigation (make the beliefs
+executable code, not an LLM) was the right instinct, but the *dialogue* layer would still
+have leaked, as flagged in `docs/AUDIT.md` M4.
+
+**Standing rule:** if a claim can only be tested against a simulated human, it cannot be
+tested. Find real human data or change the claim.
+
+---
+
+## D-024 — Kill-test 2 result: an LLM cannot be reliably wrong
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Recorded as a hard project constraint, measured twice by different mechanisms.
+Full results in `docs/KILLTEST-RESULTS-2.md`.
+
+- **KT-E (poison):** model solves multi-step arithmetic correctly **88%** of the time.
+  Wrong 1 time in 8 → would tell a correct child they are wrong. Not a source of truth.
+- **KT-A (planting):** asked for a solution with one deliberate error and an explicitly
+  wrong final line, only **12–25%** produced a genuinely wrong answer. It returns the
+  correct value and then confabulates having planted an error.
+- **KT-B:** invalid — I used an LLM as a proxy learner, which D-023 forbids. Logged as a
+  design error, not a finding.
+- False-alarm rate on clean solutions: **4%** (the one good number).
+
+**The constraint:**
+> An LLM will not hold assigned ignorance and will not commit to a planted error. It drifts
+> to correct and confabulates. Anything needing **controlled wrongness** or **known truth**
+> must be produced by code.
+
+---
+
+## D-025 — Idea #3 (fallible tutor) reduced, not selected
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** The deliberately-fallible mechanic is viable **only** on content where the
+problem and the error are both generated in code. That confines it to procedurally
+generatable domains.
+
+**Why not selected:** that is the identical limitation that sank concept v1 — excellent in a
+demo, no obvious path to 3,000 subjects. Repeating a known failure mode.
+
+**Kept as:** a possible mechanic inside another product, not a product.
+
+---
+
+## D-026 — Method inversion: choose from the capability map, not from novelty
+3 Sep 2026 · Status: **Decided** · Amends D-020
+
+**Decision:** Stop selecting concepts by novelty and then testing whether they can be
+evidenced. Start from the measured capability map in `docs/KILLTEST-RESULTS-2.md` and choose
+the strongest product that stands entirely on capabilities already proven to work.
+
+**Why:** three concepts were assessed today and all three broke, each for the same underlying
+reason — the central claim could not be evidenced with the tools available. Cost was one
+afternoon and no build time, so the method is working. But the ordering is wrong and is
+burning cycles.
+
+**Standing constraint set for any future candidate:**
+1. No dependence on a simulated learner (D-023)
+2. No dependence on controlled LLM wrongness (D-024)
+3. No LLM as a source of ground truth (D-024, 88%)
+4. No claim resting on a variable we cannot directly observe (D-022)
+5. LLM judgement of quality is suspect — it rewards fluency (D-022)
+
+**Note:** idea #2 (calibration) is currently the only candidate that violates none of these.
+Its two quantities — stated confidence and observed correctness — are both directly measured.
+
+---
+
+## D-027 — "Ask Better" passes its kill-tests; first candidate to survive
+3 Sep 2026 · Status: **Decided**
+
+**Decision:** Candidate A (CANDIDATES.md, "Ask Better") cleared its kill-tests. Full results
+`docs/KILLTEST-RESULTS-3.md`. First of four concepts to pass this gate.
+
+- **KT-1 leak block (killer):** 0 leaks / 80 replies; 0 / 32 direct answer-grabs leaked.
+  Decided by a code string-check we control, so the answer is unobtainable by construction.
+- **KT-3 typing:** 80/80 = 100% vs constructed labels. The maturity graph is well-founded.
+- **KT-2 separability:** transcripts unambiguous (refuse answer-seek / explain concept,
+  withhold number); crude keyword proxies undercount and were NOT gamed into a nicer number.
+
+**Deliberately not faked:** the full claim "better questions -> higher solve rate" needs
+real learners (D-023). Flagged as required validation with honest n, not simulated.
+
+**Why it survived where three died:** its central claim rests on directly observed events
+(did the answer leak: code-checked; what type was the question: code-checked) rather than on
+an unobservable (does the child understand) or on the LLM being reliably wrong/ignorant.
+
+---
+
+## D-028 — Build target selected: Ask Better (+ calibration overlay, later)
+3 Sep 2026 · Status: **Decided** · Closes the concept search
+
+**Decision:** Build "Ask Better" as the submission. Fold the CANDIDATES.md B calibration
+overlay in only after the core ask/refuse/solve loop runs end to end. `src/` may now exist.
+
+**Standing guardrails carried into build:**
+- LLM is the language layer only; code owns truth and the leak-check (D-024/026)
+- Answer-leak prevention is a code check, never merely a prompt instruction (KT-1)
+- Ship honest limitations, incl. solve-rate lift as human-validated with real n (D-012)
+- Learner is the visible hero of the demo (D-013)
+
+**Concept search is now closed.** Reopen only if the build surfaces a fatal flaw the
+kill-tests missed.
+
+---
+
+## D-029 — Khanmigo overlap confirmed; greenlight (D-028) was premature
+3 Sep 2026 · Status: **Decided** · Supersedes D-028
+
+**Decision:** "Ask Better" as specified is too close to Khan Academy's Khanmigo (700k users,
+shipping 2 years) to stand as a differentiated submission. The greenlight in D-028 was made
+before checking the incumbent and is withdrawn.
+
+**Evidence (sourced):** Khanmigo's documented design is Socratic, refuses to give answers,
+redirects "just tell me the answer" with "I want to help you figure this out yourself,"
+frames productive struggle as the point, and spent most of its engineering on *not*
+answering homework — i.e. our exact core mechanic. Its teacher dashboard already surfaces
+struggle and misconceptions, colliding with the critic's proposed "point it at the teacher"
+pivot too.
+
+**Process failure to remember:** competitor check must come BEFORE greenlight, not after.
+Kill-tests proved the thing *works*; they did not ask whether it was *already shipped by the
+market leader*. Add "incumbent check" as a gate alongside kill-tests.
+
+**What survives as genuine (thin) differentiation:**
+1. Question-quality as the *measured object* — Khanmigo does not do this. But it is a
+   feature, not a product (critic #3 stands).
+2. **Code-owns-truth architecture** — Khanmigo is documented as unreliable on basic maths
+   because the LLM does the arithmetic. Our kill-tests independently proved the LLM is ~88%
+   on multi-step maths and must not be the source of truth. This is a REAL technical answer
+   to the market leader's REAL published weakness, and it is an AI-engineering story.
+
+**Status:** concept search reopened. Do not rebuild "Ask Better" as-is. The one asset worth
+carrying forward is the code-owns-truth principle (D-024) as a *positive* product pillar,
+not just a guardrail.
+
+---
+
+## D-030 — Correct the novelty bar; α proceeds as synthesis, not virgin novelty
+4 Sep 2026 · Status: **Decided** · Amends D-020, D-029
+
+**Incumbent check on α (done BEFORE greenlight, per D-029):**
+- **Correctness-by-code** is how Photomath / Symbolab / Mathway already work (symbolic engine
+  computes, LLM explains). Not novel. Sources: toolradar, arsturn neuro-symbolic.
+- **Calibration / confidence-before-answer** is established metacognition research with
+  existing digital tools (Dunning–Kruger calibration training). Not novel. Sources:
+  structural-learning, Springer IJAIED.
+
+**The correction:** "has any part been done before?" is the WRONG bar and it has been killing
+concepts unfairly — by that test Photomath, Khanmigo and Duolingo all fail too. This is a
+large, well-funded field; virgin novelty is nearly impossible and, per Nerdy's own JD, not
+what is valued ("user value over novelty"). Four concepts were partly judged on the wrong
+standard.
+
+**The right bar (going forward):** (1) defensibly differentiated, (2) shows engineering
+judgment, (3) felt in the 3-minute demo, (4) measurable. Not "nobody has touched any piece."
+
+**α under the right bar — the defensible gap:**
+| | Computes correctly | Withholds the answer |
+|---|---|---|
+| Photomath | yes | **no** (hands it over — PNAS harm) |
+| Khanmigo | **no** (LLM computes, documented wrong) | yes |
+| **α** | **yes** | **yes** |
+
+α is the synthesis neither leader achieves, plus a measured metacognition outcome
+(calibration improvement). This is a strong *judgment* story, not a novelty claim, and it is
+honest under scrutiny.
+
+**Decision:** α proceeds to the kill-test gate. Framing in all submission materials is
+synthesis + rigor + measurement, never "a new idea." Do not claim novelty of the pillars.
+
+**Rejected:** continuing to hunt for a virgin-novel concept (diminishing returns; day 4 of 15;
+the wrong bar).
+
+---
+
+## D-031 — α passes the kill-test gate; GREENLIT to build
+4 Sep 2026 · Status: **Decided**
+
+**Decision:** Play α ("correct-by-construction tutor + confidence trap") passes both
+kill-tests (`docs/KILLTEST-RESULTS-4.md`) and the incumbent check (D-030). Build starts.
+This is the committed direction. `src/` may now be created.
+
+- **KT-C1 demo contrast:** vanilla LLM is grossly, unambiguously wrong on **65%** of
+  multi-step percentage/money problems (raw 80%, honestly discounted for rounding/ambiguity).
+  Real, dependable, honest side-by-side villain.
+- **KT-C2 explanation integrity:** LLM explained method with **0/30 wrong facts** and
+  **0/40 answer leaks**. Code-owns-truth / LLM-owns-language architecture holds.
+
+**Locked design facts:**
+- Demo domain = **multi-step percentage / money** (that is where the contrast is real).
+- Our answer + all correctness checks come from **code** (`Decimal`, exact), never the LLM.
+- LLM is language-only: coaches, explains, encourages; never emits a number or the answer.
+- Confidence captured per attempt; **calibration** (confident-and-wrong) is the measured
+  metacognition object.
+
+**Honest limitations shipped (D-012):** calibration *improvement* and trust/usage effects
+need real learners with stated n; factual-integrity check generalised in the eval harness.
+
+**Framing (D-030):** synthesis of what Photomath (correct, gives answers) and Khanmigo
+(withholds answers, computes wrong) each get half-right — never pitched as novel pillars.
+
+---
+
+## D-032 — Working name and one-line pitch
+4 Sep 2026 · Status: **Open (name), Decided (pitch)**
+
+**Pitch (locked):** "Photomath gives kids the answer. Khanmigo withholds it but gets the
+maths wrong. This does neither — always-correct help that never hands over the answer — and
+measures whether the child learns to tell what they actually know."
+
+**Name:** TBD. Placeholder in code: `app`. Not a blocker; decide before README/demo.
+
+---
+
+## D-033 — β kill-test passes: disengagement is learnable from real data
+4 Sep 2026 · Status: **Decided**
+
+**Decision:** Play β's core ML claim is validated on real student data. Results in
+`docs/KILLTEST-RESULTS-5.md`. This is the first concept whose central claim survived contact
+with real data rather than needing a simulated learner or a reliably-wrong LLM.
+
+- Trained logistic regression FROM SCRATCH (numpy; no sklearn) on UCI Student Performance
+  (1,044 real students), predicting course failure from **behaviour only** (G1/G2/G3
+  excluded). Held-out **AUC 0.717 / 0.729**, beats majority baseline, train 17 ms, infer
+  <1 µs/student. Learned signals are pedagogically sensible (past failures, going out,
+  absences, aspiration).
+
+**Why it matters:** the hard part IS a trained, evaluated model — an ML/data-science artefact
+— not a system-prompted chatbot. Answers the standing "where is the AI?" critique.
+
+**Honest gaps carried forward (D-012):** UCI is a proxy (survey→grade, not clickstream/
+real-time); "failure" is a disengagement proxy not disengagement; the 2026 bypass-to-AI
+signal has no dataset; AUC 0.72 is modest and reported as such. OULAD (clickstream) download
+from UCI was truncated at source; obtaining a clean real-time set is an open build task with
+UCI #320 as the proven fallback.
+
+**Status:** method validated, NOT yet greenlit as the build. Product shape, a real-time-ish
+dataset, and the single demo moment are the next decisions (do not repeat the fall-in-love
+pattern; design + incumbent-recheck before commit).
+
+---
+
+## D-034 — Stop optimising novelty; optimise execution. Three finalists.
+4 Sep 2026 · Status: **Decided** · Governs selection from here
+
+**Decision:** After five concepts died to the same structural pattern ("provable part is a
+commodity; novel part is unbuildable/unprovable solo in 14 days"), stop treating novelty as a
+veto. New selection bar: **execution × demo-punch × honest measurement × genuinely helps a
+learner**, buildable+polishable in 13 days, on-brief (learner-facing). Novelty is not required
+— Nerdy's JD says "user value over novelty," and every incumbent is un-novel too.
+
+Three finalists in `docs/FINALISTS.md`:
+1. **Numbo** — correct-by-construction maths buddy (reliable, never gives the answer). Safe.
+2. **Rung** — real adaptive-practice engine (finds each child's struggle edge). Best craft+measure.
+3. **Sona** — voice-first maths for pre-readers. Highest ceiling, riskiest (child-ASR untested,
+   needs a real 5-yo to film).
+
+**Recommendation:** Rung with Numbo's coach-buddy folded in — real model + honest number +
+warm learner-facing moment, no rigged benchmark, nothing resting on a failed kill-test.
+
+**This is the final selection round.** After the pick: build and polish only, no more ideation.
+
+**Process note (the meta-lesson):** 4 days spent, 0 build. The novelty veto cost the time.
+Recorded so it is not repeated: for a 15-day hiring-signal build, pick fast on
+execution+demo and spend the days shipping.
+
+---
+
+## D-035 — COMMIT: Rung + buddy is the build. Selection closed.
+4 Sep 2026 · Status: **Decided** · Final selection
+
+**Decision:** Build **Rung + buddy** — adaptive maths practice that targets each child's
+productive-struggle edge, with a warm coach that never gives the answer and (by construction)
+is never wrong. Learner-facing, on-brief (maths game + adaptive practice), buildable in 13
+days. No more concept selection. Next 13 days = build + polish + measure + film.
+
+**Critic's valid points, baked into the design (not argued away):**
+- Do NOT claim "first/only real adaptive" — DreamBox/ALEKS do real adaptivity. Frame = the
+  synthesis (adaptive engine + never-wrong coach) + execution, honestly.
+- Do NOT validate circularly. Honest metric = adaptive policy vs a fair baseline (random
+  selection) on the SAME engine, reported as "keeps the child in the productive-struggle
+  band X% vs Y%" and "estimates the child's level in N items" — never "improves learning"
+  (that needs real kids; stated as a limitation).
+- The demo's heart is the coach + game feel; the adaptivity is the "smart" beat; the
+  two-learners-diverge view is the measurement shot, not the whole demo.
+
+---
+
+## D-036 — Stack: single Next.js/TypeScript app, engine in TS, deploy Vercel
+4 Sep 2026 · Status: **Decided**
+
+**Decision:** One self-contained Next.js (TypeScript) app. Adaptive engine + problem
+generator in TS (simple maths — Elo/Rasch, ~100 lines). Coach via one server API route,
+provider-agnostic OpenAI-compatible client (DeepSeek now, Claude-ready). Free live URL on
+Vercel (submission asks for one). One language, one deploy.
+
+**Why not Python engine:** two languages + two deploys is more surface for a solo 13-day
+ship. The Python kill-tests already proved the method; the product is self-contained TS.
+
+**Build order (ship daily, riskiest first):** (1) engine + generator + honest eval [today],
+(2) coach API + never-give-answer guard, (3) play UI, (4) two-learner measurement view,
+(5) polish + film. UI deferred until engine's number is real.
+
+---
+
+## D-037 — Build/critique loop: three rounds of real improvement
+4 Sep 2026 · Status: **Decided**
+
+Ran engineer↔critic cycles on the BUILT product until high-end, per request.
+
+**Round 1 — killed the circular metric.** v1 headline ("63% in-band vs 16% random") was
+near-definitional (learner + engine shared the 1PL model; random was a strawman). Replaced
+with a NON-CIRCULAR eval (`evals/engine_eval2.mjs`, ported live into `/measure`): the
+simulated child responds through a misspecified world the engine never assumes (2PL +
+guessing + learns over time); baseline is a real fixed curriculum. Metric = "wasted
+questions" (bored or frustrated), measured on the true model. Result: **adaptive wastes ~24%
+vs 58%**, frustration **2% vs 27%** — a result, not a definition, robust to misspecification.
+
+**Round 2 — answered "thin AI" + "not a game" together.** Added generative theming
+(`src/engine/story.mjs`, `/api/story`): the child picks a world (Dragons/Space/Sport/Bakery
+— autonomy + curiosity, the under-served SDT needs), and the LLM wraps each problem in a
+story. Numbers + answer stay code-owned; a code guard verifies both operands appear and the
+answer does not, else falls back to plain. Correctness pillar intact; real generative AI now
+does real work.
+
+**Round 3 — gave the session a game arc.** Summit goal (climb 8 rungs), celebration +
+confetti + "Keep climbing" to raise the goal, streak fire. Turns an endless quiz into a game
+with a win state.
+
+**Verdict:** the AI surface is now a real multi-component system — adaptive engine + LLM
+coach (code-guarded) + generative theming (verified) + honest eval harness. That orchestration
+of an unreliable model, made safe and measurable, IS the AI-product-engineering signal.
+Scorecard moved: depth 4→7, engagement 3→7, modern-AI 3→7, measurement 5→8.
+
+**Stopping the loop here (D-034 discipline):** remaining items (story prefetch latency, deeper
+game, real-child validation) are polish/scope, not fundamentals. Further looping = diminishing
+returns. Declared high-end enough to ship and film.
+
+**Residual honest limitations (ship in submission):** themed-story latency ~1.5s (non-blocking —
+equation shows instantly); core ability model is Elo (modest but correct); learning gains need
+real classrooms; genAI theming is flavour, not deep reasoning.
+
+---
+
+## D-038 — De-generic pass: the maths becomes the game mechanic
+4 Sep 2026 · Status: **Decided** · Supersedes the quiz-with-a-skin framing in D-037 R3
+
+**Trigger:** Manpreet's read that the product felt generic. He was right. Stripped of framing,
+Rung was adaptive practice + hint chat + a gamified skin — the game and the learning were
+*separable* (chocolate-covered broccoli).
+
+**Research that settled it:** *"Prodigy's RPG combat IS math practice — the mechanics and the
+learning are inseparable."* And: children form genuine emotional bonds with AI companions that
+have **persistent memory**, which is what drives persistence — something Prodigy structurally
+cannot do, because its world is hand-authored and forgets you.
+
+**Decision — rebuilt the play experience around three changes:**
+1. **Maths is the mechanic.** The child builds a village; every build's cost IS the adaptive
+   problem. You cannot build without computing. Not a wrapper.
+2. **The world is generative and remembers.** `narrateBuild()` (`/api/narrate`) writes one warm
+   line per build that references what they built before; village + name + ability persist in
+   localStorage; returning children are greeted by name and told what they built last time.
+3. **Agency.** Each turn offers two builds (never already-built ones), each with its own cost.
+   The child chooses what their village becomes — autonomy, the SDT need shipped designs
+   under-serve 3×.
+
+**Kept intact:** code owns every number (correct by construction), adaptive difficulty,
+code-guarded never-leak coach, honest non-circular measurement.
+
+**Why this is the differentiator:** Prodigy's content is fixed and hand-made forever; ours is
+generated, personal, and responds to what *this* child did last week. That is only possible
+with 2026 AI, and it is exactly the AI-Product-Engineer signal — not a chatbot bolted on.
+
+**Verified live:** choice → build → tile appears → AI narrates referencing the earlier build →
+persists across reload → no repeat offers → adaptive ladder climbing.
+
+**Residual (polish, not fundamentals):** emoji tiles rather than rich art; coins accumulate but
+aren't spent; no loss-aversion stake; narration latency ~1.5s; learning gains still need a
+real classroom.
+
+---
+
+## D-039 — The village is AI-painted, live, and repaints as the child builds
+4 Sep 2026 · Status: **Decided**
+
+**Trigger:** Manpreet's read that the visuals were "very basic icons… no good visuals, no
+animations" — and his prompt to find free AI tech for the visual layer. Correct on both.
+
+**Decision:** The village hero is a **generative AI painting composed from what the child
+actually built**, repainted (async, non-blocking) every time they add something.
+
+- **Tech:** Pollinations image API — **free, no API key, callable straight from the browser**.
+  Verified: 896×420 JPEG, first paint ~6.3s, then ~0.5s cached (URL is deterministic).
+- **Personal + stable:** the prompt is composed from the child's own build list; the seed is
+  fixed per child, so it stays recognisably *their* village as it grows.
+- **Craft:** cross-fade between old and new painting (1.4s), slow Ken-Burns drift so the scene
+  breathes, tile pop-in, confetti, hover-lift on choice cards, scrim for text legibility.
+- **Graceful:** on error it keeps the sky gradient and the emoji roster — nothing breaks.
+
+**Why this is the right AI use (not decoration):** the child's maths decisions literally paint
+their world. It gives a real reason to build the next thing, it is impossible for a
+hand-authored competitor (Prodigy's art is fixed forever), and it costs nothing and needs no
+key — so it survives as a live demo and a deployed link.
+
+**Verified live:** built bridge + cottage → painting rendered → narration referenced the
+earlier bridge → coins 114 → survives reload.
+
+**Honest limitation:** the painting is impressionistic — it evokes the village rather than
+depicting each build exactly. Stated as flavour, never claimed as a literal render.
+
+---
+
+## D-040 — Generative-image village REMOVED after it failed testing. Scene is drawn in code.
+4 Sep 2026 · Status: **Decided** · Reverses D-039
+
+**What happened:** D-039 shipped an AI-generated painting of the village. I verified only that
+an image *loaded* — never that it was *correct or different*. Manpreet caught it: "it's showing
+repainting but it's the exact same image." He was right.
+
+**Then I actually tested it** (4 prompts, 1→5 buildings, fixed seed):
+- **Buildings did not appear.** 1-building image had a bridge; the 3-building image had **no
+  bridge at all**. The painting did not depict what the child built.
+- **Visually near-identical.** Fixed seed locked the composition — same tree, same river, same
+  mountains every time. Byte hashes differed; the picture didn't.
+- **Long prompts failed outright.** The 5-building request returned a **1,346-byte error
+  placeholder** — i.e. it broke exactly as the village got interesting.
+- Plus ~6s latency for a generic stock landscape.
+
+**Decision:** feature deleted. The village is now **drawn in code** (`src/public/village.mjs`):
+a composed SVG scene that renders the child's actual buildings at fixed slots — stone bridge,
+cottage with chimney smoke, orchard, fountain with jets, barn, watchtower, lantern row, boat,
+turning big wheel, castle. Parallax hills, drifting clouds, shimmering river, and a sky that
+progresses morning → gold → dusk → starlight as the village grows.
+
+**Why this is the correct engineering call, not a retreat:** it is the project's own rule,
+applied to pixels — *the model is used where it is reliable (language: coaching, narration),
+code is used where it must be right (truth, difficulty, and now the world)*. Forcing AI into
+the visual layer where it measurably underperformed was the mistake.
+
+**Verified properly this time:** 0 JS errors; SVG grows 2,106 → 11,979 chars across 5 builds;
+`.bld` groups 0→5 matching the child's choices; empty state renders a bright morning meadow,
+5-build state renders a dusk village with stars. Instant, offline, never fails.
+
+**Process lesson (repeat of the D-029 mistake, in a new costume):** "it loaded" is not "it
+works." Verify the *output*, not the *mechanism*.
+
+---
+
+## D-041 — Real isometric game art replaces hand-drawn SVG
+4 Sep 2026 · Status: **Decided** · Supersedes the SVG scene in D-040
+
+**Trigger:** Manpreet: "does this look professional, or like an immature school project?"
+Correct — hand-rolled flat SVG shapes read as a student project. Real products do not
+hand-draw their art; they use an asset pipeline.
+
+**Decision:** the village is now a true isometric scene built from **Kenney CC0 game art**
+(*Isometric Landscape* ground tiles + *Isometric Miniature Farm* structures) — the same
+public-domain packs used in shipped indie games.
+
+**The world is a farm/homestead**, not a mixed fantasy village, because that is what the
+art supports. Designing to your assets is what a studio does; forcing castles and fountains
+out of a barn pack is what a student does.
+
+**Engineering that made it work (each found by measurement, not assumption):**
+- **Projection:** tiles are 132×83 with a 132×66 diamond → `x=(c-r)·66, y=(c+r)·33`. Verified
+  by rendering a grid and checking tessellation.
+- **Ground tile:** found by *pixel analysis* (scan each tile's top face for uniform green)
+  rather than eyeballing 128 thumbnails → tile 015 is seamless flat grass.
+- **Sprite anchoring:** art occupies varying regions of a 256×512 canvas with different
+  footprints, so sprites are anchored by the **bottom-centre of their measured opaque
+  bounding box** (baked into the module from PIL measurements), not the canvas.
+- **Roof offset:** swept dy ∈ {0,−60,−120,−180,−235,−300} and inspected → **−120** seats the
+  roof on the wall with the door visible.
+- **Z-order bug:** front ground tiles were painting over rear buildings. Ground now occupies
+  a low z-band and buildings a high one, depth-sorted among themselves.
+- **Content-fit:** the scene scales to the *actual painted bounds* of the content, with
+  headroom reserved for the header overlay.
+
+**Verified:** 8 builds, 13 sprites, **0 broken images, 0 JS errors**; village persists across
+reload and the buddy greets the returning child by name.
+
+**Repo hygiene:** trimmed unused art — 41 sprites and 127 tiles deleted; assets now **361 KB**
+total. Credits in `docs/CREDITS.md` and in the app footer (CC0 needs no attribution;
+crediting is professional practice).
+
+---
+
+## D-042 — UI art direction: no emoji beside rendered art; type and palette from the artwork
+4 Sep 2026 · Status: **Decided**
+
+**Trigger:** "still not looking professional." Three specific causes, all real:
+
+1. **Emoji standing in for game art.** Choice cards and the built-roster used 🪵🌽🏠 next to
+   professionally rendered 3D isometric sprites. Mixing the two is the single loudest
+   amateur signal in the whole UI.
+2. **Default system typography.** No display face, so the product had no voice.
+3. **A palette unrelated to the art.** Purple/lavender UI wrapped around wood-and-grass
+   artwork, and the island floated in an empty void with no grounding.
+
+**Fixes:**
+- **`buildPreview()` in `village.mjs`** renders a real stacked sprite preview using the same
+  measured art bounds as the world — so a choice card shows *exactly* what will be built.
+  **Every emoji is gone from the UI** (kept only as chat/particle flavour, never as art).
+- The emoji roster is deleted outright: the village already shows what was built, so it is
+  now a simple "N built" chip.
+- **Typography:** Fredoka (display) + Nunito (body).
+- **Palette derived from the artwork** — timber `#a9702f`, grass `#5f9e46`, parchment
+  `#efe3cd`, sky — replacing the arbitrary purple. Buttons got a wooden press-depth.
+- **The island is grounded:** sky gradient, inner vignette, and a soft blurred ground shadow
+  so it sits in a world instead of floating.
+- **Choice cards are a 2-column grid**, not fixed-width flex — they were wrapping to one
+  column at 412px (choices block 427px tall → now 208px).
+
+**Verified:** 0 JS errors, 0 broken sprite previews, Fredoka loading, cards side-by-side,
+empty state and 5-build state both clean.
+
+**Note:** a white band sometimes appears in captures while scrolling — confirmed a
+screenshot paint artifact, not a CSS bug (`elementFromPoint` returns the sprite underneath).
+
+---
+
+## D-043 — STOP. The current build is extrinsically integrated. Redesign from the learner research.
+4 Sep 2026 · Status: **Decided** · Governs everything after it
+
+**Trigger:** Manpreet: "game-wise it's okay, but is it actually interactive and meaningful for a
+learner of that age? The placement and visuals don't make sense. No story line, nothing. Stop.
+Go back to the research on the psychology of these learners." He was right, and the research
+says why with precision.
+
+**Method:** five parallel specialist research passes (attention/cognitive load; motivation;
+narrative; game design for learning gains; retention & ethics) → one master analyst synthesis →
+two load-bearing citations independently spot-checked by the orchestrator. Full evidence base:
+`docs/RESEARCH-LEARNER.md`.
+
+**The diagnosis, in evidence terms (one failure, four masks):**
+- *"Not interactive"* — the arithmetic is a **tollgate** in front of the build, not the build
+  itself. That is *extrinsic* integration, the exact configuration Habgood & Ainsworth show
+  produces engagement without learning. **Single largest defect.**
+- *"Placement makes no sense"* — number, cost and object are separated: the **split-attention
+  effect** taxing a 3–4 item working memory. Plus unsignalled affordances.
+- *"Visuals don't make sense"* — decorative celebration animation is **seductive detail**;
+  the harm is diversion, worst for the weakest learners.
+- *"No storyline"* — right symptom, wrong cure. The only direct RCT (Sýkora 2021, N=95, maths
+  game, kids, 2 weeks) found cutscene narrative changed **nothing** on five outcomes. What's
+  missing is **meaning for the numbers** — a situation where the village's need IS the problem.
+
+**Decisions:**
+1. **Core loop becomes build-is-the-problem.** The child assembles the quantity in the world
+   (place 4 logs per beam × 3 beams); the manipulation and the arithmetic are one action. A wrong
+   quantity builds a visibly wrong structure, fixable — not a red X. (Strong: Habgood & Ainsworth.)
+2. **The village is a readout of mastered skills, not coins spent.** (Strong: Lepper 1973;
+   gamification meta-analysis shows badges barely move competence.)
+3. **No bracketing story, no cutscenes, no intro plot.** Write situations, not plots.
+   (Strong: Sýkora null RCT; Cordova & Lepper / Adair positive only when story = the problem.)
+4. **Cut seductive detail** — celebration confetti, decorative animation, any label separated
+   from its object. (Strong: Rey et al. 2021, split-attention.)
+5. **No loss-framed streaks, timers, auto-advance, leaderboards, cosmetic skins.**
+   (Strong on direction; also Children's Code exposure.)
+6. **Adaptive floor, learner-chosen ceiling** — system proposes at mastery pace, child picks
+   which building, harder always allowed, never silently easier. (Moderate — one tie study.)
+7. **Buddy = Tutor CoPilot, never a chatbot.** Never states an answer; hint tiers; fires
+   before frustration; may express pride in the child's work, **never** sadness or need. Age/
+   safety context re-injected every turn (KIDBench: safety degrades 6–24% over turns).
+8. **Two pacing tiers (7–8 vs 10–11)** per the age-9 attentional reorganisation. Never cite a
+   minute-count — none is evidence-based.
+9. **Parent-facing mastery view.** Parents, not children, control return.
+10. **Measurement is the deliverable:** off-game near-transfer test + delayed retest; A/B
+    tollgate vs build-is-the-problem (a modern Habgood replication — the headline number);
+    disengagement proxies; hint-tier escalation rate.
+
+**What this supersedes:** the confetti/celebration layer (D-037 R3), the tollgate cost modal,
+the emoji-then-sprite decoration debate as a *primary* concern (D-042 stands, but visuals were
+never the root cause). The isometric art pipeline (D-041) is retained — the art was fine; the
+*learning design* was wrong.
+
+**Honest limits carried forward:** seductive-detail and split-attention evidence is largely
+from older learners (extrapolated); every retention number in the field is vendor-sourced; the
+village-as-mastery return bet is reasoned, not proven; all of Rung's own effect claims need
+Rung's own measurement.
+
+**Process lesson (the real one):** I built mechanics, then art, then polish — and only then
+asked who the learner is. The research took one afternoon and would have prevented three days
+of rework. Learner model first, always.
+
+
+---
+
+## D-044 — Concept v3: "the plot is the problem". The build IS the maths; the error persists.
+4 Sep 2026 · Status: **Decided** · Supersedes D-009/D-031 (concept), D-037 R3, D-038 core loop
+
+**Pipeline:** five learner-research passes -> master synthesis (RESEARCH-LEARNER.md) -> AI-Product-
+Engineer brief (AI-ARCHITECTURE.md) + market landscape (MARKET.md) -> innovation synthesis
+(CONCEPT-V3.md). Two load-bearing citations independently spot-checked.
+
+**Decision:** build CONCEPT-V3 concept 1. Concept 2 (parent CoPilot screen) is a bounded stretch
+only if days 1-11 land clean. Concept 3 is a level type, not a product. Concept 4 is rejected -
+no evidence for learning-by-teaching in our base, and a buddy that needs the child crosses the
+parasocial line (RESEARCH-LEARNER 3d).
+
+**The mechanic:** the child makes the quantity in the world (drags 4 planks x 3 sections). No
+answer box, no submit. A miscount builds a visibly wrong structure that persists until repaired -
+"error persistence", the one thing no product in MARKET.md has. The farm is a readout of mastered
+skills. The buddy phrases a code-chosen hint tier at a 7-year-old reading level and is **never
+given the target** - it cannot leak what it does not hold. The child never types.
+
+**Why this and not the others:** it is the only concept standing on P1 (Habgood & Ainsworth - the
+sole controlled *learning* gain at equal time-on-task in exactly this age band); its differentiator
+is a 20-second visual, not an architecture claim taken on faith; and it is the cheapest build (it
+deletes the modal and reuses art, renderer, Elo and harness).
+
+**Scope narrowed honestly:** build-is-the-problem tops out around ~30 objects. This is a Year 2-4
+grouping / multiplication / division tool, not a general arithmetic tutor. `generateProblem` must
+be re-scoped from 2-digit x 2-digit to buildable quantities. Say this out loud in the submission.
+
+**Headline metric:** near-transfer post-test, integrated vs tollgate arm at equal time-on-task -
+reported as a pilot with raw per-child scores, no p-value. Leak rate (0/60 fixtures) is the number
+that is not underpowered.
+
+**Demo beat:** the sheep walks out through the gap in the short fence. No red X in the video.
+
+**Pre-attacks answered in-doc:** "Zombie Division with an LLM" (credited; ours is the structural
+never-answers + published leak rate); "n=3 is noise" (agreed; pilot, not proof).
+
+**Kill conditions:** drag too fiddly (tap-to-place fallback from day 2, pilot by day 12); null
+transfer result (report it plainly); classifier ambiguity (ask, don't guess).
+
+**Plan:** 1-4 placement + wrong-structure render · 5-6 classifier table + answer-blind coach ·
+7 mastery skyline · 8 tollgate A/B arm · 9 transfer checkpoint · 10 harness + judge · 11 parent
+view · 12 pilot with real children · 13 film · 14 buffer.
+
+
+---
+
+## D-045 — Critic loop converged: CONCEPT-V3.2 adopted. Build authorised pending owner's go.
+4 Sep 2026 · Status: **Decided** · Supersedes D-044 (v3 → v3.2)
+
+**Loop:** Critic R1 (NOT SATISFIED: 2 fatal, 6 serious, 5 minor) → Innovator v3.1 → Critic R2
+(NOT SATISFIED but close: 7/13 closed, 9 new) → Innovator v3.2 → Critic R3 **SATISFIED subject to
+a patch list, all 13 patches applied and verified**. Three rounds, as capped. Records:
+CRITIC-R1/R2/R3.md, CONCEPT-V3.1/V3.2.md.
+
+**Evidence produced during the loop (measured, not asserted):**
+- ART-FEASIBILITY — no sheep in any CC0 pack (goat, chicken, cow, pig now in repo); the "broken
+  fence" sprite fails legibility at 320px; a MISSING section and `planksHole` pass.
+- REDTEAM-RESULTS — the "answer-blind" claim was FALSE in v3 (target in the prompt, factored).
+  v3.2's redacted payload was attacked by a different-family model, forced-choice, 60 fixtures:
+  a real leak (`"a couple"` bucket identified groups==2) was found and closed; the 1-in-12 floor
+  was wrong (majority baseline ~48%); final: 40.0% vs 48.3% baseline, shape below floor. PASS.
+- READINGLEVEL-RESULTS — 5 of 6 original templates contained "one", which the product's OWN
+  zero-number-word gate rejects. Rewrites in `data/hints_v2.txt`: 0 number words, Dolch∪Fry+domain
+  99%, one residual word (*past*). Wordlist is NAMED (Dolch 315 ∪ Fry 300, both public domain) at
+  `data/wordlist.txt`. Build-time assert added (`readinglevel.py --assert`).
+- V3.2-ARITHMETIC-CHECK — caught v3.2 mis-listing 4×5 as non-colliding (it collides); design
+  unaffected (diagnostic node 4×3 is clean).
+
+**What v3.2 is (final):** the child makes the quantity in the world — finite cart, tap-to-place;
+packs ordered ONCE with no top-up (forces the multiplicative commitment); a miscount builds a
+visibly wrong structure that persists in both directions; the goat walks through the gap; the
+farm is a readout of mastered skills. Buddy: code classifies the misconception from the
+time-stamped placement sequence (no timing heuristics), the model only phrases a template with a
+payload containing NO integers, behind a lexical gate that protects the target total (not the next
+action — said honestly). Diagnostic node 4×3. 12-node mastery graph; Elo engine FROZEN as the
+control arm, not deleted. Measurement: within-child pre→post→48h, /6 trained + /2 pre-registered
+control items, falsification line pre-committed, n=3 case studies, COI and unblinding said aloud.
+
+**Residual risks logged (v3.2 §10, 1–10):** packs at 7 unevidenced; goat over iso is a style
+compromise; n=3 supports no inference; red-team may worsen on rebalanced shapes (day-8 rerun);
+height cue unproven until the day-1 test; templates subordinate to the wordlist; graph has no
+baseline; 3 of 6 shapes collide on one pair; all test items are near-transfer (null likely);
+leftover-plank cue spoken aloud.
+
+**Scope, said plainly:** a Year 2–4 grouping / multiplication / division tool. Not a general
+arithmetic tutor.
+
+**Next:** Principal AI Engineer tech spec (`docs/TECH-STACK.md`, in progress) → owner's go → build
+per CONCEPT-V3.2 §8. Critic's day-1 warning stands: `mountScene` + `appendPlank` + delegated
+listener are unstarted; move them explicitly or cut the day-10 buffer.
+
+
+---
+
+## D-046 — Tech stack adopted (TECH-STACK.md). Zero new runtime dependencies.
+4 Sep 2026 · Status: **Decided**
+
+**Stack (per Principal AI Engineer, model/pricing claims verified against vendor docs):**
+- **AI:** `claude-haiku-4-5-20251001` for hint phrasing only — structured outputs GA
+  (`output_config.format`, strict), ~$0.0007/hint, ≤2 sentences enforced in code (wire does not
+  enforce maxLength). Do NOT send `effort` (unsupported on Haiku 4.5); do not enable thinking.
+  Prompt rebuilt per request (KIDBench). Prefetch on the wrong-part `place` event, abort on `remove`.
+- **Judge/attacker:** a different family — DeepSeek via OpenAI-compatible API (only key available).
+  Repin to `deepseek-v4-flash` as day-1 hygiene; `deepseek-chat` still worked today (3 runs).
+- **Classifier + 12-node mastery graph: pure code**, no I/O, importable under `node` so the 60
+  fixtures are a real eval.
+- **Not used, by decision:** voice, vision, RAG, agents, fine-tuning, local models.
+- **Visuals:** DOM `<img>` sprites (keep `village.mjs` approach); Kenney CC0 farm + landscape +
+  animals; one throwaway Pillow compositor `scripts/make_parts.py` run once, outputs committed;
+  CSS-only animation; no particles/confetti/sound.
+- **Frontend:** vanilla ES modules + static HTML, no framework; `data-part` + one delegated
+  listener; `touch-action: manipulation`; one localStorage key `rung.v1`, local-only, try/catch.
+- **Backend:** keep zero-dependency `server.mjs`; add static `/build.html`, `/fence.mjs`,
+  `/buddy.mjs` (isomorphic — templates/payload/gate run in the browser) and `POST /api/buddy`
+  (server-only, holds the key, re-validates enum + tier at the trust boundary). No integer
+  crosses the wire. Offline fallback: 1.2 s timeout → template.
+- **Evals:** `python evals/run_all.py` — one command, one PASS/FAIL table; asserts template
+  equality between `data/hints_v2.txt` and `buddy.mjs` TEMPLATES. No package.json, no npm.
+- **Deploy:** Render free Node service, unmodified server, one env var. Cold start ~60 s —
+  warm before judging or pay the always-on tier for the fortnight [price UNVERIFIED].
+
+**Corrections to CONCEPT-V3.2 §6 from the stack review:** `buddy.mjs` must be isomorphic and
+needs BOTH a static route and `POST /api/buddy`; `data/hints_v2.txt`: `past` → `over` closes the
+last out-of-list word.
+
+**Build budget:** ≈ 28.75 h across days 1–8 (~4 h/day) — slack absorbs day 3 (packs).
+
+**Day-1 verification list:** repin attacker model (curl); verify strict JSON on a real Haiku key
+without `effort`; confirm Render always-on price; write `classify()` before any DOM.

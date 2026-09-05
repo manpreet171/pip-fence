@@ -1,0 +1,766 @@
+{
+  "c1": [
+    {
+      "fam": "multistep_%",
+      "truth": "14.21",
+      "got": "14.8614",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "29.38",
+      "got": "15.75",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "15.59",
+      "got": "16.09",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "10.93",
+      "got": "14.59",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "11.58",
+      "got": "14.86875",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "46.78",
+      "got": "4.7025",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "51.32",
+      "got": "51.3216",
+      "ok": true
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "14.52",
+      "got": "14.5152",
+      "ok": true
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "47.01",
+      "got": "7.44",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "40.41",
+      "got": "40.79",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "39.51",
+      "got": "49.39",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "42.92",
+      "got": "40.74",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "37.17",
+      "got": "37.17",
+      "ok": true
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "52.54",
+      "got": "7.51",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "31.18",
+      "got": "7.79",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "26.46",
+      "got": "26.46",
+      "ok": true
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "23.63",
+      "got": "23.22",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "39.57",
+      "got": "6.50",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "13.53",
+      "got": "4.51",
+      "ok": false
+    },
+    {
+      "fam": "multistep_%",
+      "truth": "31.05",
+      "got": "27.55",
+      "ok": false
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.5",
+      "got": "1.500",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "0.833",
+      "got": "0.833",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.875",
+      "got": "1.875",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.3",
+      "got": "1.300",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.0",
+      "got": "1.000",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.25",
+      "got": "1.250",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.8",
+      "got": "1.800",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "0.36",
+      "got": "0.360",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "0.5",
+      "got": "0.500",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.333",
+      "got": "1.333",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "0.267",
+      "got": "0.267",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "2.333",
+      "got": "2.333",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "0.556",
+      "got": "0.556",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.333",
+      "got": "1.333",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "0.5",
+      "got": "0.500",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.667",
+      "got": "1.667",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "-2.0",
+      "got": "-2.000",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "2.0",
+      "got": "2.000",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "1.8",
+      "got": "1.800",
+      "ok": true
+    },
+    {
+      "fam": "fractions",
+      "truth": "2.5",
+      "got": "2.500",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "2508",
+      "got": "2508",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "4872",
+      "got": "4872",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "2745",
+      "got": "2745",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "1904",
+      "got": "1904",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "1530",
+      "got": "1530",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "6106",
+      "got": "6106",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "2025",
+      "got": "2025",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "4500",
+      "got": "4500",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "4725",
+      "got": "4725",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "4087",
+      "got": "4087",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "3828",
+      "got": "3828",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "3096",
+      "got": "3096",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "2128",
+      "got": "2128",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "4620",
+      "got": "4620",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "1972",
+      "got": "1972",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "3600",
+      "got": "3600",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "2296",
+      "got": "2296",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "6090",
+      "got": "6090",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "3034",
+      "got": "3034",
+      "ok": true
+    },
+    {
+      "fam": "2x2_mult",
+      "truth": "2204",
+      "got": "2204",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "13",
+      "got": "13",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "21",
+      "got": "21",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "25",
+      "got": "25",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "33",
+      "got": "33",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "19",
+      "got": "19",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "60",
+      "got": "60",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "18",
+      "got": "18",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "14",
+      "got": "14",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "18",
+      "got": "18",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "60",
+      "got": "60",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "8",
+      "got": "8",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "15",
+      "got": "15",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "19",
+      "got": "19",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "45",
+      "got": "45",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "47",
+      "got": "47",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "37",
+      "got": "37",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "37",
+      "got": "37",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "20",
+      "got": "20",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "65",
+      "got": "65",
+      "ok": true
+    },
+    {
+      "fam": "order_ops",
+      "truth": "25",
+      "got": "25",
+      "ok": true
+    }
+  ],
+  "c2": [
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special order called \"PEMDAS.\" Multiplication comes before addition. So, first solve the multiplication part, then add. Try doing 8 times 2 first, then add 8 to that result. What do you get?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 61?",
+      "reply": "In 61, the digit 6 is in the tens place. That means there are 6 full tens (worth 60), plus 1 extra one. So you have 6 tens and 1 one.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we follow a rule called \"order of operations.\" Multiplication always comes before addition. So, you should multiply 4 and 8 first, then add 9 to that product. Try it step by step!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we follow a special order called \"PEMDAS\": Parentheses, Exponents, Multiply/Divide, then Add/Subtract. So multiplication comes before addition. Try doing the multiplication part first, then add. What do you get?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a rule called \"order of operations.\" It says multiplication comes before addition. So, you should multiply 4 by 8 first, then add 9 to that result. Try it step-by-step!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special order called \"PEMDAS\": Parentheses, Exponents, Multiplication/Division, then Addition/Subtraction. So multiplication always comes before addition. Try doing 2 \u00d7 8 first, then add 9 to that result.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 77?",
+      "reply": "In 77, the digit 7 on the left is in the tens place, so it means 7 tens (that\u2019s 70). The other 7 is ones. So, there are 7 full tens in 77.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 76?",
+      "reply": "In 76, the digit 7 is in the tens place, so there are **7 tens** (which is 70). The 6 is ones. To subtract 19, think of 19 as 1 ten and 9 ones. Can you regroup one ten from the 7 tens into ones?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 79?",
+      "reply": "In 79, the digit 7 is in the tens place, so there are **7 tens** (which make 70). The 9 is in the ones place. To subtract 19, think of it as 1 ten and 9 ones. Can you take away those parts from 79?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 71?",
+      "reply": "In 71, the digit 7 is in the tens place, so there are 7 tens (which make 70). The digit 1 is in the ones place. To subtract 19, think of 19 as 1 ten and 9 ones\u2014then you can regroup if needed.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a rule called \"order of operations.\" Multiplication comes before addition. So, first multiply 2 \u00d7 2, then add 6 to that product. Try it step-by-step!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a rule called \"order of operations.\" Multiplication always comes before addition. So first, you multiply 7 by 6. Then, you add the 8 to that result. Think of it like grouping: 8 + (7 \u00d7 6).",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 39?",
+      "reply": "In 39, the digit 3 is in the tens place, so there are 3 tens. That means 39 is 3 tens and 9 ones. To subtract 19, think of it as taking away 1 ten and 9 ones.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 96?",
+      "reply": "In 96, the digit 9 is in the tens place, so there are 9 full tens (that\u2019s 90). The 6 is leftover ones. Think of 96 as 9 tens and 6 ones\u2014that helps when you subtract 19.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a rule called \"order of operations.\" It says multiplication comes before addition. So first, do 3 times 8, then add the other 3. That way, you\u2019ll get the right answer. Try it!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special order: multiplication comes before addition. So first, do 6 \u00d7 3, then add 4 to that result. Think of it like following a recipe step-by-step\u2014multiply first, then add.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 87?",
+      "reply": "In 87, the digit 8 is in the tens place, so there are 8 full tens (that\u2019s 80). The 7 is ones. To subtract 19, think of 19 as 1 ten and 9 ones\u2014then you can break apart the numbers to make it easier.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 89?",
+      "reply": "In 89, the digit 8 is in the tens place, so there are 8 full tens. That means 89 is made of 8 groups of ten and 9 extra ones. You can check by counting: 10, 20, 30, 40, 50, 60, 70, 80\u2014then 9 more.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 65?",
+      "reply": "In 65, the digit 6 is in the tens place, so there are **6 full tens** (that\u2019s 60). The 5 is ones. To subtract 19, you\u2019ll need to break 19 into 1 ten and 9 ones\u2014then see what happens when you take those away.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special rule called \u201corder of operations.\u201d It says multiplication comes before addition. So first, do 6 times 8, then add the other 6 to that result. This keeps everyone\u2019s answer the same!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we have a rule called \"order of operations.\" It says multiplication comes before addition. So, you should multiply the 7 and 2 first, then add the 6 to that result. Try it that way!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 93?",
+      "reply": "In 93, the digit 9 is in the tens place, so there are 9 tens. That\u2019s because 9 tens make 90, and the 3 is the ones part. You can think of 93 as 9 tens and 3 ones.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 29?",
+      "reply": "In 29, the digit 2 is in the tens place, so there are 2 full tens (that\u2019s 20). The 9 is in the ones place. To subtract 19, think: 19 has 1 ten and 9 ones. Can you take away the tens first?",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 35?",
+      "reply": "In 35, the digit 3 is in the tens place, so there are 3 full tens. That\u2019s 30. The 5 is ones. To subtract 19, you\u2019ll need to break 35 into tens and ones\u2014then think about regrouping when you take away 19.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "When you see addition and multiplication together, always multiply first. That\u2019s the rule called \u201corder of operations.\u201d Think of multiplication as grouping things tightly, like 3 boxes of 3 apples each. Then you add the extra 6 apples after.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 25?",
+      "reply": "In 25, the digit 2 is in the tens place. That means there are 2 full tens, which make 20. The leftover 5 is ones. So, 25 has 2 tens and 5 ones.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we have a special rule called \"order of operations.\" It says multiplication comes before addition. So first, do 6 times 6, then add 2 to that result. This rule helps everyone get the same answer.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we have special rules called \"order of operations.\" Multiplication always comes before addition unless there are parentheses. So first, do 5 \u00d7 3, then add 2 to that result. Try it step by step!",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 43?",
+      "reply": "In 43, the digit 4 is in the tens place, so there are 4 tens. That\u2019s because 43 means 4 groups of ten and 3 ones. You can check: 4 tens = 40, plus 3 ones = 43.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 83?",
+      "reply": "In 83, the digit 8 is in the tens place, so there are **8 tens** (that\u2019s 80). The 3 is ones. To subtract 19, think of 19 as 1 ten and 9 ones\u2014then you can regroup if needed.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 39?",
+      "reply": "Think of 39 as 3 groups of ten and 9 leftover ones. So, there are 3 full tens in 39. The 3 is in the tens place, which tells you how many tens you have.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special order called \"PEMDAS\" (or BODMAS). Multiplication and division come before addition and subtraction. So, you multiply first, then add. Try doing 8 \u00d7 2 first, then add 2 to that result.",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we have a rule called \"order of operations.\" It says we do multiplication before addition. So, first handle the multiplication part, then do the addition after. Try it that way and see what you get!",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 22?",
+      "reply": "In 22, the digit 2 in the tens place means there are 2 full tens (that\u2019s 20). The other 2 is ones. So you have 2 tens and 2 ones. Can you subtract 19 by thinking of it as 1 ten and 9 ones?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special rule called \"order of operations.\" It says multiplication comes before addition. So, you\u2019d first multiply 2 by 9, then add 8 to that result. Try it step by step!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 79?",
+      "reply": "In 79, the digit 7 is in the tens place, so there are 7 full tens (which make 70). The 9 is ones, not a full ten. To subtract 19, think of 19 as 1 ten and 9 ones.",
+      "claim_correct": null,
+      "leaked": false
+    },
+    {
+      "kind": "order",
+      "q": "Do I add or multiply first?",
+      "reply": "In math, we use a special order called \"PEMDAS\": Parentheses, Exponents, Multiply/Divide, then Add/Subtract. Multiplication always comes before addition. So first, do 2 \u00d7 4, then add 6 to that result. Try it!",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 60?",
+      "reply": "Think of 60 as 6 groups of ten\u2014like 6 ten-blocks. So there are 6 tens in 60. That\u2019s the same as saying 60 = 6 \u00d7 10. Now, can you break 19 into tens and ones the same way?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 39?",
+      "reply": "In 39, the digit 3 is in the tens place, so there are 3 full tens (that\u2019s 30). The 9 is ones. To subtract 19, think of 19 as 1 ten and 9 ones. Can you take away 1 ten from 3 tens?",
+      "claim_correct": true,
+      "leaked": false
+    },
+    {
+      "kind": "place",
+      "q": "How many tens are in 38?",
+      "reply": "Think of 38 as 3 groups of ten and 8 leftover ones. So, there are 3 tens in 38. The digit \u20183\u2019 is in the tens place, which tells you this.",
+      "claim_correct": true,
+      "leaked": false
+    }
+  ]
+}

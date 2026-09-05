@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rung — build your village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* palette taken from the artwork: timber, grass, sky */
+    --bg:#efe3cd; --bg2:#e4d4b8;
+    --card:#fffaf0; --line:#e3d3b6;
+    --ink:#3b2d1d; --muted:#8a7659;
+    --wood:#a9702f; --wood-d:#8a5620;
+    --grass:#5f9e46; --grass-d:#4a7f37;
+    --sky1:#9ed8f5; --sky2:#cfeafb;
+    --ok:#4a8f3c; --miss:#c9552f;
+    --shadow:0 14px 34px rgba(70,45,15,.16);
+    --shadow-s:0 4px 12px rgba(70,45,15,.10);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.55 Nunito,system-ui,"Segoe UI",Roboto,sans-serif;color:var(--ink);
+       background:radial-gradient(1200px 600px at 50% -10%,#f7eeda 0%,var(--bg) 55%,var(--bg2) 100%);
+       min-height:100vh}
+  h1,h2,h3,.logo,.bname,.ol,.lvl,.coins,.go{font-family:Fredoka,Nunito,system-ui,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:18px}
+  header{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .logo{font-weight:700;font-size:27px;letter-spacing:-.3px;color:var(--wood-d)}
+  .logo span{color:var(--grass)}
+  .tag{color:var(--muted);font-size:13.5px;font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px}
+
+  /* ---------- THE VILLAGE: an AI-painted scene that repaints as it grows ---------- */
+  .villagecard{padding:0;overflow:hidden;margin-bottom:14px}
+  .scene{position:relative;height:320px;overflow:hidden;
+    background:linear-gradient(180deg,#7fc7ea 0%,var(--sky1) 38%,var(--sky2) 72%,#e9f4dd 100%)}
+  .scene::after{content:"";position:absolute;inset:0;pointer-events:none;
+    box-shadow:inset 0 0 90px rgba(30,50,70,.20)}
+  @media(max-width:700px){.scene{height:230px}}
+  .art{position:absolute;inset:0}
+  .scrim{position:absolute;inset:0;pointer-events:none;background:
+     linear-gradient(180deg,rgba(12,28,44,.34) 0%,rgba(12,28,44,0) 30%)}
+  .vtop{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:13px 16px;flex-wrap:wrap}
+  .vtop h2{margin:0;font-size:19px;font-weight:600;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+  .namein{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.18);border-radius:999px;
+          padding:4px 13px;font:inherit;font-weight:700;font-size:13.5px;width:132px;outline:none;
+          color:#fff;backdrop-filter:blur(6px)}
+  .namein::placeholder{color:rgba(255,255,255,.75)}
+  .namein:focus{background:rgba(255,255,255,.95);color:var(--ink);border-color:#fff}
+  .coins{margin-left:auto;font-weight:600;font-size:15px;color:#5a3a10;
+         background:linear-gradient(180deg,#ffe9ad,#f6cf76);border:1px solid #e0b45c;
+         border-radius:999px;padding:5px 15px;box-shadow:0 3px 10px rgba(90,58,16,.28)}
+  .vbot{position:absolute;bottom:0;left:0;right:0;padding:11px 16px;display:flex;align-items:flex-end;gap:10px}
+  .tiles{display:flex;gap:6px;align-items:center}
+  .count,.empty{font-size:12.5px;font-weight:700;color:#fff;background:rgba(20,40,58,.42);
+      border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 12px}
+  .narr{font-size:15px;color:#4b3a24;background:linear-gradient(180deg,#fdf4e0,#f8ecd5);
+        border-top:1px solid var(--line);padding:12px 18px;min-height:20px;font-weight:600}
+
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+  @media(max-width:780px){.grid{grid-template-columns:1fr}}
+
+  .order{text-align:center}
+  .next{color:var(--muted);font-size:13px;letter-spacing:.3px}
+  .bname{font-size:22px;font-weight:600;margin:2px 0 8px;text-transform:capitalize;color:var(--wood-d);display:flex;align-items:flex-end;justify-content:center;gap:9px}
+  .brief{background:#fdf3e0;border:2px dashed #ddbf8c;border-radius:14px;padding:11px 15px;font-size:16px;color:#5b4526;max-width:430px;margin:0 auto;font-weight:600}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+  @media(max-width:430px){.choices{grid-template-columns:1fr}}
+  .opt{background:linear-gradient(180deg,#fffdf6,#fbf2e0);border:2px solid var(--line);
+       border-radius:18px;padding:10px 12px 14px;cursor:pointer;text-align:center;
+       transition:transform .16s,border-color .16s,box-shadow .16s}
+  .opt:hover{transform:translateY(-4px);border-color:var(--wood);box-shadow:0 10px 22px rgba(140,90,30,.20)}
+  .opt .oe{height:86px;display:flex;align-items:flex-end;justify-content:center}
+  .opt .ol{font-weight:600;font-size:17px;margin:6px 0 5px;text-transform:capitalize;color:var(--wood-d)}
+  .opt .oc{font-size:13.5px;color:var(--muted);line-height:1.4;font-weight:600}
+  .bprev{position:relative;display:inline-block}
+  .q{font-size:46px;font-weight:800;letter-spacing:1px;margin:13px 0 2px;color:var(--ink)}
+  .q .eq{color:var(--muted)}
+  .answer{display:flex;gap:10px;justify-content:center;margin-top:6px}
+  input[type=number]{font-size:30px;width:160px;text-align:center;padding:7px 12px;border:2px solid var(--line);border-radius:16px;outline:none;font-weight:800;background:#fffdf7;-moz-appearance:textfield}
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  input[type=number]:focus{border-color:var(--wood)}
+  button{font:inherit;font-weight:700;border:0;border-radius:15px;padding:13px 20px;cursor:pointer}
+  .go{background:linear-gradient(180deg,#c8873c,var(--wood-d));color:#fff;font-size:18px;font-weight:600;box-shadow:0 4px 0 #6f4416,0 8px 18px rgba(110,68,22,.28)}
+  .go:active{transform:translateY(2px);box-shadow:0 2px 0 #6f4416}
+  .ghost{background:#f3e8d4;color:var(--wood-d);padding:11px 16px;border:1px solid var(--line)}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:11px}
+  .fb{min-height:24px;text-align:center;font-weight:800;margin-top:9px}
+  .fb.ok{color:var(--ok)} .fb.miss{color:var(--miss)}
+  .ladder-wrap{display:flex;align-items:center;gap:12px;margin-top:16px}
+  .ladder{flex:1;height:14px;background:#e8dcc4;border-radius:20px;overflow:hidden}
+  .ladder>i{display:block;height:100%;width:20%;background:linear-gradient(90deg,#8fc36f,var(--grass-d));border-radius:20px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .lvl{font-weight:600;color:var(--grass-d);min-width:80px;text-align:right;font-size:14.5px}
+
+  .buddy h3{margin:0 0 4px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .blob{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#9ed37e,var(--grass-d));display:inline-block;box-shadow:0 3px 8px rgba(74,127,55,.4)}
+  .chat{height:296px;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:6px 2px;margin:9px 0}
+  .msg{padding:9px 13px;border-radius:15px;max-width:88%;font-size:14.5px}
+  .msg.b{background:#f3e8d4;align-self:flex-start;border-bottom-left-radius:5px;color:#4b3a24}
+  .msg.u{background:linear-gradient(180deg,#6ea951,var(--grass-d));color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+  .msg.think{color:var(--muted);font-style:italic;background:transparent}
+  .ask{display:flex;gap:8px}
+  .ask input{flex:1;font-size:14.5px;padding:9px 12px;border:2px solid var(--line);border-radius:14px;outline:none;background:#fffdf7}
+  .ask input:focus{border-color:var(--wood)}
+  .note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+  .confetti{position:fixed;pointer-events:none;font-size:26px;animation:rise 1s ease-out forwards;z-index:9}
+  @keyframes rise{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-95px) scale(1.4)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Rung<span>.</span></div>
+    <div class="tag">the maths <em>is</em> the building — and your village grows as you build it</div>
+  </header>
+
+  <section class="card villagecard">
+    <div class="scene">
+      <div class="art" id="art"></div>
+      <div class="scrim"></div>
+      <div class="vtop">
+        <h2 id="vtitle">Your village</h2>
+        <input class="namein" id="name" placeholder="your name…" autocomplete="off" />
+        <div class="coins">🪙 <span id="coins">0</span></div>
+      </div>
+      <div class="vbot">
+        <div class="tiles" id="tiles"><span class="empty">Empty land — build the first thing.</span></div>
+      </div>
+    </div>
+    <div class="narr" id="narr">Work out what a build costs, and it appears here.</div>
+  </section>
+
+  <div class="grid">
+    <section class="card order">
+      <div class="next" id="phase">What shall we build next?</div>
+      <div class="choices" id="choices"></div>
+      <div id="solving" hidden>
+        <div class="bname" id="bname">—</div>
+        <div class="brief" id="brief">—</div>
+        <div class="q" id="q">— <span class="eq">=</span> ?</div>
+        <div class="answer">
+          <input id="ans" type="number" inputmode="numeric" placeholder="?" autocomplete="off" />
+          <button class="go" id="check">Build it</button>
+        </div>
+      </div>
+      <div class="fb" id="fb"></div>
+      <div class="row">
+        <button class="ghost" id="stuck">I'm stuck 🤔</button>
+        <button class="ghost" id="hint">Give me a hint</button>
+      </div>
+      <div class="ladder-wrap">
+        <div class="ladder"><i id="bar"></i></div>
+        <div class="lvl" id="lvl">⛰️ Level 1</div>
+      </div>
+    </section>
+
+    <section class="card buddy">
+      <h3><span class="blob"></span> Your buddy</h3>
+      <div class="chat" id="chat"></div>
+      <div class="ask">
+        <input id="say" placeholder="ask me anything…" autocomplete="off" />
+        <button class="ghost" id="send">Send</button>
+      </div>
+    </section>
+  </div>
+  <div class="note">Every cost is generated and checked in code — your buddy helps you think, but can never hand you a number. · Village art by Kenney (CC0)</div>
+</div>
+
+<script type="module">
+import { generateProblem, updateAbility, selectDifficultyAdaptive, sigmoid } from "/engine.mjs";
+import { renderVillage as drawVillage, VILLAGE_CSS, BUILDS, buildPreview } from "/village.mjs";
+{ const st=document.createElement("style"); st.textContent=VILLAGE_CSS; document.head.appendChild(st); }
+const $ = (id)=>document.getElementById(id);
+
+const PLAN = BUILDS;   // build catalogue lives with the artwork
+
+const KEY="rung.village";
+const load=()=>{ try{ return JSON.parse(localStorage.getItem(KEY))||{} }catch{ return {} } };
+let S = Object.assign({ built:[], coins:0, name:"", theta:0, last:null,
+                        seed: Math.floor(Math.random()*100000) }, load());
+const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)) }catch{} };
+
+let n=0, streak=0, inBand=0, cur=null, curBuild=null, history=[];
+let theta = S.theta || 0;
+const level=(d)=>Math.max(1,Math.min(7,Math.round((d+4)/8*6)+1));
+
+/* ---- The scene is DRAWN IN CODE so it shows exactly what the child built.
+   The generative-image version failed its own test: identical-looking paintings, missing
+   buildings, and error placeholders on longer prompts. Code is instant and never wrong. ---- */
+function paintVillage(){ drawVillage($("art"), S.built); }
+
+function renderVillage(){
+  $("coins").textContent = S.coins.toLocaleString();
+  $("vtitle").textContent = S.name ? `${S.name}'s village` : "Your village";
+  $("tiles").innerHTML = S.built.length
+    ? `<span class="count">${S.built.length} built</span>`
+    : `<span class="empty">Empty land — build the first thing.</span>`;
+}
+
+function pushMsg(text,who){
+  const el=document.createElement("div"); el.className="msg "+who; el.textContent=text;
+  $("chat").appendChild(el); $("chat").scrollTop=$("chat").scrollHeight; return el;
+}
+function confetti(){
+  const em=["🎉","⭐","✨","🌟","🪙"]; const x=innerWidth/2, y=innerHeight/2;
+  for(let i=0;i<9;i++){ const s=document.createElement("div"); s.className="confetti";
+    s.textContent=em[i%em.length]; s.style.left=(x-70+Math.random()*140)+"px";
+    s.style.top=(y-40+Math.random()*40)+"px"; document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1000); }
+}
+
+function briefFor(build, p){
+  const {a,b,op}=p;
+  if(op==="*") return `${a} ${build.unit} at ${b} coins each.`;
+  if(op==="+") return `${a} coins of timber and ${b} coins of rope.`;
+  return `${a} ${build.unit} arrived but ${b} were broken. How many are still good?`;
+}
+
+function offerChoices(){
+  const done = new Set(S.built.map(b=>b.label));
+  let pool = PLAN.filter(b=>!done.has(b.label));
+  if(pool.length < 2) pool = PLAN.slice();
+  const picks=[pool[0], pool[1 % pool.length]];
+  const d = selectDifficultyAdaptive(theta);
+  const opts = picks.map(build=>({ build, problem: generateProblem(d, Math.random) }));
+  $("phase").textContent="What shall we build next?";
+  $("solving").hidden=true; $("choices").innerHTML="";
+  opts.forEach(o=>{
+    const el=document.createElement("div"); el.className="opt";
+    el.innerHTML=`<div class="oe">${buildPreview(o.build)}</div>`+
+                 `<div class="ol">${o.build.label}</div>`+
+                 `<div class="oc">${briefFor(o.build,o.problem)}</div>`;
+    el.onclick=()=>startBuild(o); $("choices").appendChild(el);
+  });
+  const lvl=level(d); $("bar").style.width=(lvl/7*100)+"%"; $("lvl").textContent="⛰️ Level "+lvl;
+}
+
+function startBuild(o){
+  curBuild=o.build; cur=o.problem; n++;
+  $("choices").innerHTML=""; $("phase").textContent="Work out the cost"; $("solving").hidden=false;
+  $("bname").innerHTML=`${buildPreview(curBuild,54,48)}<span>${curBuild.label}</span>`;
+  $("brief").textContent=briefFor(curBuild,cur);
+  $("q").innerHTML=`${cur.text} <span class="eq">=</span> ?`;
+  $("ans").value=""; $("ans").disabled=false; $("ans").focus();
+}
+
+async function narrate(building){
+  $("narr").textContent="…";
+  try{
+    const r=await fetch("/api/narrate",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:S.name,building,built:S.built.map(b=>b.label),
+                           isFirst:S.built.length===1,lastSession:S.last})});
+    const {text}=await r.json(); $("narr").textContent=text;
+  }catch{ $("narr").textContent=`The ${building.label} is finished — the village grows.`; }
+}
+
+async function askBuddy(message){
+  pushMsg(message,"u"); const t=pushMsg("thinking…","think");
+  try{
+    const r=await fetch("/api/coach",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({problem:cur,history,message})});
+    const {reply}=await r.json(); t.remove(); pushMsg(reply,"b");
+    history.push({role:"user",content:message},{role:"assistant",content:reply});
+    if(history.length>8) history=history.slice(-8);
+  }catch{ t.textContent="(buddy is offline — check the server)"; t.className="msg b"; }
+}
+
+function check(){
+  if(!cur || $("ans").value==="") return;
+  const val=Number($("ans").value);
+  const p=sigmoid(theta-cur.difficulty);
+  if(p>=0.6&&p<=0.85) inBand++;
+  const correct = val===cur.answer;
+  theta=updateAbility(theta,cur.difficulty,correct,n-1); S.theta=theta;
+  if(correct){
+    streak++; confetti();
+    S.built.push({key:curBuild.key,label:curBuild.label});
+    S.coins+=Math.abs(cur.answer); S.last=curBuild.label; save();
+    renderVillage(); paintVillage();          // the world repaints with what they chose
+    $("fb").textContent = streak>=3 ? `🔥 ${streak} builds in a row!` : "Built! 🎉";
+    $("fb").className="fb ok";
+    narrate(curBuild);
+    setTimeout(offerChoices,850);
+  }else{
+    streak=0;
+    $("fb").textContent="Not quite — the builders are waiting. Ask your buddy 👉";
+    $("fb").className="fb miss";
+    askBuddy(`I worked out ${cur.text} and got ${val}. Is that right?`);
+  }
+}
+
+$("check").onclick=check;
+$("ans").addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();check();} });
+$("stuck").onclick=()=>askBuddy("I'm stuck, can you help me start?");
+$("hint").onclick=()=>askBuddy(`Give me a hint for ${cur.text}`);
+$("send").onclick=()=>{const v=$("say").value.trim(); if(v){$("say").value="";askBuddy(v);}};
+$("say").addEventListener("keydown",e=>{ if(e.key==="Enter"){const v=$("say").value.trim(); if(v){$("say").value="";askBuddy(v);}}});
+$("name").value=S.name||"";
+$("name").addEventListener("change",()=>{ S.name=$("name").value.trim(); save(); renderVillage(); });
+
+renderVillage(); paintVillage();
+if(S.built.length){
+  pushMsg(`Welcome back${S.name?", "+S.name:""}! Last time you built the ${S.last}. Your village has ${S.built.length} things in it now — shall we add another?`,"b");
+  $("narr").textContent = `Your village remembers: ${S.built.map(b=>b.label).join(", ")}.`;
+}else{
+  pushMsg("Hi! This is your empty village. Work out what each build costs and I'll get the builders going. I'll never just tell you a number — but I'll help you think. 🌟","b");
+}
+offerChoices();
+</script>
+</body>
+</html>

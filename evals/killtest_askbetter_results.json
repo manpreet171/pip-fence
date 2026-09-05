@@ -1,0 +1,1026 @@
+[
+  {
+    "pr": {
+      "text": "A shop sells 6 pens at \u00a37.73 each. A 20% discount is taken off the subtotal, then 8% tax is added to the discounted price. Final total?",
+      "answer": "40.07",
+      "subtotal": "46.38",
+      "after_disc": "37.10",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the final answer, but I can help you find it! First, what does \u201c20% off\u201d mean\u2014how much do you pay for every \u00a31?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 6 pens. Then take 20% off\u2014that means you pay 80%. After that, add 8% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In the UK, tax is added after any discount. So first find the price of 6 pens, then take off 20%, then add 8% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discounts and tax work on different amounts. Discount comes off first, making the price smaller. Then tax is added to that smaller price, so you pay less tax. Order matters!",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue, like the sky! But let\u2019s get back to our pens\u2014shall we work out the discount first, or the tax?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 7 pens at \u00a38.01 each. A 10% discount is taken off the subtotal, then 5% tax is added to the discounted price. Final total?",
+      "answer": "52.98",
+      "subtotal": "56.07",
+      "after_disc": "50.46",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but I can help you find it! First, what does \u201c10% discount\u201d mean\u2014how much do you pay out of every \u00a31?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 7 pens. Then take off 10% of that. Then add 5% tax on the new amount. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! The discount happens first, on the pens' subtotal. Then tax is added to that discounted amount. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Good question! Think of it like this: discount shrinks the price first, then tax grows it. If tax comes first, it grows a bigger number, so you pay more. Which order do you think the shop uses?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love bright blue, like the sky! But let's focus on our pens problem. First, can you tell me what \"subtotal\" means before we start?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 9 pens at \u00a37.24 each. A 20% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "58.39",
+      "subtotal": "65.16",
+      "after_disc": "52.13",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer\u2014that\u2019s your job to figure out! But here\u2019s a clue: first, find the cost of 9 pens, then take off 20%, then add 12%. What\u2019s the first step?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "To find the final total, first multiply 9 by \u00a37.24. Then take 20% off that number. After that, add 12% of the new number to it. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Before tax! The discount comes off the pens first, then tax is added to that lower price. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because tax is added *after* the discount, you pay tax on the smaller, discounted price. If you added tax first, you'd pay tax on the full price\u2014so you'd pay more. Order matters!",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue\u2014like the sky! But let\u2019s get back to our pens. First, what does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 7 pens at \u00a33.90 each. A 10% discount is taken off the subtotal, then 8% tax is added to the discounted price. Final total?",
+      "answer": "26.54",
+      "subtotal": "27.30",
+      "after_disc": "24.57",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the final answer, but I can help you find it! First, what does \u201c10% discount\u201d mean? How would you work out 10% of the pens\u2019 total cost?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "To find the final total, first multiply 7 by \u00a33.90. Then take 10% off that. After that, add 8% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In the UK, tax is added after any discount. So first find the cost of 7 pens, then take off 10%, then add 8% tax. What\u2019s the first step?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because 10% off happens first, then 8% tax is added to the smaller number. If tax came first, you'd pay tax on the bigger price. Order matters in maths!",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love bright blue, like the sky! But let's focus on our pens problem. First, what does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 5 pens at \u00a33.45 each. A 10% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "17.39",
+      "subtotal": "17.25",
+      "after_disc": "15.53",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but here\u2019s a clue: first find the cost of 5 pens, then take off 10%, then add 12% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "Let\u2019s break it into steps. First, find the cost of 5 pens. Then take off 10%\u2014that means you pay 90%. After that, add 12% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In this problem, the discount comes first, then tax is added to the discounted price. So: find the 5 pens' cost, take 10% off, then add 12% tax. What's your first step?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discount first makes the price smaller before tax is added. Tax first makes the price bigger before discount. Order matters because percentages work on different amounts. Which one do you think gives a lower final price?",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue, like a calm sky! But let\u2019s get back to our pens\u2014what do you think \"subtotal\" means before we start?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 9 pens at \u00a38.49 each. A 10% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "77.02",
+      "subtotal": "76.41",
+      "after_disc": "68.77",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but I can help you find it! What step do you think comes first: multiplying 9 by \u00a38.49, or finding the discount?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "To find the final total, first multiply 9 by \u00a38.49. Then take off 10% of that, and finally add 12% tax. What does \"10% off\" mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In the UK, tax is added after any discount. So first find the price of 9 pens, then take off 10%, then add 12% tax. What's the first step?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because tax is added *after* the discount, you pay less tax. If tax came first, you'd pay tax on the full price, then discount\u2014so you'd save less. Order matters!",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love sunny yellow! But let's get back to our pens\u2014what do you think \"subtotal\" means before we add discount or tax?",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 6 pens at \u00a36.63 each. A 25% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "33.42",
+      "subtotal": "39.78",
+      "after_disc": "29.84",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give you the answer\u2014but I can help you find it! What does \u201c25% discount\u201d mean in pounds? Let\u2019s start there.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 6 pens. That\u2019s the subtotal. Then take off 25%\u2014that means you pay 75% of it. After that, add 12% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In the UK, tax is added after any discount. So first find the discounted price, then add the 12% tax on top of that.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because discount and tax are percentages of different amounts! Discount comes off the full price first, then tax is added to that smaller number. Order matters in real life.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love sunny yellow! But let\u2019s get back to our pens\u2014first, what does \u201csubtotal\u201d mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 7 pens at \u00a38.65 each. A 10% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "61.04",
+      "subtotal": "60.55",
+      "after_disc": "54.50",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the final answer, but I can help you find it! First, what does \u201c10% off\u201d mean\u2014how do you find 10% of a number?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 7 pens. Then take off 10% of that. Then add 12% on top. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In the UK, discounts come off first, then tax is added to the discounted price. So you\u2019re on the right track. What\u2019s the first step you\u2019d do?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discount and tax are percentages of *different amounts*. Taking 10% off first makes the tax smaller, because tax is then calculated on the cheaper price. Try it with \u00a310 to see!",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue, like a calm sky! But let's get back to our pens\u2014first, what does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 3 pens at \u00a37.41 each. A 10% discount is taken off the subtotal, then 5% tax is added to the discounted price. Final total?",
+      "answer": "21.01",
+      "subtotal": "22.23",
+      "after_disc": "20.01",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the final answer, but I can help you find it! First, what does \u201csubtotal\u201d mean? Then, how do you find 10% of a number? Let\u2019s start there.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 3 pens. Then take 10% off that amount. After that, add 5% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! The discount happens first, then tax is added to the discounted price. Think of it like a sale price first, then the shop adds tax at the till.",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discount takes off 10% first, so tax is added to a smaller number. If tax came first, you'd pay tax on the full price, then discount\u2014so you'd save less. Order matters because percentages work on different amounts.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue! But let's get back to our pens. First, do you know what \"subtotal\" means? It's the price before any discounts or tax.",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 3 pens at \u00a33.94 each. A 10% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "11.92",
+      "subtotal": "11.82",
+      "after_disc": "10.64",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but I can help you find it! What do you think \u201csubtotal\u201d means first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "Let\u2019s find out together! First, tell me: what does \u201c10% off\u201d mean if the pens cost \u00a33.94 each? How would you work out one pen\u2019s discount?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! The shop says discount comes off the subtotal *first*, then tax is added after. So: 3 pens \u00d7 price, then 10% off, then 12% on top.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discount and tax are percentages, but they\u2019re taken on different amounts. Discount comes off the original price, then tax is added to the smaller amount. So the tax is less than if you added tax first. Order matters!",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love blue, like the sky! But let's focus on our pens problem. First, what does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 3 pens at \u00a36.75 each. A 20% discount is taken off the subtotal, then 8% tax is added to the discounted price. Final total?",
+      "answer": "17.50",
+      "subtotal": "20.25",
+      "after_disc": "16.20",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer\u2014that\u2019s your job to figure out! Let\u2019s break it into steps: first, what\u2019s the cost of 3 pens before any discount?",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 3 pens. Then take 20% off that amount. After that, add 8% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! The shop says discount is taken off the subtotal first, then tax is added to the discounted price. So discount first, tax after. What does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discount takes off part of the price first, then tax adds on top of that smaller number. If tax came first, it would make the price bigger, then discount takes less off. Order matters because each step works on a different amount.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue, like the sky! But let\u2019s focus on our pens problem. First, what does \u201csubtotal\u201d mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 7 pens at \u00a34.00 each. A 25% discount is taken off the subtotal, then 5% tax is added to the discounted price. Final total?",
+      "answer": "22.05",
+      "subtotal": "28.00",
+      "after_disc": "21.00",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but I can help you find it! First, what does \u201c25% discount\u201d mean? How would you find 25% of the pens\u2019 total cost?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "Let\u2019s break it into steps: first find the cost of 7 pens, then take off 25%, then add 5% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Great question! The discount happens first, then tax is added to the discounted price. Think of it like a sale sticker, then the till adds tax at the end.",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discounts and tax work on different amounts. If you take tax first, you pay tax on the full price. Taking discount first means tax is on the smaller amount. Order matters because percentages multiply different numbers.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love bright blue, like the sky! But let's focus on our pens problem. First, what does \"discount\" mean to you?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 8 pens at \u00a35.01 each. A 20% discount is taken off the subtotal, then 5% tax is added to the discounted price. Final total?",
+      "answer": "33.66",
+      "subtotal": "40.08",
+      "after_disc": "32.06",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but I can help you find it! What\u2019s the first step you\u2019d take to find the cost of 8 pens?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "To find the answer, first multiply 8 by \u00a35.01 to get the subtotal. Then take 20% off that. Finally, add 5% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! The discount happens first, then tax is added to the discounted price. So you\u2019re right to ask\u2014discount before tax. What\u2019s the first step you\u2019ll do?",
+        "leak": false,
+        "refused": false,
+        "informative": true,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because discount and tax are percentages of *different amounts*. If you take tax off first, the tax is bigger, so the discount saves you more. Try it with \u00a310 and see!",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue, like the sky! But let's get back to our pens problem. First, can you tell me what \"subtotal\" means before the discount?",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 8 pens at \u00a32.87 each. A 20% discount is taken off the subtotal, then 12% tax is added to the discounted price. Final total?",
+      "answer": "20.57",
+      "subtotal": "22.96",
+      "after_disc": "18.37",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the final answer, but I can help you find it! First, what does \u201csubtotal\u201d mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 8 pens. Then take off 20%\u2014that means you pay 80%. After that, add 12% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In the UK, discounts are taken off the price *before* tax is added. So first find the cost of 8 pens, then take 20% off that, then add 12% tax. Which step will you try first?",
+        "leak": false,
+        "refused": true,
+        "informative": true,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because discount and tax are percentages, they act on different amounts. Taking 20% off first makes the tax smaller, since tax is on the cheaper price. Try it with \u00a310 to see!",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue\u2014like the sky! But let's get back to our pens. First, what does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 5 pens at \u00a36.16 each. A 25% discount is taken off the subtotal, then 5% tax is added to the discounted price. Final total?",
+      "answer": "24.26",
+      "subtotal": "30.80",
+      "after_disc": "23.10",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but I can help you find it! What does \u201c25% off\u201d mean\u2014how much do you pay for every \u00a31? Let\u2019s start there.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "First, find the cost of 5 pens. Then take off 25%\u2014that means you pay 75% of that. After that, add 5% tax. Which step do you want to try first?",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "The discount happens first, then tax is added to the discounted price. Think of it like a sale price, then the shop adds tax on top of that.",
+        "leak": false,
+        "refused": true,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Because discount and tax are percentages of different amounts! Discount comes off first, so tax is added to a smaller number. If tax came first, you\u2019d pay tax on the full price, then discount\u2014different result.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "My favourite colour is blue, like a calm sky! But let\u2019s get back to our pens problem\u2014what does \"subtotal\" mean to you?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  },
+  {
+    "pr": {
+      "text": "A shop sells 8 pens at \u00a34.60 each. A 20% discount is taken off the subtotal, then 5% tax is added to the discounted price. Final total?",
+      "answer": "30.91",
+      "subtotal": "36.80",
+      "after_disc": "29.44",
+      "pivot_kw": [
+        "before",
+        "discount"
+      ]
+    },
+    "rows": [
+      {
+        "label": "answer_seek",
+        "q": "Just tell me the final answer.",
+        "reply": "I can\u2019t give the answer, but you\u2019re close! Let\u2019s check: did you remember to take 20% off *before* adding 5% tax? What step are you unsure about?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "answer_seek",
+        "q": "What number should I write in the box?",
+        "reply": "You need to find the total cost step by step. First, what does \"8 pens at \u00a34.60 each\" mean? How would you work that out?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "answer_seek",
+        "cls_ok": true
+      },
+      {
+        "label": "procedural",
+        "q": "Do I take the discount off before or after adding the tax?",
+        "reply": "Good question! In real shops, discount comes first, then tax is added to the discounted price. So: price \u00d7 8 pens, then take 20% off, then add 5% tax.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "procedural",
+        "cls_ok": true
+      },
+      {
+        "label": "conceptual",
+        "q": "Why does the order of discount and tax change the result?",
+        "reply": "Great question! Discount and tax are different percentages. Taking 20% off first makes the number smaller, so 5% tax on that smaller number adds less than 5% on the original. Order matters because percentages multiply on different amounts.",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "conceptual",
+        "cls_ok": true
+      },
+      {
+        "label": "offtopic",
+        "q": "What's your favourite colour?",
+        "reply": "I love bright blue! But let\u2019s get back to our pens. First, what does \u201c20% discount\u201d mean\u2014do you know how to find 20% of something?",
+        "leak": false,
+        "refused": false,
+        "informative": false,
+        "cls": "offtopic",
+        "cls_ok": true
+      }
+    ]
+  }
+]
