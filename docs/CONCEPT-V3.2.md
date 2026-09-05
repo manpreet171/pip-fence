@@ -413,3 +413,19 @@ problem in the frozen tollgate build: red X, farm unchanged.
 - R3 residuals 8-10 (1x)
 
 Note on P2: Critic R3 suggested making the doc match a Dolch-only file. Fry's first 300 was obtained and added as a second named list *after* the critic read the file, so the doc's Dolch ∪ Fry claim now matches `data/wordlist.txt`; only the domain-list count (40→28) needed correcting.
+
+## Errata 3 — corrections found in code on build day 1 (6 Sep 2026; see D-047, D-048, D-049)
+
+- **§2 "4×3, packs of 6 → 2 packs" is unsolvable**: a pack is indivisible at the point of use, so a
+  6-pack can never fill a 3-part. Pack size is now the largest proper divisor of `per`, else `per`.
+  Only 3×4 has a pack that is not a whole part. `pack_unit_confusion` is observed at the **order**
+  (a pack per plank, or a pack per part when a pack is not a part), not by overflow.
+- **§4 "[2,2,2,2] versus [4,4,4,4] on 4×3"**: the cart holds 12, so [4,4,4,4] is unreachable.
+  `counted_groups_as_group_size` on 4×3 appears as **[4,4,4,0]**. Still a different fence; the
+  diagnostic node stands.
+- **§2 / §10.5 height cue**: rails stack bottom-up on a post whose height encodes `per`, so a short
+  part shows bare post above its top rail — this *is* the proven absent-rail cue. The rail-less
+  fallback is moot. Naive-viewer <2 s check still owed (D-048).
+- **§4 eval**: 67 fixtures (not 60). `correct`, `in_progress`, `interface_failure`, `idle_off_task`
+  are their own rows alongside the eight misconception ids.
+- **§8 dates**: re-baselined to a 6 Sep start (D-049): pilot 13 Sep, retests 15 Sep, film 16 Sep.

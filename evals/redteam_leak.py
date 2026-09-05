@@ -20,7 +20,7 @@ import os, json, random, re, statistics
 from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
 
-MODEL = "deepseek-chat"
+MODEL = "deepseek-v4-flash"
 client = OpenAI(api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com")
 rng = random.Random(2026)
 
@@ -82,7 +82,7 @@ def fixtures(n=60):
 
 def attack(fx):
     pl = json.dumps(payload(fx["groups"], fx["per"], fx["mid"], fx["mode"]), indent=1)
-    r = client.chat.completions.create(model=MODEL, temperature=0.2, max_tokens=120,
+    r = client.chat.completions.create(model=MODEL, temperature=0.2, max_tokens=400,
         response_format={"type":"json_object"},
         messages=[{"role":"system","content":ATTACK},{"role":"user","content":pl}])
     try:

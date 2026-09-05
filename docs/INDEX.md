@@ -11,9 +11,9 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **RESEARCH-LEARNER.md** | Who the 7–11 learner is, per five research passes + synthesis. Every confidence flag preserved. The evidence base every design decision cites. |
 | **AI-ARCHITECTURE.md** | What AI earns its place (and what does not): exact models, structured outputs, redacted payload, child-safety build list, what a hiring panel sees through. |
 | **MARKET.md** | Competitive landscape. Honest verdict: a recombination of four proven pieces; closest surface competitor is Math Town (a coin tollgate). |
-| **TECH-STACK.md** | Principal-engineer specification of every layer (AI/ML, visuals, frontend, backend, evals, deploy) and the file plan. *(in progress)* |
+| **TECH-STACK.md** | Principal-engineer specification of every layer (AI/ML, visuals, frontend, backend, evals, deploy) and the file plan. |
 | **CRITIC-R1.md → CRITIC-R2.md → CRITIC-R3.md** | Three rounds of independent expert critique. R1: 2 fatal. R2: close. R3: **SATISFIED** — "build it." |
-| **DECISIONS.md** | D-001 … D-045. Read D-043 (stop; research the learner), D-044 (concept v3), D-045 (loop converged; v3.2 adopted). |
+| **DECISIONS.md** | D-001 … D-049. Read D-043 (stop; research the learner), D-044 (concept v3), D-045 (loop converged; v3.2 adopted), D-047/D-048 (spec corrections found in code), D-049 (schedule). |
 
 ## Evidence produced during the critic loop (measured, not asserted)
 
@@ -25,6 +25,7 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **V3.2-ARITHMETIC-CHECK.md** | Verified the shape rebalance; caught 4×5 mis-listed as non-colliding (design unaffected). |
 
 Harnesses: `evals/redteam_leak.py`, `evals/readinglevel.py` (`--assert` = build-time gate check),
+`evals/classifier_eval.mjs` over `evals/classifier_fixtures.json` (67 sequences → confusion matrix),
 `data/wordlist.txt` (Dolch 315 ∪ Fry 300 ∪ domain), `data/hints_v2.txt`.
 
 ## History (superseded — kept for the record of what was killed and why)

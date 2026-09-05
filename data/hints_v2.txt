@@ -2,5 +2,5 @@ That part of the fence is short. Count a full part again.
 Every part of the fence is a little short. Look at how tall a full part is.
 Each part needs the same planks. Look at what is in a full part.
 Only the first part is built. The other parts are still empty.
-That part has a plank sticking out past the post. Take it back to the cart.
+That part has a plank sticking out over the post. Take it back to the cart.
 A pack holds many planks. Look inside a pack.

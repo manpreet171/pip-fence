@@ -20,7 +20,7 @@ const GRASS = G(15);
 
 // opaque art bounds of each sprite in its 256x512 canvas, measured from the PNGs.
 // Used to anchor art by its true footprint instead of the empty canvas.
-const BB = {"fenceHigh":[0,277,134,451],"dirtFarmland":[0,373,256,512],"cornDouble":[1,285,231,491],"hayBalesStacked":[22,346,211,489],"woodWallDoorClosed":[0,220,141,455],"roofSingle":[0,313,256,512],"woodWallWindow":[0,220,141,455],"roof":[0,242,256,512],"woodWallGateClosed":[0,220,141,455],"chimneyBase":[0,250,136,452],"chimneyTop":[61,250,113,441],"planksHigh":[0,354,256,510],"ladderStraight":[41,275,145,457],"cornYoungDouble":[32,376,219,490],"sacksCrate":[71,401,163,469],"planksSide":[0,364,256,512]};
+export const BB = {"fenceHigh":[0,277,134,451],"dirtFarmland":[0,373,256,512],"cornDouble":[1,285,231,491],"hayBalesStacked":[22,346,211,489],"woodWallDoorClosed":[0,220,141,455],"roofSingle":[0,313,256,512],"woodWallWindow":[0,220,141,455],"roof":[0,242,256,512],"woodWallGateClosed":[0,220,141,455],"chimneyBase":[0,250,136,452],"chimneyTop":[61,250,113,441],"planksHigh":[0,354,256,510],"ladderStraight":[41,275,145,457],"cornYoungDouble":[32,376,219,490],"sacksCrate":[71,401,163,469],"planksSide":[0,364,256,512]};
 
 // Each build is a small stack of sprites at one cell. dy is in scaled pixels, up is negative.
 export const BUILDS = [
@@ -63,7 +63,7 @@ const SLOTS = [
   {r:0,c:3},  // back, between right pair
 ];
 
-function iso(r, c, originX, originY) {
+export function iso(r, c, originX, originY) {
   return { x: originX + (c - r) * (TW / 2), y: originY + (c + r) * (TH / 2) };
 }
 

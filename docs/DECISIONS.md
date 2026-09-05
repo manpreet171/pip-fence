@@ -1158,3 +1158,61 @@ last out-of-list word.
 
 **Day-1 verification list:** repin attacker model (curl); verify strict JSON on a real Haiku key
 without `effort`; confirm Render always-on price; write `classify()` before any DOM.
+
+
+---
+
+## D-047 — Pack size must divide the part size; the finite cart changes what misconceptions look like
+6 Sep 2026 · Status: **Decided** (found while writing `classify()`, day 1 of build)
+
+**What.** Two arithmetic facts in CONCEPT-V3.2 do not survive its own rules:
+1. *"4×3, packs of 6"* — a pack is indivisible at the point of use, so a pack of 6 can never fill a
+   part of 3 without overflowing. The level would be unsolvable. **Rule now: pack size = the largest
+   proper divisor of `per`, else `per` itself.** Only 3×4 gets a pack that is not a whole part
+   (packs of 2). Everywhere else a pack *is* one part, and the ordering decision is "how many parts".
+2. *"[2,2,2,2] versus [4,4,4,4] on 4×3"* — the cart holds exactly 12 planks, so [4,4,4,4] (16) is
+   unreachable. `counted_groups_as_group_size` on 4×3 appears as **[4,4,4,0]**: the cart runs dry
+   before the last part. The two fences are still completely different, so the diagnostic node stands.
+
+**Also decided in code:** `[12,0,0]` and `[6,6,0]` are `right_total_wrong_grouping` (all the wood
+used, whole parts bare); `[5,4,3]` is `over_count` (a plank over a post, no part bare). In packs
+mode, ordering a pack per plank is `pack_unit_confusion` **even when the fence comes out right** —
+the order is the multiplicative act the mode exists to observe, and the surplus sits in the cart.
+
+**Why it matters.** The packs progression was already flagged UNEVIDENCED and first-to-cut. Point 1
+narrows it further: the "pack ≠ part" beat exists on one shape. If day 3 slips, packs go, and §2's
+multiplicative claim is withdrawn as planned. Evidence: `evals/classifier_eval.mjs` — 67 fixtures,
+100% right when committed, 12 silent (`ambiguous`/`in_progress`/unconfirmed), 0 mismatches.
+
+**Rejected.** Letting a pack spill into the next part (hides the over-count state); infinite cart
+(destroys the leftover-plank cue NEW-1 relies on); shrinking shapes to make 6-packs fit (would
+change the red-team fixtures whose numbers are already published).
+
+---
+
+## D-048 — Fence art: a part is posts + N rails; the post height encodes the part size
+6 Sep 2026 · Status: **Decided**
+
+Kenney's `fenceHigh_E.png` cut into two sprites (`assets/fence/post.png`, `rail.png`) by
+`scripts/make_parts.py`; rails stack bottom-up at Kenney's own 24 px pitch; the post is stretched
+to `65 + 24·(per−1)` so a full part fills its posts and a short part shows bare post above the last
+rail. The "height difference" cue therefore **is** the absent-top-rail cue the art probe proved,
+not a separate bet — CONCEPT §2's rail-less fallback is moot. Rendered at 320 px (`[4,4,3]`,
+`[3,3,3]`, `[4,4,4]`, `4×5 [5,5,5,4]`, `[4,0,0]`): the missing top rail is visible; a naive-viewer
+<2 s check still needs a human who has not seen the fence before — **owner: Manpreet, before day 2
+ends**. Over-count rail: same sprite, rotated −12°, drop shadow, above the post (CSS, no new art).
+
+---
+
+## D-049 — Schedule re-baselined: build starts 6 Sep, 12 days to deadline
+6 Sep 2026 · Status: **Decided**
+
+CONCEPT §8 assumed a 4 Sep start. Two days went to the critic loop and the stack review, which
+produced the evidence that made the plan defensible, so this is not a slip to hide. Re-baseline:
+days 1–8 of §8 compress to 6–12 Sep (day 3 packs and day 10 buffer are the cuts if needed), pilot
+**Sun 13 Sep**, 48 h retests **Tue 15 Sep**, film **Wed 16 Sep**, edit + README **Thu 17 Sep**,
+submit **Fri 18 Sep**. Day-1 (6 Sep) done: `control-arm-frozen` tag on the initial commit;
+`classify()` + 67 fixtures + eval; post/rail sprites + compositor; `mountScene`/`appendPlank`/
+`removePlank`/`onTap`; `/build` test page; `past→over` (hints now 100% in-list, 0 residual words);
+attacker repinned to `deepseek-v4-flash` (verified live). **Blocked:** Haiku strict-JSON check —
+no `ANTHROPIC_API_KEY` exists on this machine; needed before day 7 (`buddy.mjs` live call).

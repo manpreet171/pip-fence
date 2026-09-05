@@ -41,6 +41,8 @@ const server = createServer(async (req, res) => {
     if (path === "/measure") path = "/public/measure.html";
     if (path === "/engine.mjs") path = "/engine/engine.mjs";
     if (path === "/village.mjs") path = "/public/village.mjs";
+    if (path === "/build") path = "/public/build.html";
+    if (path === "/fence.mjs") path = "/public/fence.mjs";
     if (path.startsWith("/assets/")) path = "/public" + path;
     const file = join(HERE, path.replace(/^\/+/, ""));
     if (!file.startsWith(HERE)) return send(res, 403, "no");
