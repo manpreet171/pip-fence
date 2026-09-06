@@ -1,6 +1,6 @@
 # ART FEASIBILITY — can the demo beat actually be drawn? (4 Sep 2026)
 
-The critic (CRITIC-R1 #3) said: prove the plank / gap / sheep art on day 1, or change the beat.
+The review (REVIEW-R1 #3) said: prove the plank / gap / sheep art on day 1, or change the beat.
 Done today, with the actual CC0 sprites on disk, rendered at demo scale and inspected.
 
 ## What is in hand (all Kenney, CC0)
@@ -28,7 +28,7 @@ Two things that DO read instantly:
 
 - The **gap state is rendered as a missing section, not a damaged one.** A short fence is two
   sections plus bare ground; the animal walks into the bare ground. No new art needed.
-- **Over-count** (CRITIC #5) needs its own visible state: a plank that sticks out past the post
+- **Over-count** (R1 #5) needs its own visible state: a plank that sticks out past the post
   — draw once as a small SVG overlay on the last section, or use a plank sprite offset beyond the
   post. Not yet drawn; it is the one remaining art item (est. 1–2 h).
 - The escaping animal is a **goat or chicken**, not a sheep. The concept text must say goat.
@@ -37,10 +37,10 @@ Two things that DO read instantly:
 
 ## Still to draw / prove (honest residual)
 - The over-count sprite (sticks-out plank). 1–2 h.
-- A bundle-of-4 sprite for the bundles phase (CRITIC #2): a stack of 4 planks — `hayBalesStacked`
+- A bundle-of-4 sprite for the bundles phase (R1 #2): a stack of 4 planks — `hayBalesStacked`
   is a workable stand-in visually; a proper 4-plank bundle is ~1 h of compositing.
 - Drag/tap hit-testing on the iso grid (`village.mjs` has no inverse of `iso()`) — engineering,
-  not art; ~1 day (CRITIC #3 estimate stands).
+  not art; ~1 day (R1 #3 estimate stands).
 
 Files: probe page `src/public/artprobe.html`; fence/plank sprites `src/public/assets/probe/`;
 animals **copied into the project** at `src/public/assets/animals/{goat,chicken,cow,pig}.png`

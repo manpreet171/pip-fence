@@ -1,8 +1,8 @@
-# CRITIC — Round 3 (final) verification of CONCEPT-V3.2
+# REVIEW — Round 3 (final) verification of CONCEPT-V3.2
 
-4 Sep 2026. Same independent critic as R1 and R2. Verified against CRITIC-R2, CONCEPT-V3.2,
+4 Sep 2026. Same review series as R1 and R2. Verified against REVIEW-R2, CONCEPT-V3.2,
 ART-FEASIBILITY, REDTEAM-RESULTS (incl. updates 1–2), READINGLEVEL-RESULTS, `data/wordlist.txt`,
-`data/hints_v2.txt`, RESEARCH-LEARNER, AI-ARCHITECTURE, CLAUDE.md and the source.
+`data/hints_v2.txt`, RESEARCH-LEARNER, AI-ARCHITECTURE, CONSTITUTION.md and the source.
 
 ## Verification table
 

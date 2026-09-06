@@ -41,11 +41,11 @@ core claim survived contact with real data.**
 Every earlier idea died because its central claim needed something we could not get honestly:
 - Viva / misconception: needed a faithful simulated learner — impossible (D-023).
 - Fallible tutor: needed the LLM to be reliably wrong — impossible (D-024).
-- α: the hard part was routed *away* from the AI into a calculator (critic #2).
+- α: the hard part was routed *away* from the AI into a calculator (review point #2).
 
 Here the hard part **is** a trained model doing real inference on real behavioural data, with
 a proper held-out evaluation and an honest metric. That is an ML/data-science artefact — the
-exact thing the last three concepts hid. It answers the critic's recurring "where is the AI?"
+exact thing the last three concepts hid. It answers the review's recurring "where is the AI?"
 with: *a model, trained and evaluated, not a system prompt.*
 
 Speed is a non-issue: 17 ms to train, sub-microsecond to score a student. "Real-time" is free.

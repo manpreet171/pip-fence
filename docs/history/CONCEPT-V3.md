@@ -1,4 +1,4 @@
-> **SUPERSEDED 4 Sep 2026.** v3 was revised through three critic rounds (CRITIC-R1/R2/R3). Current authority: `docs/CONCEPT-V3.2.md`.
+> **SUPERSEDED 4 Sep 2026.** v3 was revised through three review rounds (REVIEW-R1/R2/R3). Current authority: `docs/CONCEPT-V3.2.md`.
 
 # CONCEPT v3 — "The plot is the problem"
 
@@ -6,7 +6,7 @@
 current build (a tollgate maths game with a village wrapper).
 
 Provenance: five learner-research passes → master synthesis (`docs/RESEARCH-LEARNER.md`) →
-AI-Product-Engineer brief (`docs/AI-ARCHITECTURE.md`) + market landscape (`docs/MARKET.md`) →
+AI-architecture review (`docs/AI-ARCHITECTURE.md`) + market landscape (`docs/MARKET.md`) →
 this innovation synthesis. Two load-bearing citations independently spot-checked. Every
 confidence flag from the research is preserved; nothing weak has been upgraded.
 

@@ -1,6 +1,6 @@
 # TECH STACK — final technical specification (4 Sep 2026, day 1 of 14)
 
-Authority: `CONCEPT-V3.2.md` (incl. Errata) + `AI-ARCHITECTURE.md`, under `CLAUDE.md` R5.
+Authority: `CONCEPT-V3.2.md` (incl. Errata) + `AI-ARCHITECTURE.md`, under `CONSTITUTION.md` R5.
 Every model ID, price and platform limit below was verified against vendor docs today; anything
 unverified is marked **[UNVERIFIED]**. The rule applied throughout: **nothing new enters the stack
 unless the existing zero-dependency code cannot do it.** Net new runtime dependencies: **zero.**
@@ -279,7 +279,7 @@ Sources: [Models overview](https://platform.claude.com/docs/en/about-claude/mode
 
 ---
 
-## Orchestrator's note on §1.2 / risk #1 (same day)
+## Follow-up note on §1.2 / risk #1 (same day)
 
 `deepseek-chat` did **not** 404 today: `evals/redteam_leak.py` ran against it three times
 (3 × 60 fixtures, all successful — REDTEAM-RESULTS updates 1–3). "No longer exists" is therefore

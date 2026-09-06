@@ -1,4 +1,4 @@
-# CLAUDE.md — Project Constitution
+# CONSTITUTION.md — Project Constitution
 
 **This file outranks every other instruction in this repo. Read it before every task. Never deviate.**
 
@@ -75,7 +75,7 @@ place in the shot list, it goes to the backlog or the bin.
 
 ```
 /
-├── CLAUDE.md          # this file — the constitution
+├── CONSTITUTION.md    # this file — the constitution
 ├── README.md          # public face (written last, written well)
 ├── docs/              # ALL documentation lives here, no exceptions
 │   ├── INDEX.md       # the map — read this first

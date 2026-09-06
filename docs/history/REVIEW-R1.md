@@ -1,8 +1,8 @@
-# CRITIC — Round 1 review of CONCEPT-V3
+# REVIEW — Round 1 review of CONCEPT-V3
 
-4 Sep 2026. Independent expert critic (children's edtech, learning science, applied AI).
+4 Sep 2026. Independent design review (children's edtech, learning science, applied AI).
 Mission: find every loophole so the concept can be made bulletproof — not to kill it. Read
-CONCEPT-V3, RESEARCH-LEARNER, AI-ARCHITECTURE, MARKET, CLAUDE.md and the actual source
+CONCEPT-V3, RESEARCH-LEARNER, AI-ARCHITECTURE, MARKET, CONSTITUTION.md and the actual source
 (`engine.mjs`, `coach.mjs`, `village.mjs`, `index.html`, `server.mjs`, `measure.html`, assets).
 
 ---

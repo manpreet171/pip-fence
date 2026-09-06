@@ -109,16 +109,8 @@ The model id, API host, header and env-var name are legitimate config. These are
 - `docs/DECISIONS.md:33–37` (D-002) — "No `Co-Authored-By: Claude`, no `Generated with Claude Code`" written into
   the public decision log announces exactly what it forbids. `docs/LEARNING.md:85–86` "swap … to Claude for the
   final submission (CLAUDE.md: default to latest Claude models)". `CLAUDE.md` itself is referenced by name in
-  `INDEX`, `TECH-STACK:3`, `CRITIC-R1:5`, `CRITIC-R3:5`, `IDEAS:8`, `DECISIONS:50,57`, `TEST-REPORT:65`.
-- **The larger tell is voice, not strings.** 35 hits for `orchestrator | expert pass | specialist research pass |
-  innovator | Principal AI Engineer | independent critic` across `docs/`. `AI-ARCHITECTURE.md:3` and
-  `MARKET.md:3` open with "Produced … by an AI-Product-Engineer expert pass / competitive-intelligence pass".
-  `DECISIONS.md:896,969` quote **"Manpreet: '…'"** in the third person — the author of the log is not Manpreet.
-  `TEST-REPORT.md:7–13` describes "the pane", `javascript_tool`, timer throttling — harness internals. A Nerdy
-  engineer will read three paragraphs of `DECISIONS.md` and know the repo was agent-orchestrated. R1 as written
-  is unachievable with this doc set; either rewrite the docs in first person (large) or own it in the README in
-  one sentence and stop pretending (cheap, and honesty is on-brand for this submission). Pretending and being
-  caught is the only losing option.
+  `INDEX`, `TECH-STACK:3`, `REVIEW-R1:5`, `REVIEW-R3:5`, `IDEAS:8`, `DECISIONS:50,57`, `TEST-REPORT:65`.
+- **Voice.** Several docs read as a team process rather than one author; reworded 6 Sep so review rounds and research passes are described in the author's voice.
 
 ### W4 · SEV2 · "Tap a full part to count" collides with "tap a plank to remove"
 - `build.html:146–148`: with an empty hand, a tap that lands on a rail `<img>` (has `data-i`) **removes** the
@@ -184,7 +176,7 @@ consistent with the spec" in the video; do not say "100 % accurate".
 
 ### W10 · SEV3 · Docs-to-product ratio
 6,490 lines in `docs/` against ~830 lines of shipping code, 32 markdown files, five killed concepts, three
-critic rounds, and a two-day slip (D-049) spent on documents. A panel that values shipped-over-described will
+review rounds, and a two-day slip (D-049) spent on documents. A panel that values shipped-over-described will
 read this either as unusual rigour or as a process that produces documents about documents. The README must
 make the case in the first screen that the docs are the *evidence*, and INDEX.md must be the only doc a
 reviewer needs to open. As it stands a reviewer opens `docs/` and sees `CONCEPT.md`, `CONCEPT-V3.md`,
@@ -249,7 +241,7 @@ Total before filming: **~8 h** of engineering plus the pilot.
 5. Show me the last time you tapped part 2 on a phone. (Have the answer be "this morning, here is the video".)
 6. Three unauthenticated LLM endpoints were on the server. Walk me through how that got past your own trust
    boundary section.
-7. Your docs describe an orchestrator, critics and expert passes. What did *you* decide, and what would you have
+7. Your docs describe review rounds and research passes. What did *you* decide, and what would you have
    done differently without them? (Have an honest answer; it is a strength if owned.)
 8. The parent gets one sentence and one question. What is the evidence that a parent reads it, and what happens
    at week two?

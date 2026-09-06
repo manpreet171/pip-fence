@@ -125,7 +125,7 @@ highest chance of not shipping.
 **Build Finalist 2 (Rung), with Finalist 1's reliable-coach buddy inside it.**
 
 Why this pairing wins on the new bar:
-- **Rung** gives the two things the critic said were missing everywhere: a **real model doing
+- **Rung** gives the two things the review said were missing everywhere: a **real model doing
   real inference** (craft, "where's the AI" answered) and a **rigorous, honest number**
   (convergence vs baseline, validatable in simulation with *known* ability — no D-023
   violation).

@@ -1,6 +1,6 @@
 # READING-LEVEL RESULTS — the six hint templates, measured (4 Sep 2026)
 
-CRITIC-R2 #13: "reading level is asserted, never measured; the 500-word list is unnamed."
+REVIEW-R2 #13: "reading level is asserted, never measured; the 500-word list is unnamed."
 Now named and measured. List = **Dolch Sight Words** (220 service + 95 nouns, public domain),
 committed at `data/wordlist.txt`, plus a separately-reported 28-word DOMAIN list of screen
 vocabulary (part, plank, pack, fence, post, cart, …). Scorer: `evals/readinglevel.py` — pure
@@ -29,7 +29,7 @@ code, no model.
    exactly this: *"the list wins, not the prose."* It did.
 2. **"One" is not a leak risk — it is a rule-consistency problem.** "One part" is a determiner,
    not a count of planks. The gate could exempt the determiner sense, but a lexical gate cannot
-   tell "one part" from "one more plank" (Critic R2, N2). The honest fix is to rewrite the
+   tell "one part" from "one more plank" (Review R2, N2). The honest fix is to rewrite the
    templates without it, which keeps the gate simple and the claim clean.
 3. **Out-of-list words are fixable.** *than/others/other/still/should/past/used/check/size/number*
    are Year-3+ or abstract. Rewrites tested below.
@@ -54,7 +54,7 @@ code, no model.
 **Conclusion:** the zero-number-word gate is satisfiable without loss of meaning — "That part" and
 "the first part" replace every "one". The constraint is real and the templates now pass it.
 
-**Open call for v3.2 / the critic:** the five residuals (*other, still, same, needs, past*) are
+**Open call for v3.2 / the review:** the five residuals (*other, still, same, needs, past*) are
 common Year-2 words that are not Dolch. Two honest options: (a) extend BASE with a second *named*
 list (Fry's first 300 contains *other* and *still*), or (b) accept and publish "5 non-Dolch words
 across 6 hints." Either is defensible; silently relabelling them as DOMAIN is not.
@@ -78,7 +78,7 @@ lookup, exactly as §3 defines "out-of-list". Six v2 templates:
 - **number words: 0 of 6** ✅
 - out-of-list: **`past`** only (from "sticking out *past* the post") — one word across six hints.
 
-The residual-word question the critic raised is closed by a named list, not by relabelling:
+The residual-word question the review raised is closed by a named list, not by relabelling:
 *other, still, same* are Fry words; *needs* → *need* is Fry once inflection is handled per spec.
 `past` is the single honest residual and is published as such (or the over-count hint becomes
 "…sticking out *over* the post" — *over* is Dolch — which is the cheaper fix).

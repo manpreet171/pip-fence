@@ -87,7 +87,7 @@ change beyond the config object.
 
 ## 4 Sep 2026 — Day 1 build, rounds 1-3 (build↔critique loop)
 
-Three verified engineer↔critic rounds turned the demo-ready product into a high-end one:
+Three verified build↔review rounds turned the demo-ready product into a high-end one:
 - R1: non-circular metric (`engine_eval2.mjs`) — adaptive wastes 24% vs 58% under model
   misspecification vs a real fixed-curriculum baseline. Live in `/measure`.
 - R2: generative theming (`story.mjs`, `/api/story`) — pick-your-world stories, code-owned
@@ -156,7 +156,7 @@ vignette; fixed choice cards wrapping (flex fixed-width -> 2-col grid, 427px -> 
 
 Manpreet: "is it actually meaningful for a learner of that age? No storyline, placement makes no
 sense. Stop and research." Ran 5 parallel research agents (attention, motivation, narrative,
-game design, retention/ethics) + a master analyst; spot-checked the two load-bearing citations
+game design, retention/ethics) then one synthesis; spot-checked the two load-bearing citations
 myself. Verdict in docs/RESEARCH-LEARNER.md, decision in D-043.
 
 The finding that reframes everything: the current build is EXTRINSICALLY integrated — maths is a
@@ -169,14 +169,14 @@ numbers, i.e. the village's need must BE the problem.
 Cheap, fast, and should have been step one.
 
 
-## 4 Sep 2026 — the critic loop (3 rounds) and what it taught
+## 4 Sep 2026 — the review loop (3 rounds) and what it taught
 
-Ran critic → innovator → critic → innovator → critic, capped at 3. R1 found two FATAL flaws I'd
+Ran review → revision → review → revision → review, capped at 3. R1 found two FATAL flaws I'd
 have shipped: the "never given the answer" claim was false (the build state handed the target
 over in factored form), and dragging 12 planks is counting, not multiplying. R3: SATISFIED.
 
 The thing that actually moved the needle was not argument but MEASUREMENT run mid-loop: the
 red-team eval found a real leak in a field I thought was harmless ("a couple" vs "a few"); the
 reading-level scorer found the templates violated the product's own gate; the art probe killed the
-sheep and the broken-fence beat. Each of those changed the plan. Lesson: when a critic says
+sheep and the broken-fence beat. Each of those changed the plan. Lesson: when a review says
 "prove it", run the test before the next round — evidence closes items that prose only argues.

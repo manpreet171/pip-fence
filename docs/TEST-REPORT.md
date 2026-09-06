@@ -62,7 +62,7 @@ GET (curl, `--path-as-is`):
 | `/public/parent.html` | 200 | text/html |
 | `/assets/fence/rail.png`, `/assets/animals/goat.png` | 200 | **application/octet-stream** (no `.png` in `TYPES`, `src/server.mjs:36`) |
 | `/nonexistent` | 404 | body `not found` |
-| `/../server.mjs`, `/../data/wordlist.txt`, `/../../CLAUDE.md` | 403 | body `no` |
+| `/../server.mjs`, `/../data/wordlist.txt`, `/../../CONSTITUTION.md` | 403 | body `no` |
 | `/public/../server.mjs` | **200** text/javascript — `path.join` normalises `..` before the `startsWith(HERE)` check (`server.mjs:72-73`); anything under `src/` is reachable. No secret lives in `src/`, so no leak — but the guard is not doing what it says. |
 | `/public/` (directory) | 500 | body `server error` (EISDIR) — no path, no stack |
 

@@ -5,7 +5,7 @@
 
 Generated 3 Sep 2026. 15 days to deadline.
 Every idea below is scored against `docs/RESEARCH.md` §9 openings (A/B/C/D) and the
-Mission test in `CLAUDE.md`.
+Mission test in `CONSTITUTION.md`.
 
 **Scoring key** (1–5 each): **NOV** novelty · **FIT** Nerdy strategic fit ·
 **DEMO** shows in 3 min · **BLD** buildable solo in 15 days · **EVID** evidence backing ·

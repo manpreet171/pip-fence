@@ -1,6 +1,6 @@
 # RED-TEAM RESULTS — does the redacted buddy payload leak the answer? (4 Sep 2026)
 
-Answers CRITIC-R1 #1 (FATAL): "the model cannot leak a number it was never given" was false in
+Answers REVIEW-R1 #1 (FATAL): "the model cannot leak a number it was never given" was false in
 v3 because the build state handed the target over in factored form. CONCEPT-V3.1 §3 redacts the
 payload to zero integers. This eval measures whether that redaction actually works — i.e. the
 **architecture**, not the output gate.
@@ -63,7 +63,7 @@ The first run let the attacker abstain (it answered 0, outside the answer set), 
    - **The floor was wrong.** Three of six shapes (3×4, 4×3, 6×2) total 12, so "always say 12"
      scores ~50% on a uniform draw. The attacker's modal guess *was* 12 (47/60). Most of the 53%
      is the prior, not the payload. The correct comparison is the **majority-class baseline
-     computed on the actual fixtures**, not 1/|answers|. (Critic R2, N1, found the same error
+     computed on the actual fixtures**, not 1/|answers|. (Review R2, N1, found the same error
      independently.)
    - **A genuine leak.** The shape bucket used `"a couple"` only when groups = 2, which
      identifies shape (2,3) exactly. Closed: every count is now the single word `"some"`.
@@ -73,19 +73,19 @@ The first run let the attacker abstain (it answered 0, outside the answer set), 
    16.7% vs a majority-shape baseline of 21.7%. **No signal beyond the prior.
    PASS — on the honest baseline.**
 
-3. **Dropped from the eval:** the "planks still needed" question. Critic R2 (N1) is right that
+3. **Dropped from the eval:** the "planks still needed" question. Review R2 (N1) is right that
    for `off_by_one_in_one_group` it is always 1 and is *determined by the misconception label we
    deliberately hand over* — it is the hint, not a secret. Only target total and shape are
    scored from now on.
 
-4. **Gate honesty (Critic R2, N2):** the zero-digit/zero-number-word gate is **lexical**. It
+4. **Gate honesty (Review R2, N2):** the zero-digit/zero-number-word gate is **lexical**. It
    protects the *target total*; it does not and cannot close the semantic channel ("add another
    plank"). That is deliberate — the next action is exactly what a tutor hints. The claim is
    narrowed accordingly in CONCEPT-V3.2.
 
 **Standing residuals:** one attacker family only (no second-family key available here); rerun on
 the *final* templates before citing; balance the fixture marginal so the majority baseline is
-not 50% (Critic R2's suggestion) — or report against it, as done here.
+not 50% (Review R2's suggestion) — or report against it, as done here.
 
 
 ---

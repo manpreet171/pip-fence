@@ -1,9 +1,9 @@
-> **SUPERSEDED 4 Sep 2026.** v3.1 was revised after CRITIC-R2. Current authority: `docs/CONCEPT-V3.2.md`.
+> **SUPERSEDED 4 Sep 2026.** v3.1 was revised after REVIEW-R2. Current authority: `docs/CONCEPT-V3.2.md`.
 
-# CONCEPT v3.1 — "the plot is the problem", after Critic R1
+# CONCEPT v3.1 — "the plot is the problem", after Review R1
 
-4 Sep 2026. Day 1 of 14. Answers `docs/CRITIC-R1.md` point by point. Same core idea; six
-structural changes. Nothing the critic marked strong has been softened, and no confidence flag
+4 Sep 2026. Day 1 of 14. Answers `docs/REVIEW-R1.md` point by point. Same core idea; six
+structural changes. Nothing the review marked strong has been softened, and no confidence flag
 from `RESEARCH-LEARNER.md` has been upgraded.
 
 ---
@@ -183,7 +183,7 @@ child-facing noun is on trial on day 1 and defaults to **"part"**.
 `idle_off_task` (>30s gap, no commit), `wheel_spinning` (≥4 place/remove cycles on one group, no
 net progress), `rapid_guessing` (median inter-place < 400ms).
 
-**The critic's collisions, separated:**
+**The review's collisions, separated:**
 
 - **`[4,4,3]`** — *off-by-one* vs *failed drag* vs *walked away* vs *"I re-read the 3"*.
   `place_failed` on group 2 immediately before the end → interface, not maths (and it is counted

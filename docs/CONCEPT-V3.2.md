@@ -1,6 +1,6 @@
 # CONCEPT v3.2 — "the plot is the problem", final revision
 
-4 Sep 2026. Day 1 of 14. Answers `docs/CRITIC-R2.md` completely. Nothing marked CLOSED is
+4 Sep 2026. Day 1 of 14. Answers `docs/REVIEW-R2.md` completely. Nothing marked CLOSED is
 reopened; nothing marked strong is softened. Two pieces of evidence produced today —
 `ART-FEASIBILITY.md` and `REDTEAM-RESULTS.md` — do most of the closing.
 
@@ -396,7 +396,7 @@ problem in the frozen tollgate build: red X, farm unchanged.
 
 ---
 
-## Errata — Critic R3 PATCH list applied (4 Sep 2026)
+## Errata — Review R3 PATCH list applied (4 Sep 2026)
 
 - P1 template (2x)
 - P3 table total (1x)
@@ -412,7 +412,7 @@ problem in the frozen tollgate build: red X, farm unchanged.
 - NEW-2 fence frame (1x)
 - R3 residuals 8-10 (1x)
 
-Note on P2: Critic R3 suggested making the doc match a Dolch-only file. Fry's first 300 was obtained and added as a second named list *after* the critic read the file, so the doc's Dolch ∪ Fry claim now matches `data/wordlist.txt`; only the domain-list count (40→28) needed correcting.
+Note on P2: Review R3 suggested making the doc match a Dolch-only file. Fry's first 300 was obtained and added as a second named list *after* the review read the file, so the doc's Dolch ∪ Fry claim now matches `data/wordlist.txt`; only the domain-list count (40→28) needed correcting.
 
 ## Errata 3 — corrections found in code on build day 1 (6 Sep 2026; see D-047, D-048, D-049)
 

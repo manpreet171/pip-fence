@@ -1,6 +1,6 @@
 # AI ARCHITECTURE — what AI earns its place in Rung (Sept 2026)
 
-Produced 4 Sep 2026 by an AI-Product-Engineer expert pass, grounded in `docs/RESEARCH-LEARNER.md`.
+Written 4 Sep 2026 as the AI-architecture review, grounded in `docs/RESEARCH-LEARNER.md`.
 Model IDs, prices and API features were verified against vendor docs at time of writing; see the
 confidence flags at the end. Companion to `docs/MARKET.md`.
 

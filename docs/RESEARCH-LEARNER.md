@@ -1,7 +1,7 @@
 # RESEARCH — The Learner (ages 7–11): psychology, evidence, and what it demands of Rung
 
-4 Sep 2026. Produced by five specialist research passes (attention/cognitive load; motivation;
-narrative; game design for learning gains; retention & ethics) synthesised by a master analyst,
+4 Sep 2026. Produced by five research passes (attention/cognitive load; motivation;
+narrative; game design for learning gains; retention & ethics) synthesised into one document,
 with the two load-bearing citations independently spot-checked (see §9).
 
 **Rule carried throughout:** every confidence flag from the underlying research is preserved.
@@ -116,7 +116,7 @@ Confidence: **moderate–high**.
 
 ---
 
-## 4. What the owner's criticism actually means, in evidence terms
+## 4. What the earlier build's failure actually means, in evidence terms
 
 The criticism — "not interactive, not meaningful, no storyline, placement makes no sense" — is
 correct, and it is **one failure wearing four masks**.
@@ -260,19 +260,19 @@ learning gains; retention & ethics), each instructed to report only what it foun
 with URLs and confidence labels, and to flag popular claims lacking evidence. Synthesised by a
 separate analyst instructed to preserve every confidence flag.
 
-**Independently spot-checked** (by the orchestrator, separately from both researchers and
+**Independently spot-checked** (afterwards, separately from the research passes and
 analyst; publisher pages returned 403 so verified via search records):
 - **Sýkora, Stárková & Brom (2021), BJET** — "Can narrative cutscenes improve home learning from
   a math game? An experimental study with children." Confirmed: N=95, mean age 8.24, two weeks
   at-home, story vs no-story via comic cutscenes at beginning and end. Design matches exactly.
-  The null-result sentence was reported from the abstract by the narrative researcher and not
+  The null-result sentence was reported from the abstract in the narrative pass and not
   re-read verbatim here.
 - **Habgood & Ainsworth (2011), Journal of the Learning Sciences** — "Motivating Children to
   Learn Effectively: Exploring the Value of Intrinsic Integration in Educational Games."
   Confirmed: *Zombie Division*, ages 7–11, intrinsic / extrinsic / control, Study 1 N=58.
   Landmark, real. https://eric.ed.gov/?id=EJ922627
 
-Not independently re-verified (carried at the researcher's stated confidence): Lepper 1973 and
-Cordova & Lepper 1996 (classics, low risk); PMC9206186 (rated High by the retention researcher);
+Not independently re-verified (carried at the pass's stated confidence): Lepper 1973 and
+Cordova & Lepper 1996 (classics, low risk); PMC9206186 (rated High in the retention pass);
 Tokac et al. exact effect size (flagged unverified — do not cite a number); arXiv 2604.04721
 (sample age unverified).

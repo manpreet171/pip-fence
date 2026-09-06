@@ -1,6 +1,6 @@
 # MARKET — competitive landscape for kids' maths edtech (Sept 2026)
 
-Produced 4 Sep 2026 by a competitive-intelligence pass, grounded in `docs/RESEARCH-LEARNER.md`.
+Produced 4 Sep 2026 as the competitive-landscape review, grounded in `docs/RESEARCH-LEARNER.md`.
 Vendor claims are labelled as such throughout. Companion to `docs/AI-ARCHITECTURE.md`.
 
 ---

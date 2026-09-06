@@ -46,14 +46,14 @@ should read that way end to end.
 ## D-003 — All documentation lives in `docs/`
 3 Sep 2026 · Status: **Decided**
 
-**Decision:** Root holds only `CLAUDE.md` and (later) `README.md`. Everything else that is
+**Decision:** Root holds only `CONSTITUTION.md` and (later) `README.md`. Everything else that is
 prose goes in `docs/`. Code folders (`src/`, `evals/`, `data/`, `scripts/`) are created only
 when their first real file exists.
 
 **Why:** Reviewers read the repo. A clean tree is a free signal. Structure decided once, at
 the start, costs nothing; retrofitted later it costs a day.
 
-**Rejected:** Creating an empty scaffold up front — YAGNI (CLAUDE.md R5).
+**Rejected:** Creating an empty scaffold up front — YAGNI (CONSTITUTION.md R5).
 
 ---
 
@@ -557,7 +557,7 @@ before checking the incumbent and is withdrawn.
 redirects "just tell me the answer" with "I want to help you figure this out yourself,"
 frames productive struggle as the point, and spent most of its engineering on *not*
 answering homework — i.e. our exact core mechanic. Its teacher dashboard already surfaces
-struggle and misconceptions, colliding with the critic's proposed "point it at the teacher"
+struggle and misconceptions, colliding with the review's proposed "point it at the teacher"
 pivot too.
 
 **Process failure to remember:** competitor check must come BEFORE greenlight, not after.
@@ -566,7 +566,7 @@ market leader*. Add "incumbent check" as a gate alongside kill-tests.
 
 **What survives as genuine (thin) differentiation:**
 1. Question-quality as the *measured object* — Khanmigo does not do this. But it is a
-   feature, not a product (critic #3 stands).
+   feature, not a product (review point #3 stands).
 2. **Code-owns-truth architecture** — Khanmigo is documented as unreliable on basic maths
    because the LLM does the arithmetic. Our kill-tests independently proved the LLM is ~88%
    on multi-step maths and must not be the source of truth. This is a REAL technical answer
@@ -717,7 +717,7 @@ productive-struggle edge, with a warm coach that never gives the answer and (by 
 is never wrong. Learner-facing, on-brief (maths game + adaptive practice), buildable in 13
 days. No more concept selection. Next 13 days = build + polish + measure + film.
 
-**Critic's valid points, baked into the design (not argued away):**
+**The review's valid points, baked into the design (not argued away):**
 - Do NOT claim "first/only real adaptive" — DreamBox/ALEKS do real adaptivity. Frame = the
   synthesis (adaptive engine + never-wrong coach) + execution, honestly.
 - Do NOT validate circularly. Honest metric = adaptive policy vs a fair baseline (random
@@ -749,7 +749,7 @@ ship. The Python kill-tests already proved the method; the product is self-conta
 ## D-037 — Build/critique loop: three rounds of real improvement
 4 Sep 2026 · Status: **Decided**
 
-Ran engineer↔critic cycles on the BUILT product until high-end, per request.
+Ran build↔review cycles on the BUILT product until high-end.
 
 **Round 1 — killed the circular metric.** v1 headline ("63% in-band vs 16% random") was
 near-definitional (learner + engine shared the 1PL model; random was a strawman). Replaced
@@ -771,7 +771,7 @@ confetti + "Keep climbing" to raise the goal, streak fire. Turns an endless quiz
 with a win state.
 
 **Verdict:** the AI surface is now a real multi-component system — adaptive engine + LLM
-coach (code-guarded) + generative theming (verified) + honest eval harness. That orchestration
+coach (code-guarded) + generative theming (verified) + honest eval harness. That composition
 of an unreliable model, made safe and measurable, IS the AI-product-engineering signal.
 Scorecard moved: depth 4→7, engagement 3→7, modern-AI 3→7, measurement 5→8.
 
@@ -970,9 +970,9 @@ learner of that age? The placement and visuals don't make sense. No story line, 
 Go back to the research on the psychology of these learners." He was right, and the research
 says why with precision.
 
-**Method:** five parallel specialist research passes (attention/cognitive load; motivation;
-narrative; game design for learning gains; retention & ethics) → one master analyst synthesis →
-two load-bearing citations independently spot-checked by the orchestrator. Full evidence base:
+**Method:** five research passes (attention/cognitive load; motivation;
+narrative; game design for learning gains; retention & ethics) → one synthesis →
+two load-bearing citations independently spot-checked afterwards. Full evidence base:
 `docs/RESEARCH-LEARNER.md`.
 
 **The diagnosis, in evidence terms (one failure, four masks):**
@@ -1031,8 +1031,8 @@ of rework. Learner model first, always.
 ## D-044 — Concept v3: "the plot is the problem". The build IS the maths; the error persists.
 4 Sep 2026 · Status: **Decided** · Supersedes D-009/D-031 (concept), D-037 R3, D-038 core loop
 
-**Pipeline:** five learner-research passes -> master synthesis (RESEARCH-LEARNER.md) -> AI-Product-
-Engineer brief (AI-ARCHITECTURE.md) + market landscape (MARKET.md) -> innovation synthesis
+**Pipeline:** five learner-research passes -> synthesis (RESEARCH-LEARNER.md) -> AI-architecture
+review (AI-ARCHITECTURE.md) + market landscape (MARKET.md) -> innovation synthesis
 (CONCEPT-V3.md). Two load-bearing citations independently spot-checked.
 
 **Decision:** build CONCEPT-V3 concept 1. Concept 2 (parent CoPilot screen) is a bounded stretch
@@ -1074,13 +1074,13 @@ view · 12 pilot with real children · 13 film · 14 buffer.
 
 ---
 
-## D-045 — Critic loop converged: CONCEPT-V3.2 adopted. Build authorised pending owner's go.
+## D-045 — Review loop converged: CONCEPT-V3.2 adopted. Build authorised pending the go decision.
 4 Sep 2026 · Status: **Decided** · Supersedes D-044 (v3 → v3.2)
 
-**Loop:** Critic R1 (NOT SATISFIED: 2 fatal, 6 serious, 5 minor) → Innovator v3.1 → Critic R2
-(NOT SATISFIED but close: 7/13 closed, 9 new) → Innovator v3.2 → Critic R3 **SATISFIED subject to
+**Loop:** Review R1 (NOT SATISFIED: 2 fatal, 6 serious, 5 minor) → Revision v3.1 → Review R2
+(NOT SATISFIED but close: 7/13 closed, 9 new) → Revision v3.2 → Review R3 **SATISFIED subject to
 a patch list, all 13 patches applied and verified**. Three rounds, as capped. Records:
-CRITIC-R1/R2/R3.md, CONCEPT-V3.1/V3.2.md.
+REVIEW-R1/R2/R3.md, CONCEPT-V3.1/V3.2.md.
 
 **Evidence produced during the loop (measured, not asserted):**
 - ART-FEASIBILITY — no sheep in any CC0 pack (goat, chicken, cow, pig now in repo); the "broken
@@ -1115,8 +1115,8 @@ leftover-plank cue spoken aloud.
 **Scope, said plainly:** a Year 2–4 grouping / multiplication / division tool. Not a general
 arithmetic tutor.
 
-**Next:** Principal AI Engineer tech spec (`docs/TECH-STACK.md`, in progress) → owner's go → build
-per CONCEPT-V3.2 §8. Critic's day-1 warning stands: `mountScene` + `appendPlank` + delegated
+**Next:** tech-stack review (`docs/TECH-STACK.md`, in progress) → go decision → build
+per CONCEPT-V3.2 §8. The review's day-1 warning stands: `mountScene` + `appendPlank` + delegated
 listener are unstarted; move them explicitly or cut the day-10 buffer.
 
 
@@ -1125,7 +1125,7 @@ listener are unstarted; move them explicitly or cut the day-10 buffer.
 ## D-046 — Tech stack adopted (TECH-STACK.md). Zero new runtime dependencies.
 4 Sep 2026 · Status: **Decided**
 
-**Stack (per Principal AI Engineer, model/pricing claims verified against vendor docs):**
+**Stack (stack review; model/pricing claims verified against vendor docs):**
 - **AI:** `claude-haiku-4-5-20251001` for hint phrasing only — structured outputs GA
   (`output_config.format`, strict), ~$0.0007/hint, ≤2 sentences enforced in code (wire does not
   enforce maxLength). Do NOT send `effort` (unsupported on Haiku 4.5); do not enable thinking.
@@ -1206,7 +1206,7 @@ ends**. Over-count rail: same sprite, rotated −12°, drop shadow, above the po
 ## D-049 — Schedule re-baselined: build starts 6 Sep, 12 days to deadline
 6 Sep 2026 · Status: **Decided**
 
-CONCEPT §8 assumed a 4 Sep start. Two days went to the critic loop and the stack review, which
+CONCEPT §8 assumed a 4 Sep start. Two days went to the review loop and the stack review, which
 produced the evidence that made the plan defensible, so this is not a slip to hide. Re-baseline:
 days 1–8 of §8 compress to 6–12 Sep (day 3 packs and day 10 buffer are the cuts if needed), pilot
 **Sun 13 Sep**, 48 h retests **Tue 15 Sep**, film **Wed 16 Sep**, edit + README **Thu 17 Sep**,

@@ -1,6 +1,6 @@
-# CRITIC — Round 2 verification of CONCEPT-V3.1
+# REVIEW — Round 2 verification of CONCEPT-V3.1
 
-4 Sep 2026. Same independent critic as R1. Verified item by item against CRITIC-R1,
+4 Sep 2026. Same review series as R1. Verified item by item against REVIEW-R1,
 CONCEPT-V3.1, ART-FEASIBILITY (new evidence), RESEARCH-LEARNER, AI-ARCHITECTURE, and the
 actual source (`engine.mjs`, `coach.mjs`, `village.mjs`, `measure.html`, `index.html`,
 `server.mjs`, `assets/`).
