@@ -257,6 +257,7 @@ export function onTap(el, fn) {
 export const FENCE_CSS = VILLAGE_CSS + `
 .isoworld{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 .isoworld .hit{position:absolute;z-index:50}
+.isoworld .tile,.isoworld .bld,.isoworld .goat{pointer-events:none}   /* scenery never eats a tap; only rails and hit regions are targets */
 .isoworld .bld{animation:none}
 .isoworld .rail{animation:plop .45s cubic-bezier(.2,1.5,.4,1) both;transform-origin:left bottom}
 .isoworld .rail.over{--o:0;transform:rotate(calc(-12deg - var(--o) * 2deg)) translate(calc(4px + var(--o) * 3px),-6px);filter:drop-shadow(3px 5px 3px rgba(0,0,0,.35))}

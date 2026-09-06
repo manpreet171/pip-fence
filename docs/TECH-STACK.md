@@ -166,7 +166,7 @@ browser half, `POST /api/buddy` for the key-holding half. Serving the module to 
 demo asset, not a leak — open devtools and the whole prompt is there with no answer in it.
 
 **API key:** `ANTHROPIC_API_KEY` from env, server-side only, never in a client bundle, never logged.
-`DEEPSEEK_API_KEY` is eval-only and never touched at runtime.
+`DEEPSEEK_API_KEY` is used by the evals and by the frozen control arm's routes (`/api/coach|narrate|story`), which the server only mounts when `CONTROL_ARM=1`. The shipping server exposes one model endpoint: `/api/buddy`.
 
 **What must never be sent to the LLM:** the child never types, so there is no free text to send —
 that is the design move that kills PII, prompt injection and moderation at once. The browser builds

@@ -11,7 +11,7 @@ export const TEMPLATES;       // { [id]: { 1: text, 2: text, 3: text } } — bui
 export function payload(result);       // result = classify() output {id, tier, counts, node, confirmed}
                                        // -> the REDACTED object of CONCEPT §3: no integer anywhere, "groups":"some",
                                        //    booleans one_group_short / all_groups_short, nouns, template, constraint, age, reading_level
-export async function hint(result, { timeoutMs = 1200, fetchImpl = globalThis.fetch } = {});
+export async function hint(result, { timeoutMs = 1500, fetchImpl = globalThis.fetch } = {});
    // POSTs payload(result) to /api/buddy. Resolves ALWAYS, never throws:
    //   { text, source: "model" }      when the server returned a gated model hint
    //   { text, source: "template" }   on timeout, network error, non-200, or server fallback

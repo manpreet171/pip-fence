@@ -17,11 +17,12 @@ Kill criteria:
 
 Run: python evals/killtest_beta.py    (reads ../scratchpad/sp/*.csv)
 """
+import sys
 import csv, math, random, time, os
 import numpy as np
 
 random.seed(5); np.random.seed(5)
-SP = "C:/Users/Manpreet/AppData/Local/Temp/claude/D--My-work-Project-learning-app/47a3c5b0-fa1f-4bf9-957f-07364368e0a1/scratchpad/sp"
+SP = sys.argv[1] if len(sys.argv) > 1 else "data/student-performance"   # folder holding the UCI student-mat.csv / student-por.csv
 
 # Behavioural / context features available before the outcome. NO G1/G2/G3.
 NUM = ["age","Medu","Fedu","traveltime","studytime","failures","famrel","freetime",

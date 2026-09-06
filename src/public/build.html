@@ -33,11 +33,11 @@
   #addpack .pack{opacity:.45;cursor:inherit}
   #grown{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;padding:13px 4px}
   #grown:hover{text-decoration:underline}
-  #bubble{position:absolute;z-index:6;background:#fff;border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.35;box-shadow:0 4px 16px rgba(20,30,40,.18);animation:fade .25s both}
+  #bubble{pointer-events:none;position:absolute;z-index:6;background:#fff;border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.35;box-shadow:0 4px 16px rgba(20,30,40,.18);animation:fade .25s both}
   #bubble::after{content:"";position:absolute;left:var(--tx,50%);bottom:-8px;width:16px;height:16px;background:#fff;transform:translateX(-50%) rotate(45deg)}
   #bsrc{display:block;margin-top:6px;font:11px/1 ui-monospace,monospace;color:var(--muted)}
   #bsrc:empty{display:none}
-  .pip{position:absolute;z-index:7;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#fff;color:var(--ink);
+  .pip{position:absolute;z-index:7;pointer-events:none;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#fff;color:var(--ink);
     font-weight:800;font-size:17px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pip 2s both}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes pip{0%{opacity:0;scale:.5}15%{opacity:1;scale:1}80%{opacity:1}100%{opacity:0}}
@@ -48,7 +48,7 @@
 <header><span class="brand">Rung</span><span id="task"></span></header>
 <div id="stage">
   <div id="scene" class="scene"></div>
-  <div id="bubble" hidden><span id="btext"></span><span id="bsrc"></span></div>
+  <div id="bubble" role="status" aria-live="polite" hidden><span id="btext"></span><span id="bsrc"></span></div>
 </div>
 <footer>
   <div id="cart"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
@@ -144,7 +144,10 @@
       return log({ e: "place_failed", nearest_group: near[1], held: S.held });
     }
     if (S.held) return place(part);          // a held plank always places, even on an existing rail
-    if (i !== null) return remove(part);
+    // Empty hand: a tap counts the part. A plank leaves only when it is the one sticking out over the
+    // post, or when she taps the same part again while the pips are still up (D-066).
+    const overRail = i !== null && e.target.classList.contains("over");
+    if (overRail || S.counting === part) return remove(part);
     count(part);
   });
 
@@ -168,7 +171,7 @@
     if (S.parts[part] < n) return;
     for (let k = 1; k <= n; k++) removePlank(scene, part, S.parts[part] - k);   // the top rail(s) go back
     S.parts[part] -= n; S.cart++;
-    S.pre = null; hideBubble(); S.probe = false;
+    S.pre = null; hideBubble(); S.probe = false; S.counting = null;
     log({ e: "remove", unit: n > 1 ? "pack" : "plank", ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
     render();
   }
@@ -176,6 +179,7 @@
   function count(part) {
     log({ e: "tap_count", group: part });
     const n = S.parts[part], still = matchMedia("(prefers-reduced-motion:reduce)").matches;  // reduced motion: all pips at once, static, gone after 1.2 s
+    S.counting = part; setTimeout(() => { if (S.counting === part) S.counting = null; }, still ? 1200 : n * 450 + 2100);
     for (let i = 0; i < n; i++) {
       const p = railPoint(scene, part, i), el = document.createElement("span");
       el.className = "pip"; el.textContent = i + 1;

@@ -97,7 +97,7 @@ export function gate(text, wordlist) {
 }
 
 // ---- browser side: POST the redacted payload, fall back to the template on anything at all ----
-export async function hint(result, { timeoutMs = 1200, fetchImpl = globalThis.fetch } = {}) {
+export async function hint(result, { timeoutMs = 1500, fetchImpl = globalThis.fetch } = {}) {
   const template = TEMPLATES[result?.id]?.[result?.tier] ?? "";
   try {
     const res = await fetchImpl("/api/buddy", { method: "POST", headers: { "content-type": "application/json" },
@@ -129,7 +129,7 @@ export function request(payload, apiKey) {
   }];
 }
 
-export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, wordlist, timeoutMs = 1000 } = {}) {
+export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, wordlist, timeoutMs = 800 } = {}) {
   const template = TEMPLATES[payload?.misconception_id]?.[payload?.tier] ?? "";
   const fallback = (reason, extra) => ({ text: template, source: "template", reason, ...extra });
   if (!apiKey) return fallback("no_key");

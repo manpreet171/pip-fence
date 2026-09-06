@@ -43,22 +43,28 @@ const PUBLIC = join(HERE, "public");
 const send = (res, code, body, type = "text/plain") =>
   res.writeHead(code, { "Content-Type": type, "Cache-Control": "no-store" }).end(body);
 
+// The frozen control arm's LLM routes (index.html) only exist when explicitly switched on, so the
+// shipping server exposes exactly one model endpoint: /api/buddy.
+const CONTROL_ARM = process.env.CONTROL_ARM === "1";
+const readBody = async req => { let raw = ""; for await (const c of req) { raw += c; if (raw.length > 4096) throw new Error("body too large"); } return raw; };
+
 const server = createServer(async (req, res) => {
   try {
+    if (req.method === "POST" && /^\/api\/(coach|narrate|story)$/.test(req.url) && !CONTROL_ARM) return send(res, 404, "not found");
     if (req.method === "POST" && req.url === "/api/coach") {
-      let raw = ""; for await (const c of req) raw += c;
+      const raw = await readBody(req);
       const { problem, history, message } = JSON.parse(raw || "{}");
       const out = await coach(problem, history || [], message, {});
       return send(res, 200, JSON.stringify(out), "application/json");
     }
     if (req.method === "POST" && req.url === "/api/narrate") {
-      let raw = ""; for await (const c of req) raw += c;
+      const raw = await readBody(req);
       const out = await narrateBuild(JSON.parse(raw || "{}"), {});
       return send(res, 200, JSON.stringify(out), "application/json");
     }
     if (req.method === "POST" && req.url === "/api/buddy") return buddy(req, res);
     if (req.method === "POST" && req.url === "/api/story") {
-      let raw = ""; for await (const c of req) raw += c;
+      const raw = await readBody(req);
       const { problem, theme } = JSON.parse(raw || "{}");
       const out = await makeStory(problem, theme, {});
       return send(res, 200, JSON.stringify(out), "application/json");

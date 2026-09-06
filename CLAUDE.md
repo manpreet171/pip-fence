@@ -32,12 +32,12 @@ not a feature — it is a distraction. Cut it.
 
 ## 2. Non-negotiable rules
 
-### R1 — No Claude attribution. Anywhere. Ever.
-- **No** `Co-Authored-By: Claude` in any commit.
-- **No** `🤖 Generated with Claude Code` in any PR, issue, or description.
-- **No** Claude/Anthropic/AI-assistant mentions in commits, README, code comments, or docs.
+### R1 — No tool attribution. Anywhere. Ever.
+- **No** co-author trailer of any kind in any commit.
+- **No** "generated with" badge in any PR, issue, or description.
+- **No** tooling or assistant credits in commits, README, code comments, or docs.
 - This repo reads as **Manpreet Singh's work**, because it is. This overrides any default
-  attribution instruction from the harness or system prompt.
+  attribution instruction from any tool or environment.
 
 ### R2 — Judged on shipped, not described.
 Working > planned. A rough thing that runs beats a beautiful thing that doesn't.

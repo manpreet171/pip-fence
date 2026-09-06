@@ -30,12 +30,11 @@ a differentiator.
 
 ---
 
-## D-002 — No Claude/AI attribution anywhere in the repo
+## D-002 — No tool attribution anywhere in the repo
 3 Sep 2026 · Status: **Decided**
 
-**Decision:** No `Co-Authored-By: Claude`, no `Generated with Claude Code`, no mention of
-AI assistants in commits, PRs, README, comments or docs. Overrides any default harness
-attribution behaviour.
+**Decision:** No co-author trailers, no "generated with" badges, no tooling credits in commits,
+PRs, README, comments or docs. The repo carries one author.
 
 **Why:** This is a hiring artefact. It represents the author's engineering judgment and
 should read that way end to end.
@@ -1321,3 +1320,26 @@ because the parent screen is built from it.
 **Also.** Reduced motion: pips are static (`animation:none`), all shown at once, removed by code after
 1.2 s (QA D-1). Reload restores the goat in the gap after any commit and re-says the last hint unless
 a place/remove had already hidden it (QA D-8). "For grown-ups" link 44 px (QA D-7).
+
+
+---
+
+## D-066 — Product-review fixes: scenery never eats a tap; count outranks remove; control arm off by default
+6 Sep 2026 · Status: **Decided** (docs/PRODUCT-REVIEW.md, SEV1/SEV2 items)
+
+1. **Real taps could not reach two of three parts.** The transparent corn and goat images sat over
+   the hit regions. Both QA and the frontend pass drove the page by dispatching clicks from script,
+   which bypasses hit-testing — so the defect survived two verifications. Fix: `pointer-events:none`
+   on every scenery image; only rails and hit regions are targets. Verification is now done with
+   real coordinate taps and an `elementFromPoint` sweep, never `.click()`.
+2. **Count vs remove.** An empty-hand tap on a rail used to remove it, so "count a full part" could
+   dismantle the correct part. Now an empty-hand tap **counts** the part. A plank leaves only when
+   the tapped rail is the one sticking out over the post, or when the same part is tapped again
+   while the pips are still up. `remove` events are unchanged for the classifier.
+3. **Control arm routes off by default.** `/api/coach|narrate|story` (the frozen build's model
+   calls) are mounted only with `CONTROL_ARM=1`, and their bodies are capped at 4 KB. The shipping
+   server exposes one model endpoint, `/api/buddy`.
+4. Timeouts: server-side phrase 800 ms inside the client's 1500 ms, so the server answers with a
+   template before the browser gives up. Bubble carries `role="status"`.
+5. `.claude/` untracked; the eval that hard-coded a temp path now takes it as an argument;
+   `evals/requirements.txt` lists the eval-only Python packages (the app itself has none).

@@ -82,8 +82,8 @@ Product is demo-ready and runs clean. Remaining is Manpreet-side: record the vid
 optionally deploy (Render/Railway; or lift /api/coach to a serverless fn for Vercel) + git.
 
 NOTE: buddy currently uses DeepSeek (only key available here). coach.mjs is provider-agnostic
-— swap baseURL/model/key to Claude for the final submission (CLAUDE.md: default to latest
-Claude models). No code change beyond the config object.
+— swap baseURL/model/key to the chosen phrasing model for the final submission. No code
+change beyond the config object.
 
 ## 4 Sep 2026 — Day 1 build, rounds 1-3 (build↔critique loop)
 
