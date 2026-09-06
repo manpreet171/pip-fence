@@ -12,7 +12,11 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **AI-ARCHITECTURE.md** | What AI earns its place (and what does not): exact models, structured outputs, redacted payload, child-safety build list, what a hiring panel sees through. |
 | **MARKET.md** | Competitive landscape. Honest verdict: a recombination of four proven pieces; closest surface competitor is Math Town (a coin tollgate). |
 | **TECH-STACK.md** | Principal-engineer specification of every layer (AI/ML, visuals, frontend, backend, evals, deploy) and the file plan. |
-| **CRITIC-R1.md → CRITIC-R2.md → CRITIC-R3.md** | Three rounds of independent expert critique. R1: 2 fatal. R2: close. R3: **SATISFIED** — "build it." |
+| **CRITIC-R3.md** | Final round of independent expert critique: **SATISFIED** — "build it." (R1, R2 in `history/`.) |
+| **BUDDY-CONTRACT.md** | The one interface the game and the hint layer share. |
+| **TEST-REPORT.md** | Independent QA over 16 user cases; 10 defects, all closed (D-064–D-066). |
+| **PRODUCT-REVIEW.md** | Hiring-panel style review of the finished product; what to fix before filming. |
+| **TRANSFER-TEST.md** | The paper instrument for the three-child pilot, with the pre-registered null. |
 | **DECISIONS.md** | D-001 … D-049. Read D-043 (stop; research the learner), D-044 (concept v3), D-045 (loop converged; v3.2 adopted), D-047/D-048 (spec corrections found in code), D-049 (schedule). |
 
 ## Evidence produced during the critic loop (measured, not asserted)
@@ -28,11 +32,13 @@ Harnesses: `evals/redteam_leak.py`, `evals/readinglevel.py` (`--assert` = build-
 `evals/classifier_eval.mjs` over `evals/classifier_fixtures.json` (67 sequences → confusion matrix),
 `data/wordlist.txt` (Dolch 315 ∪ Fry 300 ∪ domain), `data/hints_v2.txt`.
 
-## History (superseded — kept for the record of what was killed and why)
+## History — `docs/history/` (superseded, kept for the record of what was killed and why)
 
 `AUDIT.md`, `CONCEPT.md` (v2), `CONCEPT-V3.md`, `CONCEPT-V3.1.md`, `IDEAS.md`, `IDEAS-V2.md`,
 `CANDIDATES.md`, `FINALISTS.md`, `GAP-MAP.md`, `KILLTEST-RESULTS*.md`, `RESEARCH.md` (the
-pre-learner research), `DEMO.md`, `FILMING.md`, `LEARNING.md` (running notes), `CREDITS.md`.
+pre-learner research), `DEMO.md`, `FILMING.md`, `LEARNING.md` (running notes), `CRITIC-R1.md`,
+`CRITIC-R2.md`. Paths inside `DECISIONS.md` older than D-066 refer to these files at their old
+location; the log is append-only and was not rewritten.
 
 Five concepts were killed by cheap experiments before this one; the kill-tests are the reason
 the surviving concept is defensible. That trail is deliberate and is part of the submission.

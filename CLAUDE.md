@@ -44,7 +44,7 @@ Working > planned. A rough thing that runs beats a beautiful thing that doesn't.
 No feature is "done" until it survives a cold run on a clean machine.
 
 ### R3 — Evidence over vibes.
-Every pedagogical claim traces to a citation in `docs/RESEARCH.md`.
+Every pedagogical claim traces to a citation in `docs/RESEARCH-LEARNER.md` (or `docs/history/RESEARCH.md`).
 Every product claim traces to a number we can show. We do not say "improves learning" —
 we show the measurement.
 
@@ -78,11 +78,11 @@ place in the shot list, it goes to the backlog or the bin.
 ├── CLAUDE.md          # this file — the constitution
 ├── README.md          # public face (written last, written well)
 ├── docs/              # ALL documentation lives here, no exceptions
-│   ├── RESEARCH.md    # evidence base — citations, findings, the moat
-│   ├── IDEAS.md       # candidate concepts + scoring
+│   ├── INDEX.md       # the map — read this first
+│   ├── RESEARCH-LEARNER.md  # evidence base — citations, findings, the moat
+│   ├── CONCEPT-V3.2.md      # the approved product
 │   ├── DECISIONS.md   # decision log (append-only)
-│   ├── LEARNING.md    # running notes, what we learn as we go
-│   └── DEMO.md        # the 3-minute shot list (created at build start)
+│   └── history/       # superseded concepts, kill-tests, audits — kept, not deleted
 ├── src/               # application code (created when we start building)
 ├── evals/             # measurement harness — our differentiator
 ├── data/              # seeds, fixtures, misconception libraries
@@ -96,7 +96,7 @@ the first file in them does.
 
 ## 4. The thesis we are defending
 
-Peer-reviewed 2025–26 evidence (see `docs/RESEARCH.md`) says the obvious build is the
+Peer-reviewed 2025–26 evidence (see `docs/history/RESEARCH.md` and `docs/RESEARCH-LEARNER.md`) says the obvious build is the
 wrong build:
 
 - **AI that answers makes learning *worse*.** PNAS 2025: students with unguarded GPT-4
