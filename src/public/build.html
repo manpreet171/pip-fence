@@ -242,11 +242,11 @@
   addEventListener("resize", placeBubble);
 
   // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
-  const saved = load(); S.mastery = saved.mastery || {};
+  const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];   // history survives every branch below, ?node= included
   const ls = saved.events?.findLast?.(e => e.e === "level_start");
   if (Q.get("node") && shape(Q.get("node"))) start(Q.get("node"));
   else if (saved.build?.node && ls?.node === saved.build.node && shape(saved.build.node)) {
-    Object.assign(S, { events: saved.events, node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, at: ls.at || Date.now() });
+    Object.assign(S, { node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, at: ls.at || Date.now() });
     mount(); const L = lvl(), r = classify(L); S.done = r.id === "correct";
     // Put the goat back in the gap after a commit; re-say the hint that was still up (a place/remove hides it).
     if (!S.done && L.some(e => e.e === "commit")) goatToGap(r.counts);
