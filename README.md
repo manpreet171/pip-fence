@@ -30,8 +30,9 @@ node src/server.mjs
 
 Open http://localhost:5177/build. The parent view is at `/public/parent.html`.
 
-- `ANTHROPIC_API_KEY` (optional) turns on model-phrased hints via `claude-haiku-4-5-20251001`.
-  Without it, and whenever the model is slow, fails, or trips the gate, the gate-checked template
+- Model-phrased hints follow whichever key is present: `ANTHROPIC_API_KEY` (`claude-haiku-4-5-20251001`,
+  strict JSON schema) or `DEEPSEEK_API_KEY` (`deepseek-v4-flash`, JSON mode). Same payload, same gate.
+  Without a key, and whenever the model is slow, fails, or trips the gate, the gate-checked template
   ships instead. Pulling the cable degrades the hint; it does not break the game.
 - `CONTROL_ARM=1` mounts the frozen earlier build (`/`, `/measure`) and its model routes, for the
   side-by-side comparison only.
@@ -51,7 +52,7 @@ python evals/run_all.py
 | `buddy_test.mjs` | 31 checks: no integer ever crosses the wire; the gate rejects digits, number words, extra sentences, banned words; every failure falls back to a template |
 | `engine_eval2.mjs` | The frozen control arm's adaptive-selector result, kept so it is not lost |
 | `redteam_leak.py` (manual, needs `DEEPSEEK_API_KEY`) | A different-family attacker, forced choice, recovers the target total no better than the majority-class baseline. Results in [docs/REDTEAM-RESULTS.md](docs/REDTEAM-RESULTS.md) |
-| `latency_cost.mjs` (manual, needs `ANTHROPIC_API_KEY`) | p50/p95 and cost per hint over 20 live calls |
+| `latency_cost.mjs` (manual, needs a key) | p50/p95 and cost per hint over 20 live calls. Measured: p50 757 ms, p95 1.4 s, $0.00015/hint, gate pass 80% — [docs/LATENCY-RESULTS.md](docs/LATENCY-RESULTS.md) |
 
 Eval-only Python packages are in `evals/requirements.txt`. The shipped app has none.
 

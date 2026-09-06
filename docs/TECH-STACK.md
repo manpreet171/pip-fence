@@ -9,6 +9,8 @@ unless the existing zero-dependency code cannot do it.** Net new runtime depende
 
 ## 1. AI / ML layer
 
+> **6 Sep update (D-067):** the phrasing provider follows the key — Anthropic Haiku if `ANTHROPIC_API_KEY` is set, else DeepSeek `deepseek-v4-flash` (thinking disabled, JSON mode). The live path was measured on DeepSeek: `docs/LATENCY-RESULTS.md`. §1.1 below remains the Anthropic request, verbatim.
+
 ### 1.1 Coach phrasing model — `claude-haiku-4-5-20251001`, confirmed
 
 Verified: it is the current Claude API ID (a pinned snapshot; alias `claude-haiku-4-5`), **$1 / $5

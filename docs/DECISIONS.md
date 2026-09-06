@@ -1343,3 +1343,27 @@ a place/remove had already hidden it (QA D-8). "For grown-ups" link 44 px (QA D-
    template before the browser gives up. Bubble carries `role="status"`.
 5. `.claude/` untracked; the eval that hard-coded a temp path now takes it as an argument;
    `evals/requirements.txt` lists the eval-only Python packages (the app itself has none).
+
+
+---
+
+## D-067 — The hint provider follows the key; live path measured on DeepSeek
+6 Sep 2026 · Status: **Decided**
+
+**What.** `phrase()` gains a provider table: Anthropic (`claude-haiku-4-5-20251001`, strict JSON
+schema) when `ANTHROPIC_API_KEY` is set, else DeepSeek (`deepseek-v4-flash`, thinking disabled, JSON
+mode) with `DEEPSEEK_API_KEY`. Same redacted payload, same ordered gate, same template fallback.
+
+**Why.** No Anthropic key exists on this machine, so the live path had never run. The "different
+family for attacker and coach" argument in TECH-STACK §1.2 does not apply here: the red-team attacks
+the payload the coach *receives*, not the coach's output, so the coach's vendor is irrelevant to that
+result. Measured on 20 live hints (`docs/LATENCY-RESULTS.md`): p50 757 ms, p95 1,382 ms, $0.000154
+per hint, gate pass 80%, all four rejections the word *one*. The gate is the safety claim, not the
+vendor, and this run is the first live evidence of it working.
+
+**Consequences.** Server timeout 800 → 2,000 ms inside a 2,500 ms client timeout (the 800 ms figure
+was a Haiku guess that the measured median would have broken). Prefetch keeps both invisible to the
+child. Residual: the attacker family and the coach family are now the same; published as such.
+
+**Rejected.** Waiting for an Anthropic key (unmeasured headline numbers for the whole submission);
+DeepSeek-only (throws away the strict-schema path that is already written and unit-tested).

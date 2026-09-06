@@ -11,12 +11,12 @@ export const TEMPLATES;       // { [id]: { 1: text, 2: text, 3: text } } — bui
 export function payload(result);       // result = classify() output {id, tier, counts, node, confirmed}
                                        // -> the REDACTED object of CONCEPT §3: no integer anywhere, "groups":"some",
                                        //    booleans one_group_short / all_groups_short, nouns, template, constraint, age, reading_level
-export async function hint(result, { timeoutMs = 1500, fetchImpl = globalThis.fetch } = {});
+export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fetch } = {});
    // POSTs payload(result) to /api/buddy. Resolves ALWAYS, never throws:
    //   { text, source: "model" }      when the server returned a gated model hint
    //   { text, source: "template" }   on timeout, network error, non-200, or server fallback
    // text is TEMPLATES[result.id][result.tier] in every fallback case.
-export function phrase(payload, { fetchImpl, apiKey, wordlist });   // SERVER ONLY. Calls Haiku (TECH-STACK §1.1 exact request,
+export function phrase(payload, { fetchImpl, apiKey, provider, wordlist });   // SERVER ONLY. provider = "anthropic" | "deepseek" (follows the key, D-067). Anthropic = Haiku (TECH-STACK §1.1 exact request,
    // no `effort`, no thinking), runs the output gate in order (schema → ≤2 sentences → zero digits/number words →
    // no banned affect words → ≤2 out-of-list words), returns { text, source:"model" } or { text: template, source:"template", reason }.
    // Also carries `usage` {input_tokens, output_tokens} and, on a gate failure, `rejected` (the model text) — for

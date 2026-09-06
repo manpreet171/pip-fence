@@ -25,6 +25,7 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 |---|---|
 | **ART-FEASIBILITY.md** | No sheep in any CC0 pack → goat. "Broken fence" sprite fails legibility at 320px; a missing section and `planksHole` pass. |
 | **REDTEAM-RESULTS.md** (3 updates) | The v3 "answer-blind" claim was false. v3.2's redacted payload attacked by a different-family model, forced choice: a real leak found and closed; wrong chance floor corrected; final lift **+0.0%** over baseline. PASS. |
+| **LATENCY-RESULTS.md** | 20 live hints through the shipped path: p50 757 ms, p95 1.4 s, $0.00015/hint, gate pass 80% (every rejection was the word *one*). |
 | **READINGLEVEL-RESULTS.md** | 5 of 6 original hints broke the product's own no-number-word gate. Rewrites: 0 number words, 99% in a **named** list (Dolch ∪ Fry). |
 | **V3.2-ARITHMETIC-CHECK.md** | Verified the shape rebalance; caught 4×5 mis-listed as non-colliding (design unaffected). |
 

@@ -97,7 +97,7 @@ export function gate(text, wordlist) {
 }
 
 // ---- browser side: POST the redacted payload, fall back to the template on anything at all ----
-export async function hint(result, { timeoutMs = 1500, fetchImpl = globalThis.fetch } = {}) {
+export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fetch } = {}) {
   const template = TEMPLATES[result?.id]?.[result?.tier] ?? "";
   try {
     const res = await fetchImpl("/api/buddy", { method: "POST", headers: { "content-type": "application/json" },
@@ -111,36 +111,55 @@ export async function hint(result, { timeoutMs = 1500, fetchImpl = globalThis.fe
   }
 }
 
-// ---- server side: the exact Haiku request of TECH-STACK §1.1, then the gate, in order ----
-const MODEL = "claude-haiku-4-5-20251001";
+// ---- server side: one request builder per provider, then the same gate, in order ----
+// Provider follows the key: Anthropic (Haiku, strict JSON schema) if ANTHROPIC_API_KEY is set, else
+// DeepSeek (v4-flash, JSON mode, thinking disabled) with DEEPSEEK_API_KEY. Same payload, same gate,
+// same template fallback either way; the gate is what makes the output safe, not the vendor (D-067).
 const SYSTEM = () => "You phrase one hint for a child aged 8 reading at a 500-word level. Max 2 sentences. " +
   "Use no numbers of any kind — no digits, no number words. Never state or imply how many. Point with words. " +
   "Never say sad, disappointed, or miss you.";
 const SCHEMA = { type: "object", additionalProperties: false, required: ["tier", "misconception_id", "text"],
   properties: { tier: { type: "integer", enum: [1, 2, 3] }, misconception_id: { type: "string", enum: IDS }, text: { type: "string" } } };
 
-export function request(payload, apiKey) {
-  return ["https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 120, temperature: 0.4, system: SYSTEM(),
-      messages: [{ role: "user", content: JSON.stringify(payload) }],
-      output_config: { format: { type: "json_schema", schema: SCHEMA } } }),
-  }];
-}
+export const PROVIDERS = {
+  anthropic: {
+    model: "claude-haiku-4-5-20251001", usd_per_mtok: { in: 1, out: 5 },
+    request: (payload, apiKey) => ["https://api.anthropic.com/v1/messages", {
+      method: "POST", headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 120, temperature: 0.4, system: SYSTEM(),
+        messages: [{ role: "user", content: JSON.stringify(payload) }],
+        output_config: { format: { type: "json_schema", schema: SCHEMA } } }) }],
+    parse: data => ({ text: data?.content?.find(b => b.type === "text")?.text ?? "",
+      usage: data?.usage && { input_tokens: data.usage.input_tokens, output_tokens: data.usage.output_tokens } }),
+  },
+  deepseek: {
+    model: "deepseek-v4-flash", usd_per_mtok: { in: 0.44, out: 1.32 },   // peak list price; off-peak is half
+    request: (payload, apiKey) => ["https://api.deepseek.com/chat/completions", {
+      method: "POST", headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
+      body: JSON.stringify({ model: "deepseek-v4-flash", max_tokens: 120, temperature: 0.4,
+        thinking: { type: "disabled" }, response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM() + " Reply with only a JSON object with the keys tier, misconception_id and text. Copy tier and misconception_id from the input exactly." },
+          { role: "user", content: JSON.stringify(payload) }] }) }],
+    parse: data => ({ text: data?.choices?.[0]?.message?.content ?? "",
+      usage: data?.usage && { input_tokens: data.usage.prompt_tokens, output_tokens: data.usage.completion_tokens } }),
+  },
+};
+export const MODEL = PROVIDERS.anthropic.model;
+export const request = (payload, apiKey, provider = "anthropic") => PROVIDERS[provider].request(payload, apiKey);
 
-export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, wordlist, timeoutMs = 800 } = {}) {
+export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", wordlist, timeoutMs = 2000 } = {}) {
   const template = TEMPLATES[payload?.misconception_id]?.[payload?.tier] ?? "";
   const fallback = (reason, extra) => ({ text: template, source: "template", reason, ...extra });
   if (!apiKey) return fallback("no_key");
   try {
-    const [url, init] = request(payload, apiKey);
+    const [url, init] = PROVIDERS[provider].request(payload, apiKey);
     const res = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
     if (!res.ok) return fallback(`http_${res.status}`);
     const data = await res.json();
-    const usage = data?.usage && { input_tokens: data.usage.input_tokens, output_tokens: data.usage.output_tokens };
+    const { text, usage } = PROVIDERS[provider].parse(data);
     let out;
-    try { out = JSON.parse(data?.content?.find(b => b.type === "text")?.text ?? ""); } catch { return fallback("parse", { usage }); }
+    try { out = JSON.parse(text); } catch { return fallback("parse", { usage }); }
     const keys = Object.keys(out ?? {}).sort().join(",");
     if (keys !== "misconception_id,text,tier" || out.tier !== payload.tier || out.misconception_id !== payload.misconception_id
       || typeof out.text !== "string") return fallback("schema", { usage });

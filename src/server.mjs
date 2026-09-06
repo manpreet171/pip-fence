@@ -11,6 +11,9 @@ import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist } from "./eng
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5177;
+// Provider follows the key: Anthropic if present, else DeepSeek, else templates only (D-067).
+const PHRASER = process.env.ANTHROPIC_API_KEY ? { provider: "anthropic", apiKey: process.env.ANTHROPIC_API_KEY }
+  : process.env.DEEPSEEK_API_KEY ? { provider: "deepseek", apiKey: process.env.DEEPSEEK_API_KEY } : {};
 const WORDLIST = parseWordlist(await readFile(join(HERE, "..", "data", "wordlist.txt"), "utf8"));
 const BODY_KEYS = ["age", "reading_level", "misconception_id", "tier", "shape", "nouns", "template", "constraint"];
 
@@ -28,7 +31,7 @@ async function buddy(req, res) {
     && Object.values(shape).every(v => v === "some" || typeof v === "boolean") && !/\d/.test(JSON.stringify(shape));
   if (!ok) return send(res, 400, "bad payload");
   let out;
-  try { out = await phrase(redact(id, tier, shape), { apiKey: process.env.ANTHROPIC_API_KEY, wordlist: WORDLIST }); }
+  try { out = await phrase(redact(id, tier, shape), { ...PHRASER, wordlist: WORDLIST }); }
   catch { out = { text: TEMPLATES[id][tier], source: "template", reason: "error" }; }
   const { text, source, reason } = out;
   return send(res, 200, JSON.stringify(reason ? { text, source, reason } : { text, source }), "application/json");
