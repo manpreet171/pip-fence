@@ -122,25 +122,40 @@ const SYSTEM = () => "You phrase one hint for a child aged 8 reading at a 500-wo
 const SCHEMA = { type: "object", additionalProperties: false, required: ["tier", "misconception_id", "text"],
   properties: { tier: { type: "integer", enum: [1, 2, 3] }, misconception_id: { type: "string", enum: IDS }, text: { type: "string" } } };
 
+// A job = system prompt + strict schema + token budget. Two jobs share the providers: the child's
+// hint (60 tokens, no numbers) and the parent's weekly note (CONCEPT §7: AI pointed at the adult).
+export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120,
+  extra: " Reply with only a JSON object with the keys tier, misconception_id and text. Copy tier and misconception_id from the input exactly." };
+const NOTE_SYSTEM = () => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
+  "count groups by building fences in a game. Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +
+  "Do not use the words wrong, bad, lazy, slow, behind, struggling, failed. Do not name the game's internal labels. " +
+  "Mention only what the input lists; invent nothing. " +
+  "note: at most three sentences saying what the child did and what they are still working on. " +
+  "question: exactly one thing the parent can ask the child out loud, ending in a question mark.";
+const NOTE_SCHEMA = { type: "object", additionalProperties: false, required: ["note", "question"],
+  properties: { note: { type: "string" }, question: { type: "string" } } };
+export const NOTE_JOB = { system: NOTE_SYSTEM, schema: NOTE_SCHEMA, max_tokens: 220,
+  extra: " Reply with only a JSON object with the keys note and question." };
+
 export const PROVIDERS = {
   anthropic: {
     model: "claude-haiku-4-5-20251001", usd_per_mtok: { in: 1, out: 5 },
-    request: (payload, apiKey) => ["https://api.anthropic.com/v1/messages", {
+    request: (payload, apiKey, job = HINT_JOB) => ["https://api.anthropic.com/v1/messages", {
       method: "POST", headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 120, temperature: 0.4, system: SYSTEM(),
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: job.max_tokens, temperature: 0.4, system: job.system(),
         messages: [{ role: "user", content: JSON.stringify(payload) }],
-        output_config: { format: { type: "json_schema", schema: SCHEMA } } }) }],
+        output_config: { format: { type: "json_schema", schema: job.schema } } }) }],
     parse: data => ({ text: data?.content?.find(b => b.type === "text")?.text ?? "",
       usage: data?.usage && { input_tokens: data.usage.input_tokens, output_tokens: data.usage.output_tokens } }),
   },
   deepseek: {
     model: "deepseek-v4-flash", usd_per_mtok: { in: 0.44, out: 1.32 },   // peak list price; off-peak is half
-    request: (payload, apiKey) => ["https://api.deepseek.com/chat/completions", {
+    request: (payload, apiKey, job = HINT_JOB) => ["https://api.deepseek.com/chat/completions", {
       method: "POST", headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-      body: JSON.stringify({ model: "deepseek-v4-flash", max_tokens: 120, temperature: 0.4,
+      body: JSON.stringify({ model: "deepseek-v4-flash", max_tokens: job.max_tokens, temperature: 0.4,
         thinking: { type: "disabled" }, response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: SYSTEM() + " Reply with only a JSON object with the keys tier, misconception_id and text. Copy tier and misconception_id from the input exactly." },
+          { role: "system", content: job.system() + job.extra },
           { role: "user", content: JSON.stringify(payload) }] }) }],
     parse: data => ({ text: data?.choices?.[0]?.message?.content ?? "",
       usage: data?.usage && { input_tokens: data.usage.prompt_tokens, output_tokens: data.usage.completion_tokens } }),
@@ -148,6 +163,73 @@ export const PROVIDERS = {
 };
 export const MODEL = PROVIDERS.anthropic.model;
 export const request = (payload, apiKey, provider = "anthropic") => PROVIDERS[provider].request(payload, apiKey);
+
+// ---- the parent note: the same architecture pointed at the adult (CONCEPT §7, Tutor CoPilot shape) ----
+// Plain words per misconception, and the one question to ask. These are the fallback AND the
+// meaning the model is given; the model never sees the child's counts or the game's ids alone.
+export const PARENT_WORDS = {
+  off_by_one_in_one_group: ["One part of the fence comes out a plank short. The counting is nearly there; it stops one early on a single part.", "Show me one full part. Now count it out loud for me."],
+  off_by_one_per_group: ["Every part comes out one plank short. The number for each part is being remembered as one less than it is.", "How many planks does one part need? Show me with your fingers."],
+  counted_groups_as_group_size: ["Each part gets as many planks as there are parts. The two numbers in the job are getting swapped.", "Which number says how many parts, and which says how many go in each part?"],
+  one_group_only: ["One part is built and then the job stops, as if one part were the whole fence.", "Is the fence finished? Walk along it with your finger."],
+  over_count: ["A part gets too many planks, so one sticks out over the post.", "Show me where one part stops and the next one starts."],
+  right_total_wrong_grouping: ["All the wood gets used, but it is piled into fewer parts than the job asked for.", "How many parts does this fence need? Point to each one."],
+  pack_unit_confusion: ["A pack is being treated as one plank, so far too many packs get ordered.", "Open a pack in your head. What is inside it?"],
+  ambiguous: ["Every part came out short by the same amount. It is not clear yet whether the size of a part was miscounted or the two numbers were mixed up.", "Show me one part that looks finished."],
+};
+export const NOTE_KEYS = ["open_id", "tier", "solo", "helped", "days"];
+const FENCE_NAME = /^[2-5] parts of [2-5]( \(packs\))?$/;
+export const validNote = (b) => b && typeof b === "object" && Object.keys(b).every(k => NOTE_KEYS.includes(k))
+  && (b.open_id === null || IDS.includes(b.open_id)) && [1, 2, 3].includes(b.tier)
+  && [b.solo, b.helped].every(a => Array.isArray(a) && a.length <= 12 && a.every(x => FENCE_NAME.test(x)))
+  && Number.isInteger(b.days) && b.days >= 0 && b.days <= 7;
+// What the model is told: fence names (the parent may know the sizes), the meaning of the open
+// misconception in parent words, the template question. No event log, no counts, no ids alone.
+export function notePayload(b) {
+  return { audience: "parent", child_age: 8, days_played_this_week: b.days,
+    fences_finished_without_a_hint: b.solo, fences_finished_with_a_hint: b.helped,
+    still_working_on: b.open_id ? { what_happens: PARENT_WORDS[b.open_id][0], hints_reached: b.tier } : null,
+    suggested_question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
+}
+const BLAME = /\b(wrong|bad|lazy|slow|behind|struggling|failed|fail|stupid)\b/i;
+export function noteGate(out) {
+  if (!out || typeof out.note !== "string" || typeof out.question !== "string") return "schema";
+  if (out.note.trim().split(/[.!?]+/).filter(s => s.trim()).length > 3) return "sentences";
+  if (!/\?\s*$/.test(out.question.trim()) || (out.question.match(/\?/g) || []).length !== 1) return "question";
+  if (BLAME.test(out.note) || BLAME.test(out.question)) return "blame";
+  if (/_/.test(out.note + out.question)) return "labels";
+  if (out.note.length > 400 || out.question.length > 160) return "length";
+  return null;
+}
+export function noteFallback(b) {
+  const done = b.solo.length + b.helped.length;
+  const note = (done ? `This week ${done === 1 ? "one fence went up" : "several fences went up"}${b.helped.length ? ", some with a hint" : ""}. ` : "No fences went up this week yet. ")
+    + (b.open_id ? PARENT_WORDS[b.open_id][0] : "Nothing is open right now.");
+  return { note, question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
+}
+export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", timeoutMs = 4000 } = {}) {
+  const fallback = (reason) => ({ ...noteFallback(b), source: "template", reason });
+  if (!apiKey) return fallback("no_key");
+  if (!b.solo.length && !b.helped.length && !b.open_id) return fallback("nothing_to_say");   // an empty week gets the plain sentence, never an invented one
+  try {
+    const [url, init] = PROVIDERS[provider].request(notePayload(b), apiKey, NOTE_JOB);
+    const res = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+    if (!res.ok) return fallback(`http_${res.status}`);
+    const { text } = PROVIDERS[provider].parse(await res.json());
+    let out; try { out = JSON.parse(text); } catch { return fallback("parse"); }
+    const why = noteGate(out);
+    return why ? fallback(why) : { note: out.note.trim(), question: out.question.trim(), source: "model" };
+  } catch (e) { return fallback(e?.name === "TimeoutError" ? "timeout" : "error"); }
+}
+// browser side: never throws
+export async function note(b, { timeoutMs = 5000, fetchImpl = globalThis.fetch } = {}) {
+  try {
+    const res = await fetchImpl("/api/note", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify(b), signal: AbortSignal.timeout(timeoutMs) });
+    if (res.ok) { const out = await res.json(); if (out?.note && out?.question) return out; }
+  } catch {}
+  return { ...noteFallback(b), source: "template" };
+}
 
 export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", wordlist, timeoutMs = 2000 } = {}) {
   const template = TEMPLATES[payload?.misconception_id]?.[payload?.tier] ?? "";

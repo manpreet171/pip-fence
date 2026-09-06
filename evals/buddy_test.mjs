@@ -108,4 +108,28 @@ check("latency_cost: summarise p50/p95/$ and gate pass rate", s.p95 === 900 && s
 
 clearInterval(keepAlive);
 console.log(`\n${fails ? fails + " FAILED" : "all checks passed"}`);
+// ---- the parent note: same discipline pointed at the adult ----
+{
+  const { validNote, notePayload, noteGate, writeNote, noteFallback } = await import("../src/engine/buddy.mjs");
+  const B = { open_id: "counted_groups_as_group_size", tier: 2, solo: ["3 parts of 4 (packs)", "2 parts of 3"], helped: ["3 parts of 4"], days: 3 };
+  check("note: valid summary accepted", validNote(B));
+  check("note: unknown key rejected", !validNote({ ...B, name: "Aanya" }));
+  check("note: bad fence name rejected", !validNote({ ...B, solo: ["<script>"] }));
+  check("note: payload carries no internal id and no event log", !JSON.stringify(notePayload(B)).includes("counted_groups") && !("events" in notePayload(B)));
+  const noteReply = (o) => async () => ({ ok: true, status: 200, json: async () => ({ content: [{ type: "text", text: JSON.stringify(o) }] }) });
+  const wn = (f) => writeNote(B, { fetchImpl: f, apiKey: "k", timeoutMs: 50 });
+  let n = await wn(noteReply({ note: "Two fences went up on their own this week. The parts-versus-planks mix-up is the one to watch.", question: "Which number tells you how many parts?" }));
+  check("note: good model note passes -> source model", n.source === "model" && n.question.endsWith("?"), JSON.stringify(n));
+  n = await wn(noteReply({ note: "Fine. Fine. Fine. Fine.", question: "Ok?" }));
+  check("note: four sentences -> template", n.source === "template" && n.reason === "sentences", n.reason);
+  n = await wn(noteReply({ note: "She got it wrong again.", question: "Why?" }));
+  check("note: blame word -> template", n.source === "template" && n.reason === "blame", n.reason);
+  n = await wn(noteReply({ note: "Good week.", question: "No question here." }));
+  check("note: missing question mark -> template", n.source === "template" && n.reason === "question", n.reason);
+  n = await wn(noteReply({ note: "See counted_groups_as_group_size.", question: "Ok?" }));
+  check("note: internal label leaked -> template", n.source === "template" && n.reason === "labels", n.reason);
+  n = await wn(async () => { throw new Error("boom"); });
+  check("note: fetch throws -> template with fallback text", n.source === "template" && n.note === noteFallback(B).note, n.reason);
+}
+
 process.exit(fails ? 1 : 0);

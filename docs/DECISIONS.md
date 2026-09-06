@@ -1471,3 +1471,34 @@ addendum below.)
 Also: an inline empty favicon, which was the only 404 in the console.
 
 
+
+
+---
+
+## D-071 — Three AI additions, decided by the engineering role, not requested
+6 Sep 2026 · Status: **Decided**
+
+**Trigger.** The owner asked "what is the AI in this?" and then, when offered options, said deciding
+is the engineering role's job. It is. The honest answer was: one model call the child sees as a
+sentence, plus discipline around it. That is the right architecture and a weak *surface*. Three
+additions make the AI visible and more valuable without touching the rule that the model never
+sees a number or gives an answer:
+
+1. **Spoken hints.** The hint is read aloud through the browser's own speech synthesis. Offline,
+   no vendor, nothing leaves the device, no voice is recorded (amended COPPA is about collection;
+   playback collects nothing). RESEARCH-LEARNER asks for the lowest reading load possible at 7–8;
+   hearing the sentence is lower than reading it. A single Sound on/off control, remembered locally.
+2. **The parent note written by the model** (`/api/note`, `writeNote()` in buddy.mjs). The
+   strongest tutoring result in the literature pointed the model at the adult (Tutor CoPilot). The
+   grown-ups page sends a validated summary — fence names, the open misconception in parent words,
+   the tier reached, days played — never the event log, counts, or internal ids. The model returns
+   `{note, question}` through its own gate: ≤3 sentences, exactly one question, no blame words, no
+   internal labels, length caps. Any miss → the fixed parent sentences. An empty week never calls
+   the model (it invented activity in the first live test; now it gets the plain sentence).
+3. **A judge's overlay** (`?judge=1` or the J key): the live event log, the classifier's result,
+   the redacted payload, the hint's source, gate verdict and latency, and the provider name, beside
+   the game. The child never sees it; a reviewer sees the architecture working in real time.
+
+**Rejected:** a chat box (the saturated, evidence-contradicted lane); child voice input (collection
+under COPPA, ~25% word error on children); model-generated levels (the 12-node graph is the
+product's truth and stays code); "AI-powered" copy anywhere on the child's screen.
