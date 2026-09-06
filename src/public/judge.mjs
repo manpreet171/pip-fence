@@ -38,18 +38,18 @@ export function mount(snap) {
 
   function update() {
     if (panel.hidden) return;
-    const s = snap(), r = s.result, p = s.payload, h = s.hint;
+    const s = snap(), r = s.result, h = s.hint, p = h?.payload || s.payload;   // the payload the last hint was built from; before any hint, the live one
     const { age, tier, reading_level, ...rest } = p;                 // the only fields allowed a digit (BUDDY-CONTRACT)
     const clean = !/\d/.test(JSON.stringify(rest));
     const ev = s.events.slice(-10).map(e => { const { t, e: name, ...x } = e; return `<div class="ev">${String(t).padStart(6)} ${esc(name)} ${Object.keys(x).length ? j(x) : ""}</div>`; }).join("");
     document.getElementById("jbody").innerHTML =
       `<h3>level</h3><pre>${esc(s.node)}  ·  ${s.events.length} events</pre>` +
       `<h3>events (last ten)</h3>${ev || "<pre class=dim>none yet</pre>"}` +
-      `<h3>classifier · classify(level)</h3><pre>id         ${esc(r.id)}\ntier       ${r.tier}\nconfirmed  ${r.confirmed}\ncounts     ${j(r.counts)}\nflags      ${j(r.flags)}</pre>` +
-      `<h3>payload · what the model would get <span class="${clean ? "ok" : "bad"}">[${clean ? "no digits" : "DIGITS FOUND"}]</span></h3>` +
-      `<pre>${IDS.includes(r.id) ? "" : "<span class=dim>(not sent: no misconception to phrase)</span>\n"}${esc(JSON.stringify(p, null, 1))}</pre>` +
-      `<h3>last hint</h3><pre>${h ? `source     ${esc(h.source)}${h.reason ? `  (${esc(h.reason)})` : ""}\nfor        ${esc(h.id)} tier ${h.tier}\nround trip ${h.ms} ms\nprovider   follows the server key` : "<span class=dim>none yet</span>"}</pre>` +
+      `<h3>classifier · now · classify(level)</h3><pre>id         ${esc(r.id)}\ntier       ${r.tier}\nconfirmed  ${r.confirmed}\ncounts     ${j(r.counts)}\nflags      ${j(r.flags)}</pre>` +
+      `<h3>last hint</h3><pre>${h ? `for        ${esc(h.id)} tier ${h.tier}\nsource     ${esc(h.source)}${h.reason ? `  (${esc(h.reason)})` : ""}\nround trip ${h.ms} ms\nprovider   follows the server key` : "<span class=dim>none yet</span>"}</pre>` +
+      `<h3>payload · ${h?.payload ? "what the model got for the last hint" : "what the next hint would get"} <span class="${clean ? "ok" : "bad"}">[${clean ? "no digits" : "DIGITS FOUND"}]</span></h3>` +
+      `<pre>${h?.payload || IDS.includes(r.id) ? "" : "<span class=dim>(not sent: no misconception to phrase)</span>\n"}${esc(JSON.stringify(p, null, 1))}</pre>` +
       `<h3>mastery · ${GRAPH.length} nodes</h3><pre>${GRAPH.map(g => `${g.node.padEnd(14)} ${s.mastery[g.node] ?? 0}`).join("\n")}</pre>`;
   }
-  return { update, toggle() { const open = panel.hidden && tab.hidden; tab.hidden = true; show(open); } };
+  return { update, toggle() { tab.hidden = true; show(panel.hidden); } };   // one press from any state: closed, open, or hidden behind the tab
 }

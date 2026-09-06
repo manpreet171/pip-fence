@@ -251,7 +251,8 @@ export function mountScene(el, plan) {
     f.style.top = px(g.top); f.style.transform = `translate(-50%,0) scale(${g.scale.toFixed(3)})`;
     // A tree is whole or absent, never cut by the frame edge: hide any whose span leaves the visible world.
     const half = W / g.scale / 2, cx = g.bx.l + cw / 2;
-    for (const t of f.querySelectorAll(".tree")) t.style.visibility = parseFloat(t.dataset.l) >= cx - half && parseFloat(t.dataset.r) <= cx + half ? "" : "hidden"; };
+    for (const t of f.querySelectorAll(".tree")) t.style.visibility = parseFloat(t.dataset.l) >= cx - half && parseFloat(t.dataset.r) <= cx + half ? "" : "hidden";
+    el.dispatchEvent(new Event("fit")); };                       // the world moved: whoever placed something on it re-places it
   fit();
   new ResizeObserver(fit).observe(el);
   return g;
@@ -293,13 +294,16 @@ export function railPoint(el, part, i) {
 export function bubbleSpot(el, part, w, h, keep = []) {
   const g = el.geom, f = feet(part, g), W = el.clientWidth, H = el.clientHeight, aim = partTop(el, part);
   const R = toScene(el, f.rx, f.ry), L = toScene(el, f.lx, f.ly), o = el.getBoundingClientRect();
-  const cues = [...el.querySelectorAll(".post,.rail")].map(n => { const r = n.getBoundingClientRect();
+  const wood = [...el.querySelectorAll(".post,.rail")].map(n => { const r = n.getBoundingClientRect();
     return { l: r.left - o.left, t: r.top - o.top, r: r.right - o.left, b: r.bottom - o.top }; });
-  cues.push(sceneBox(el, goatBox(g.goat.dest.part, g.goat.dest.inside, g)), ...keep);
+  const cues = [...wood, sceneBox(el, goatBox(g.goat.dest.part, g.goat.dest.inside, g)), ...keep];
   const hits = (l, t) => l < 8 || t < 8 || l + w > W - 8 || t + h > H - 8 || cues.some(c => l < c.r + 6 && l + w > c.l - 6 && t < c.b + 6 && t + h > c.t - 6);
   const tries = [[R.x + 14, aim.y, "left"], [R.x + 14, R.y - 10, "left"], [L.x - 14 - w, aim.y, "right"], [L.x - 14 - w, L.y - 10, "right"],
     [aim.x - w / 2, L.y + 14, "top"], [aim.x - w / 2, aim.y - h - 16, "bottom"]];
-  const [l, t, side] = tries.find(([l, t]) => !hits(l, t)) || [(W - w) / 2, Math.max(8, ...keep.map(k => k.b + 8)), "bottom"];
+  // The band under the sign is tested like the rest, walked down in steps; if nothing clears, it stays at the top of the band.
+  const band = Math.max(8, ...keep.map(k => k.b + 8));
+  for (let t = band; t + h <= H - 8; t += 16) tries.push([(W - w) / 2, t, "bottom"]);
+  const [l, t, side] = tries.find(([l, t]) => !hits(l, t)) || [(W - w) / 2, band, "bottom"];
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   return { left: l, top: t, side, at: side === "left" || side === "right" ? clamp(aim.y - t, 16, h - 16) : clamp(aim.x - l, 16, w - 16) };
 }

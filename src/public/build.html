@@ -58,12 +58,14 @@
   .pack{position:relative;display:inline-block;width:36px;height:34px;cursor:pointer}
   .pack img{position:absolute;left:0;width:34px;filter:brightness(1.18) saturate(1.05) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
   /* the delivery slip: a paper note pinned on the tray */
-  #note{flex:1;display:flex;align-items:center;gap:8px;min-height:60px;padding:6px 10px;border-radius:3px;background:var(--cream);color:var(--ink);
+  #note{flex:1;display:flex;align-items:center;gap:8px;min-height:56px;padding:4px 10px;border-radius:3px;background:var(--cream);color:var(--ink);
     box-shadow:0 2px 5px rgba(0,0,0,.35);transform:rotate(-1deg)}
   #note::before{content:"";position:absolute;left:50%;top:-6px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0d9a8,#8a5a2c 70%);transform:translateX(-50%)}
   #addpack{width:48px;height:48px;flex:none;border:2px dashed var(--wood);border-radius:10px;background:rgba(169,112,47,.08);display:grid;place-items:center;padding:0}
   #addpack .pack{opacity:.45;cursor:inherit}
-  #slipn{display:flex;flex-wrap:wrap;gap:2px 4px;align-items:flex-end;flex:1;min-height:36px}
+  /* two rows of small packs, never a taller tray. ponytail: a third row (17+ packs on 4x5 at 320) is clipped */
+  #slipn{display:flex;flex-wrap:wrap;gap:1px 2px;align-content:flex-start;flex:1;min-height:36px;max-height:44px;overflow:hidden}
+  #slipn .pack{zoom:.6}
   .btn{min-height:56px;min-width:56px;padding:0 28px;border-radius:16px;font-family:var(--font-display);font-weight:600;font-size:20px;
     background:var(--woodbg);color:var(--cream);border:3px solid var(--wood2);text-shadow:0 1px 0 rgba(0,0,0,.4);
     box-shadow:0 6px 0 var(--wood2),0 10px 14px rgba(20,30,20,.35),inset 0 0 0 2px rgba(255,235,200,.16)}
@@ -98,6 +100,7 @@
     #sign{left:12px;top:10px;padding:8px 16px 10px}
     #task{font-size:18px}
     .tray{flex-basis:100%;min-height:78px}
+    #slip .lbl{display:none}
     #pile{height:56px;min-width:120px}
     .btn{flex:1 1 auto;padding:0 18px}
     #sound{min-width:0;padding:0 14px;font-size:15px}
@@ -113,7 +116,8 @@
   <div id="sign"><span class="brand">Rung</span><span id="task"></span></div>
   <div id="hud">
     <div id="cart" class="tray"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
-    <div id="slip" class="tray" hidden><span class="lbl">Order</span><div id="note"><button id="addpack" title="add a pack"></button><div id="slipn"></div></div><button class="btn" id="deliver">Deliver</button></div>
+    <div id="slip" class="tray" hidden><span class="lbl">Order</span><div id="note"><button id="addpack" title="add a pack"></button><div id="slipn"></div></div></div>
+    <button class="btn" id="deliver" hidden>Deliver</button>
     <button class="btn quiet" id="again" hidden>Order again</button>
     <button class="btn" id="done">Done</button>
     <button class="btn" id="restart" hidden>Start again</button>
@@ -130,11 +134,11 @@
   const Q = new URLSearchParams(location.search), DEBUG = Q.has("debug");
   const IDLE_MS = 45000, KEY = "rung.v1", BOARD = "/assets/fence/board.png";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart }, events: S.events })); } catch {} };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart }, events: S.events, ended: S.ended })); } catch {} };
 
   // One plain object. The event log is the state history; `events` is a ring across levels and
   // lvl() is the slice classify() reads.
-  const S = { mastery: {}, node: null, parts: [], cart: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, retry: false, idle: 0, tok: 0, last: null };
+  const S = { mastery: {}, node: null, parts: [], cart: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, ended: false, retry: false, idle: 0, tok: 0, last: null };
   const scene = $("scene");
   let J = null;                                        // the judge's overlay, mounted only when asked for
   const sh = () => shape(S.node);
@@ -152,7 +156,7 @@
   function start(node) {
     if (node !== S.node) S.retry = false;
     const s = shape(node);
-    Object.assign(S, { node, parts: Array(s.groups).fill(0), cart: s.mode === "packs" ? 0 : s.groups * s.per, held: null, slip: 0, pre: null, probe: false, done: false, at: Date.now() });
+    Object.assign(S, { node, parts: Array(s.groups).fill(0), cart: s.mode === "packs" ? 0 : s.groups * s.per, held: null, slip: 0, pre: null, probe: false, done: false, ended: false, at: Date.now() });
     S.events = S.events.slice(-500);
     log({ e: "level_start", node, at: S.at });
     mount();
@@ -161,7 +165,7 @@
     const s = sh();
     mountScene(scene, s);
     S.parts.forEach((n, p) => { for (let i = 0; i < n; i++) appendPlank(scene, p, i); });
-    $("task").textContent = `${s.groups} parts · ${s.per} planks in each part` + (s.mode === "packs" ? ` · packs of ${s.pack}` : "");
+    $("task").textContent = `${s.groups} parts · ${s.per} planks in each part` + (s.mode === "packs" ? ` · packs\u00a0of\u00a0${s.pack}` : "");
     hideBubble(); render();
   }
 
@@ -176,7 +180,7 @@
       return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
   function render() {
     const s = sh(), d = delivered(), packs = s.mode === "packs";
-    $("cart").hidden = !d; $("slip").hidden = d; $("done").hidden = !d;
+    $("cart").hidden = !d; $("slip").hidden = d; $("deliver").hidden = d; $("done").hidden = !d;
     $("again").hidden = !(packs && d && lvl().some(e => e.e === "hint") && !S.done);
     if (d) {
       $("pile").innerHTML = heap(S.cart, packs ? pack(s.pack) : plank(), packs ? 34 : 34);
@@ -280,7 +284,7 @@
     if (r.id === "ambiguous") { S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0 }; J?.update(); return bubble(TEMPLATES.ambiguous[1], "template", at); }
     const tok = ++S.tok, key = r.id + r.tier;
     const h = await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
-    S.hint = { id: r.id, tier: r.tier, ...h }; J?.update();
+    S.hint = { id: r.id, tier: r.tier, payload: payload(r), ...h }; J?.update();
     if (tok === S.tok) bubble(h.text, h.source, at);
     render();
   }
@@ -299,9 +303,9 @@
   }
   // Every plot fenced. Mastery stays (the parent screen reads it) until she taps Start again.
   function end() {
-    S.done = true; clearTimeout(S.idle); hideBubble();
+    S.done = S.ended = true; save(); clearTimeout(S.idle); hideBubble();
     $("task").textContent = "Every plot has a fence.";
-    for (const id of ["cart", "slip", "done", "again"]) $(id).hidden = true;
+    for (const id of ["cart", "slip", "deliver", "done", "again"]) $(id).hidden = true;
     $("restart").hidden = false;
   }
 
@@ -339,12 +343,16 @@
     b.style.cssText = `width:${px(w)};left:${px(p.left)};top:${px(p.top)};--tx:${px(p.at)};--ty:${px(p.at)}`;
   }
   function hideBubble() { $("bubble").hidden = true; S.tok++; }
-  addEventListener("resize", placeBubble);
+  scene.addEventListener("fit", placeBubble);          // after every re-fit of the world (a resize, the overlay, a taller HUD), never before it
+  // The scene ends where the HUD really starts when the buttons wrap (phones, packs); never above --hud, so desktop framing stays pinned.
+  new ResizeObserver(() => requestAnimationFrame(() => { scene.style.bottom = ""; scene.style.bottom = px(Math.max(parseFloat(getComputedStyle(scene).bottom), $("hud").offsetHeight)); })).observe($("hud"));
 
   // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
   const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];   // history survives every branch below, ?node= included
   const ls = saved.events?.findLast?.(e => e.e === "level_start");
+  const finale = () => { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(); };
   if (Q.get("node") && shape(Q.get("node"))) start(Q.get("node"));
+  else if (saved.ended) finale();
   else if (saved.build?.node && ls?.node === saved.build.node && shape(saved.build.node)) {
     Object.assign(S, { node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, at: ls.at || Date.now() });
     mount(); const L = lvl(), r = classify(L); S.done = r.id === "correct";
@@ -355,7 +363,7 @@
     render(); arm();
   } else {
     const n = Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : "3x4_concrete";
-    if (n) start(n); else { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(); }
+    n ? start(n) : finale();
   }
 
   // --- the judge's overlay (D-071): opt-in by ?judge=1 or the J key, loaded only then. The only place

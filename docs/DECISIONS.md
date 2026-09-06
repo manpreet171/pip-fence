@@ -1624,3 +1624,21 @@ provider name read from the server (would add a route for a label; the line says
 overlay drawn over the scene (it would cover the card at 1280); a fixed-width phone panel (unusable
 paddock). Moving the right-hand tree inside the paddock's band (crowds the hay and the back fence).
 Speaking on reload (the browser's own autoplay rule declines it without a gesture; harmless either way).
+
+---
+
+## D-073 — QA round 2, frontend defects D-2 to D-9 fixed
+7 Sep 2026 · Status: **Decided**
+
+- **D-2** The order slip is a fixed-height area: pack silhouettes at 22 px (`zoom:.6`) in a wrapping two-row grid clipped at 44 px, the slip's note sized to the cart's bed, so the slip tray is exactly the plank tray's height (78 px phone, 84 desktop) with any number of packs; Deliver left the tray and stands beside it like Done beside the cart; the "Order" label hides on phones. 12 packs at 375 and 320: posts fully visible above the tray.
+- **D-3** The parent page's fence lists are computed from the last 7 days of events (finished levels, with or without a hint), not from all-time mastery, so the count, the lines and the note's "This week" agree. Chosen over the "So far" label because the note template itself says "This week N fences went up" and the lists feed it. Mastery stays the game's all-time record.
+- **D-4** The band under the sign is tested against posts, rails and the goat like every other spot and walked down in 16 px steps until it clears; if nothing clears, the card stays at the top of the band. Measured at 320 `[12,0,0]`: the literal "push it below the highest rail" would cover 4 posts and 11 rails against 3 over-count rails at the band top, so it was rejected.
+- **D-5** J toggles from every state in one press: `toggle()` opens whenever the panel is hidden, tab or no tab.
+- **D-6** The overlay shows `classifier · now` (live `classify(level)`) and `last hint` (id and tier as logged) as two labelled blocks; the payload block is the one the last hint was built from (kept on `S.hint` by `showHint`), labelled "what the model got for the last hint"; before any hint it is the live one, labelled "what the next hint would get".
+- **D-7** `end()` writes `ended:true` into `rung.v1`; boot restores the end screen from it before the saved build; `start()` (Start again, Next plot, `?node=`) clears it.
+- **D-8** The scene ends where the HUD really starts: a ResizeObserver on `#hud` sets `#scene`'s bottom to `max(--hud, HUD height)`, so when the buttons wrap on a phone (packs after a hint: 230 px) the card can never land on the tray; desktop framing is unchanged (118 px stays). `fit()` now dispatches a `fit` event on the scene and the card re-places itself on it, after the world has moved, never before.
+- **D-9** The sign's packs clause uses non-breaking spaces ("packs of 2" never splits).
+
+**Verified** (Playwright `page.mouse.click`, never `.click()`): 375 and 320 with 12 packs, posts clear of the tray, slip tray 78 px = cart tray; 320 `[12,0,0]` card at the band top; desktop judge after a tier-1 hint reads now tier 2 / last hint tier 1 / payload tier 1; Hide then one J press opens; 12th fence → end screen → reload → end screen, Start again clears; parent page with a 10-day-old fence lists only the week's; `classifier_eval` mismatches 0; `run_all.py` ALL PASS; 0 console errors on `/build`, `/build?judge=1`, `/build?node=3x4_packs`, `parent.html` at 1280×720 and 375×812. Part 1 of `fence.mjs` untouched.
+
+**Known residual.** At 320 the card for a 12-rail tower still touches its top three over-count rails (no spot in a 320×418 scene clears a 280×118 card); the post tops the hint points at stay visible.

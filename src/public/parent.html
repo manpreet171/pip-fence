@@ -48,9 +48,11 @@
   const week = Date.now() - 7 * 864e5;
   const done = res.filter(x => x.r.id === "correct" && x.at >= week);
   document.getElementById("n").innerHTML = `${done.length}<small>${done.length === 1 ? "fence finished" : "fences finished"}</small>`;
-  const m = d.mastery || {}, solo = Object.keys(m).filter(k => m[k] >= 1), helped = Object.keys(m).filter(k => m[k] === 0.5);
+  // The lists are the week's too, so the count, the lines and the note agree (mastery is all-time; the game keeps it).
+  const names = xs => [...new Set(xs.map(x => name(x.node)))];
+  const solo = names(done.filter(x => !x.hints.length)), helped = names(done.filter(x => x.hints.length));
   document.getElementById("mastered").textContent =
-    (solo.length ? `Finished without a hint: ${solo.map(name).join(", ")}. ` : "") + (helped.length ? `Finished with a hint: ${helped.map(name).join(", ")}.` : "");
+    (solo.length ? `Finished without a hint: ${solo.join(", ")}. ` : "") + (helped.length ? `Finished with a hint: ${helped.join(", ")}.` : "");
   // The most recent level that needed a hint or ended on a named misconception is the one to talk about.
   const recent = [...res].reverse().find(x => x.hints.length || IDS.includes(x.r.id));
   const id = recent && (IDS.includes(recent.r.id) ? recent.r.id : recent.hints.at(-1).id);
@@ -61,7 +63,7 @@
   if (!res.length) what.textContent = "No fences yet. The first plot is waiting.";   // nothing to write about: no call
   else {
     what.textContent = "Writing your note…";
-    const out = await note({ open_id, tier, solo: solo.map(name), helped: helped.map(name), days });
+    const out = await note({ open_id, tier, solo, helped, days });
     what.textContent = out.note; $("ask").hidden = false; $("q").textContent = out.question;
     if (new URLSearchParams(location.search).has("debug")) { $("src").hidden = false; $("src").textContent = out.source === "model" ? "from the model" : "standard note"; }
   }
