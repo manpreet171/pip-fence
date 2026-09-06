@@ -16,6 +16,7 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **BUDDY-CONTRACT.md** | The one interface the game and the hint layer share. |
 | **TEST-REPORT.md** | Independent QA over 16 user cases; 10 defects, all closed (D-064–D-066). |
 | **PRODUCT-REVIEW.md** | Hiring-panel style review of the finished product; what to fix before filming. |
+| **DEMO-V2.md** | The 3-minute shot list for the built product: timings, what is on screen, what is said, what is never said. |
 | **TRANSFER-TEST.md** | The paper instrument for the three-child pilot, with the pre-registered null. |
 | **DECISIONS.md** | D-001 … D-049. Read D-043 (stop; research the learner), D-044 (concept v3), D-045 (loop converged; v3.2 adopted), D-047/D-048 (spec corrections found in code), D-049 (schedule). |
 
