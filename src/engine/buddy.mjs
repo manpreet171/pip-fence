@@ -129,7 +129,7 @@ export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120,
 const NOTE_SYSTEM = () => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
   "count groups by building fences in a game. Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +
   "Do not use the words wrong, bad, lazy, slow, behind, struggling, failed. Do not name the game's internal labels. " +
-  "Mention only what the input lists; invent nothing. " +
+  "Mention only what the input lists; invent nothing. Call the pieces of the fence parts and planks, never sections or segments. " +
   "note: at most three sentences saying what the child did and what they are still working on. " +
   "question: exactly one thing the parent can ask the child out loud, ending in a question mark.";
 const NOTE_SCHEMA = { type: "object", additionalProperties: false, required: ["note", "question"],
@@ -198,6 +198,7 @@ export function noteGate(out) {
   if (!/\?\s*$/.test(out.question.trim()) || (out.question.match(/\?/g) || []).length !== 1) return "question";
   if (BLAME.test(out.note) || BLAME.test(out.question)) return "blame";
   if (/_/.test(out.note + out.question)) return "labels";
+  if (/(sections?|segments?)/i.test(out.note + out.question)) return "vocab";   // the child hears "part"; the parent must too
   if (out.note.length > 400 || out.question.length > 160) return "length";
   return null;
 }

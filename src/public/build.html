@@ -70,6 +70,7 @@
   .btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--wood2),0 4px 8px rgba(20,30,20,.3)}
   .btn.quiet{background:var(--paper);color:var(--wood2);text-shadow:none;border-color:#b58d5c;box-shadow:0 5px 0 #b58d5c,0 8px 12px rgba(20,30,20,.25);font-size:17px}
   .btn.quiet:active{box-shadow:0 1px 0 #b58d5c}
+  #sound{flex:0 0 auto;padding:0 18px;min-width:120px}
   #grown{font-size:14px;font-weight:600;color:var(--cream);text-shadow:0 1px 2px rgba(0,0,0,.6);text-decoration:none;white-space:nowrap;
     padding:14px 8px;min-height:44px;margin-left:auto}
   #grown:hover{text-decoration:underline}
@@ -99,6 +100,7 @@
     .tray{flex-basis:100%;min-height:78px}
     #pile{height:56px;min-width:120px}
     .btn{flex:1 1 auto;padding:0 18px}
+    #sound{min-width:0;padding:0 14px;font-size:15px}
     #grown{padding:14px 4px}
   }
 </style>
@@ -115,12 +117,13 @@
     <button class="btn quiet" id="again" hidden>Order again</button>
     <button class="btn" id="done">Done</button>
     <button class="btn" id="restart" hidden>Start again</button>
+    <button class="btn quiet" id="sound">Sound on</button>
     <a id="grown" href="/public/parent.html">For grown-ups</a>
   </div>
 </div>
 <script type="module">
   import { IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
-  import { TEMPLATES, hint } from "/buddy.mjs";
+  import { TEMPLATES, hint, payload } from "/buddy.mjs";
   document.head.insertAdjacentHTML("beforeend", `<style>${FENCE_CSS}</style>`);
 
   const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
@@ -133,14 +136,17 @@
   // lvl() is the slice classify() reads.
   const S = { mastery: {}, node: null, parts: [], cart: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, retry: false, idle: 0, tok: 0, last: null };
   const scene = $("scene");
+  let J = null;                                        // the judge's overlay, mounted only when asked for
   const sh = () => shape(S.node);
   const lvl = () => level(S.events);
   const delivered = () => sh().mode !== "packs" || lvl().some(e => e.e === "order");
 
   function log(e) {
-    S.events.push({ t: Date.now() - S.at, ...e }); save();
+    S.events.push({ t: Date.now() - S.at, ...e }); save(); J?.update();
     if (e.e !== "commit" && e.e !== "hint") arm();
   }
+  // hint() with its round trip measured, for the judge's overlay only; hint() itself is untouched.
+  const timed = r => { const t0 = performance.now(); return hint(r).then(h => ({ ...h, ms: Math.round(performance.now() - t0) })); };
   function arm() { clearTimeout(S.idle); S.idle = setTimeout(() => { if (!S.done) { log({ e: "commit", reason: "idle" }); onCommit(); } }, IDLE_MS); }
 
   function start(node) {
@@ -229,7 +235,7 @@
     // Prefetch: the build is complete-and-wrong (cart empty) or a part overflows. Held until commit.
     if (!S.cart || S.parts[part] > s.per) {
       const p = classify([...lvl(), { t: Date.now() - S.at, e: "commit", reason: "left_plot" }]);
-      if (IDS.includes(p.id) && p.id !== "ambiguous" && S.pre?.key !== p.id + p.tier) S.pre = { key: p.id + p.tier, h: hint(p) };
+      if (IDS.includes(p.id) && p.id !== "ambiguous" && S.pre?.key !== p.id + p.tier) S.pre = { key: p.id + p.tier, h: timed(p) };
     }
     render();
   }
@@ -246,7 +252,8 @@
   function count(part) {
     log({ e: "tap_count", group: part });
     const n = S.parts[part], still = matchMedia("(prefers-reduced-motion:reduce)").matches;  // reduced motion: all pips at once, static, gone after 1.2 s
-    S.counting = part; setTimeout(() => { if (S.counting === part) S.counting = null; }, still ? 1200 : n * 450 + 2100);
+    S.counting = part; S.pips = Date.now() + (still ? 1200 : n * 450 + 2100);
+    setTimeout(() => { if (S.counting === part) S.counting = null; }, still ? 1200 : n * 450 + 2100);
     for (let i = 0; i < n; i++) {
       const p = railPoint(scene, part, i), el = document.createElement("span");
       el.className = "pip"; el.textContent = i + 1;
@@ -270,9 +277,10 @@
   async function showHint(r) {
     log({ e: "hint", id: r.id, tier: r.tier });
     const at = gapAt(r.counts);
-    if (r.id === "ambiguous") { S.probe = true; return bubble(TEMPLATES.ambiguous[1], "template", at); }
+    if (r.id === "ambiguous") { S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0 }; J?.update(); return bubble(TEMPLATES.ambiguous[1], "template", at); }
     const tok = ++S.tok, key = r.id + r.tier;
-    const h = await (S.pre?.key === key ? S.pre.h : hint(r)); S.pre = null;
+    const h = await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
+    S.hint = { id: r.id, tier: r.tier, ...h }; J?.update();
     if (tok === S.tok) bubble(h.text, h.source, at);
     render();
   }
@@ -301,7 +309,24 @@
   function bubble(text, source, part) {
     const b = $("bubble"); S.bpart = part;
     $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
-    b.hidden = false; placeBubble();
+    b.hidden = false; placeBubble(); speak(text);
+  }
+  // Spoken hints (D-071): the browser's own voice, nothing leaves the device. Says exactly the card's
+  // text, once per card, never over the counting pips. One control, remembered on this device.
+  const tts = globalThis.speechSynthesis, SOUND = "rung.sound";
+  let sound = true; try { sound = localStorage.getItem(SOUND) !== "0"; } catch {}
+  $("sound").hidden = !tts;
+  const soundLabel = () => { $("sound").textContent = sound ? "Sound on" : "Sound off"; };
+  soundLabel();
+  $("sound").onclick = () => { sound = !sound; try { localStorage.setItem(SOUND, sound ? "1" : "0"); } catch {} soundLabel(); if (!sound) tts.cancel(); };
+  function speak(text) {
+    if (!tts || !sound) return;
+    const wait = (S.pips || 0) - Date.now();
+    if (wait > 0) return setTimeout(() => { if (!$("bubble").hidden && $("btext").textContent === text) speak(text); }, wait);
+    tts.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.rate = 0.92; u.pitch = 1; u.lang = "en";
+    const v = tts.getVoices().find(v => /^en/i.test(v.lang)); if (v) u.voice = v;
+    tts.speak(u);
   }
   // Beside the gap, never on it (D-070): bubbleSpot keeps the card off every post, rail and the goat, and
   // off the sign; on a phone with no room beside, it goes in the band under the sign.
@@ -332,6 +357,13 @@
     const n = Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : "3x4_concrete";
     if (n) start(n); else { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(); }
   }
+
+  // --- the judge's overlay (D-071): opt-in by ?judge=1 or the J key, loaded only then. The only place
+  // digits appear off the sign. snap() is everything it shows, read live from the same state the game uses.
+  const snap = () => { const L = lvl(), r = classify(L); return { node: S.node, events: L, result: r, payload: payload(r), hint: S.hint, mastery: S.mastery }; };
+  async function judge() { J ??= (await import("/public/judge.mjs")).mount(snap); J.toggle(); }
+  addEventListener("keydown", e => { if (e.key === "j" || e.key === "J") judge(); });
+  if (Q.has("judge")) judge();
 </script>
 </body>
 </html>

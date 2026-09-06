@@ -31,23 +31,15 @@
 <main>
   <div><h1>For grown-ups</h1><p class="sub">What happened on the plots, and one thing to ask out loud. Everything here stays on this device.</p></div>
   <section><h2>This week</h2><div class="big" id="n"></div><p id="mastered" class="foot"></p></section>
-  <section id="open"><h2>Worth a look</h2><p id="what"></p><div class="ask" id="ask" hidden><span class="k">Ask out loud</span><div id="q"></div></div></section>
+  <section id="open"><h2>This week's note</h2><p id="what"></p><div class="ask" id="ask" hidden><span class="k">Ask out loud</span><div id="q"></div></div><p class="foot" id="src" hidden></p></section>
   <p class="foot"><a href="/build">Back to the plots</a></p>
 </main>
 <script type="module">
   import { classify, shape, IDS, level } from "/fence.mjs";
-  // Plain words for each misconception, and the one question to ask. Same register as the hints:
-  // short, no blame, points at the fence rather than at the child.
-  const WORDS = {
-    off_by_one_in_one_group: ["One part of the fence comes out a plank short. The counting is nearly there; it stops one early on a single part.", "Show me one full part. Now count it out loud for me."],
-    off_by_one_per_group: ["Every part comes out one plank short. The number for each part is being remembered as one less than it is.", "How many planks does one part need? Show me with your fingers."],
-    counted_groups_as_group_size: ["Each part gets as many planks as there are parts. The two numbers in the job are getting swapped.", "Which number says how many parts? Which one says how many go in each part?"],
-    one_group_only: ["One part is built and then the job stops, as if one part were the whole fence.", "Is the fence finished? Walk along it with your finger."],
-    over_count: ["A part gets too many planks, so one sticks out over the post.", "Show me where one part stops and the next one starts."],
-    right_total_wrong_grouping: ["All the wood gets used, but it is piled into fewer parts than the job asked for.", "How many parts does this fence need? Point to each one."],
-    pack_unit_confusion: ["A pack is being treated as one plank, so far too many packs get ordered.", "Open a pack in your head. What is inside it?"],
-    ambiguous: ["Every part came out short by the same amount. It is not clear yet whether the size of a part was miscounted or the two numbers were mixed up.", "Show me one part that looks finished."],
-  };
+  import { note } from "/buddy.mjs";
+  // The note is written from a summary the model is handed (buddy.mjs: fence names, the open misconception
+  // in PARENT_WORDS, the tier reached, days played) — never the event log or a count. Any miss → the fixed
+  // sentences, which are the same PARENT_WORDS. One source of truth for both.
   const name = node => { const s = shape(node); return `${s.groups} parts of ${s.per}${s.mode === "packs" ? " (packs)" : ""}`; };
   let d = {}; try { d = JSON.parse(localStorage.getItem("rung.v1")) || {}; } catch {}
   const levels = [];
@@ -62,11 +54,16 @@
   // The most recent level that needed a hint or ended on a named misconception is the one to talk about.
   const recent = [...res].reverse().find(x => x.hints.length || IDS.includes(x.r.id));
   const id = recent && (IDS.includes(recent.r.id) ? recent.r.id : recent.hints.at(-1).id);
-  const what = document.getElementById("what");
-  if (!res.length) what.textContent = "No fences yet. The first plot is waiting.";
-  else if (!id || (recent !== res.at(-1) && res.at(-1).r.id === "correct")) what.textContent = "Nothing open. The last fence went up without a hint.";
+  const open_id = id && !(recent !== res.at(-1) && res.at(-1).r.id === "correct") ? id : null;
+  const tier = Math.min(3, Math.max(1, ...(recent?.hints || []).filter(h => h.id === open_id).map(h => h.tier)));
+  const days = Math.min(7, new Set(res.filter(x => x.at >= week).map(x => new Date(x.at).toDateString())).size);
+  const what = document.getElementById("what"), $ = id => document.getElementById(id);
+  if (!res.length) what.textContent = "No fences yet. The first plot is waiting.";   // nothing to write about: no call
   else {
-    what.textContent = WORDS[id][0]; document.getElementById("ask").hidden = false; document.getElementById("q").textContent = WORDS[id][1];
+    what.textContent = "Writing your note…";
+    const out = await note({ open_id, tier, solo: solo.map(name), helped: helped.map(name), days });
+    what.textContent = out.note; $("ask").hidden = false; $("q").textContent = out.question;
+    if (new URLSearchParams(location.search).has("debug")) { $("src").hidden = false; $("src").textContent = out.source === "model" ? "from the model" : "standard note"; }
   }
 </script>
 </body>

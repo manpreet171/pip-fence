@@ -1575,3 +1575,52 @@ sees a number or gives an answer:
 **Rejected:** a chat box (the saturated, evidence-contradicted lane); child voice input (collection
 under COPPA, ~25% word error on children); model-generated levels (the 12-node graph is the
 product's truth and stays code); "AI-powered" copy anywhere on the child's screen.
+
+---
+
+## D-072 — The three AI additions, built: spoken hints, the judge's overlay, the parent note wired
+7 Sep 2026 · Status: **Decided**
+
+**What.**
+1. *Spoken hints* (`build.html`). Every hint card is read aloud by `speechSynthesis` the moment it is
+   shown — the card's exact text, rate 0.92, pitch 1.0, the first English voice the device offers.
+   The previous utterance is cancelled first, so a new card never queues behind an old one. Nothing is
+   said while the counting pips are up (the probe's follow-up waits until they are gone), and the
+   completion line is said once per fence. One control in the footer, the parchment quiet button
+   "Sound on" / "Sound off" (56 px), default on, remembered in `localStorage` `rung.sound`; with no
+   `speechSynthesis` the control hides itself. Measured: the utterance queued after `[4,4,3]` → Done is
+   the card text verbatim; off → the completion line queues nothing.
+2. *The judge's overlay* (`judge.mjs`, loaded by `build.html` only on `?judge=1` or the J key; J closes
+   it). Parchment on ink, monospace, 420 px on the right on desktop — the stage narrows to make room, so
+   the panel never covers the paddock or the card; a 52 vh bottom sheet on a phone with a Hide button
+   that leaves a 44 px "Judge" tab above the tray. It shows, live on every event the game writes: the
+   last ten events of the level, `classify(level)` (id, tier, confirmed, counts, flags), the exact
+   `payload(result)` pretty-printed with a `[no digits]` badge computed by testing the serialised payload
+   outside `age`/`tier`/`reading_level` for `\d`, the last hint's source, gate reason if any and round
+   trip in ms (timed around `hint()` in the page; `hint()` itself is untouched), the line "provider
+   follows the server key", and the 12-node mastery map. Pointer events stop at the panel's edge. This
+   is the only place digits appear off the sign, and it is opt-in.
+3. *The parent page on the model* (`parent.html`). The local `WORDS` table is gone; the page imports
+   `PARENT_WORDS` from `/buddy.mjs`. It builds `{open_id, tier, solo, helped, days}` from `rung.v1`
+   exactly as `validNote` requires, calls `note()`, shows "Writing your note…" while it waits (≤5 s),
+   then renders `note` and `question` — the fixed sentences on any fallback, since they are the same
+   fields. `?debug=1` adds "from the model" / "standard note". With no level in storage the page keeps
+   "No fences yet" and makes no request; a played week with nothing to say gets `nothing_to_say` from
+   the server, which never reaches the model.
+4. *Trees*. A tree is whole or absent: `fit()` hides any tree whose world span leaves the visible
+   width. On 375×812 all four are outside the paddock's 96 % band, so none shows; at 1280×720 all four
+   stay and the scene is pixel-identical to pass 3 (0 differing pixels above the HUD).
+
+**Verified** (Playwright `page.mouse.click`, never `.click()`). Desktop 1280×720 with the overlay open:
+11/11 planks on `[4,4,3]`, 0 `place_failed`; phone 375×812 with the overlay collapsed: 11/11, 0. Spoken:
+one utterance, text === card text, rate 0.92, pitch 1, an English voice, `speechSynthesis.speaking`
+true; Sound off → no utterance for "The fence is done."; `rung.sound` persisted. Parent page with a
+played week: `POST /api/note` → `source:"model"`, one question ending in "?"; empty storage: zero
+requests. `classifier_eval` mismatches 0; `run_all.py` ALL PASS; 0 console errors, 0 failed requests
+on `/build`, `/build?judge=1`, `parent.html`. `judge.mjs` is not fetched unless asked for.
+
+**Rejected.** A vendor voice (nothing leaves the device, and the browser's is free and offline). A
+provider name read from the server (would add a route for a label; the line says what is true). The
+overlay drawn over the scene (it would cover the card at 1280); a fixed-width phone panel (unusable
+paddock). Moving the right-hand tree inside the paddock's band (crowds the hay and the back fence).
+Speaking on reload (the browser's own autoplay rule declines it without a gesture; harmless either way).

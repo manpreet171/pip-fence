@@ -42,6 +42,28 @@ tier, shape}` and rebuilds the payload with `redact()` — client `template`/`no
 Response: `{ text, source, reason? }`, always 200 on a valid body (a server-side exception → the template with
 `reason:"error"`). No API key → `{ text: template, source:"template", reason:"no_key" }`. `Cache-Control: no-store`.
 
+## The parent note (D-071, additive)
+
+```js
+export const PARENT_WORDS;    // { [id]: [what_happens, question] } — parent words per misconception; the parent page's
+                              // only copy (it imports this), the model's meaning, and the fallback sentences
+export const NOTE_KEYS;       // ["open_id", "tier", "solo", "helped", "days"]
+export function validNote(b); // open_id ∈ IDS | null; tier ∈ {1,2,3}; solo/helped = ≤12 names matching
+                              // /^[2-5] parts of [2-5]( \(packs\))?$/; days integer 0–7; no other keys
+export async function note(b, { timeoutMs = 5000, fetchImpl } = {});   // BROWSER. POSTs b to /api/note. Never throws:
+   // { note, question, source:"model" } or { note, question, source:"template", reason? } — the fixed sentences
+   // (noteFallback) on any miss. The page renders note + question either way.
+export async function writeNote(b, { apiKey, provider, fetchImpl, timeoutMs = 4000 });   // SERVER ONLY. notePayload(b) → the
+   // provider → noteGate (schema → ≤3 sentences → exactly one "?" → no blame words → no "_" labels → length caps).
+```
+
+`POST /api/note`  body = the summary above; `validNote` false → **400**. Response always 200 on a valid body:
+`{ note, question, source, reason? }`. No key → `reason:"no_key"`; an empty week (`solo`, `helped` empty and
+`open_id` null) → `reason:"nothing_to_say"`, the model is never called. The parent page builds the summary
+from `rung.v1`: `solo` = mastery 1, `helped` = mastery 0.5, `open_id` = the open misconception (or null),
+`tier` = the tier reached on it, `days` = distinct days with a `level_start` in the last 7. With no level at
+all in storage the page does not call `/api/note`.
+
 `GET /buddy.mjs` → `src/engine/buddy.mjs`. `GET /build` → `src/public/build.html`. `GET /fence.mjs` → `src/public/fence.mjs`.
 Anything under `src/public/` is reachable at `/public/<name>`; assets at `/assets/...`.
 

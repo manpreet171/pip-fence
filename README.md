@@ -16,6 +16,16 @@ the truth: a pure-function classifier reads the placement log and names the misc
 only *phrases* a hint, from a payload that contains no integer, through a lexical gate that cannot
 emit a number. The leak rate is measured, not asserted.
 
+**Where the AI is, exactly.**
+- The hint the child sees is phrased by a model from a payload with every number stripped out,
+  through a gate that rejects digits, number words and ordinals, with a gate-checked template as
+  the fallback. Spoken aloud by the browser's own speech, offline.
+- The weekly note on the grown-ups page is written by the model from a validated summary of the
+  child's mistakes (never the event log), through its own gate: one question, no blame, no jargon.
+  The strongest result in the tutoring literature came from pointing AI at the adult.
+- Everything that must be true is code: the misconception classifier, the mastery graph, the
+  next-level choice. Press J in the game to watch the whole pipeline live.
+
 Read the evidence base in [docs/RESEARCH-LEARNER.md](docs/RESEARCH-LEARNER.md), the approved concept in
 [docs/CONCEPT-V3.2.md](docs/CONCEPT-V3.2.md), and every decision with its rejected alternatives in
 [docs/DECISIONS.md](docs/DECISIONS.md). [docs/INDEX.md](docs/INDEX.md) is the map.
@@ -37,7 +47,9 @@ Open http://localhost:5177/build. The parent view is at `/public/parent.html`.
 - `CONTROL_ARM=1` mounts the frozen earlier build (`/`, `/measure`) and its model routes, for the
   side-by-side comparison only.
 - `?node=4x3_concrete` starts a given level; `?debug=1` shows whether a hint came from the model or a
-  template. Levels: `{2x3,3x3,3x4,4x3,4x5,2x5}_{concrete,packs}`.
+  template; `?judge=1` (or the J key) opens the engineering overlay: live events, the classifier's
+  decision, the redacted payload, the gate verdict and latency, the mastery map.
+  Levels: `{2x3,3x3,3x4,4x3,4x5,2x5}_{concrete,packs}`.
 
 ## Evals
 

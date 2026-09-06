@@ -165,9 +165,10 @@ const staticFence = (lx, ly, mirror, z, g) =>
 const shadow = (x, y, w, h, z, g) => `<div class="shd" style="z-index:${z};left:${px(x - w / 2 - g.bx.l)};top:${px(y - h / 2 - g.bx.t)};width:${px(w)};height:${px(h)}"></div>`;
 // One flat landscape tile (its top diamond only) with its top vertex at (x,y).
 const tile = (src, x, y, z, g) => `<img class="bld" src="${src}" alt="" style="z-index:${z};left:${px(x - TW / 2 - g.bx.l)};top:${px(y - g.bx.t)};width:${TW}px">`;
-// A tree with its trunk foot at (x,y): the 180x240 sprite at farm density, plus its ground shadow.
-const tree = (x, y, z, g, mirror) => shadow(x, y - 2, 70, 22, z, g) +
-  `<img class="bld${mirror ? " mir" : ""}" src="${SPRITE.tree}" alt="" style="z-index:${z + 1};left:${px(x - 90 * KT - g.bx.l)};top:${px(y - 236 * KT - g.bx.t)};width:${px(180 * KT)}">`;
+// A tree with its trunk foot at (x,y): the 180x240 sprite at farm density, plus its ground shadow. The
+// wrapper carries its world-x span so fit() can drop a tree the frame would cut in half (phone).
+const tree = (x, y, z, g, mirror) => `<div class="tree" data-l="${px(x - 90 * KT)}" data-r="${px(x + 90 * KT)}">` + shadow(x, y - 2, 70, 22, z, g) +
+  `<img class="bld${mirror ? " mir" : ""}" src="${SPRITE.tree}" alt="" style="z-index:${z + 1};left:${px(x - 90 * KT - g.bx.l)};top:${px(y - 236 * KT - g.bx.t)};width:${px(180 * KT)}"></div>`;
 
 // Draws ground + paddock + three finished sides + the buildable side's posts + goat + one transparent
 // hit region per part, and pins bbox from the FINISHED fence (every rail present, goat at every rest
@@ -247,7 +248,10 @@ export function mountScene(el, plan) {
     const W = el.clientWidth, H = el.clientHeight, T = 0.15 * H;
     g.scale = Math.min(0.96 * W / cw, 0.70 * H / ch);
     g.top = Math.max(T + (H - T - ch * g.scale) / 2, g.oh * g.scale + 8);
-    f.style.top = px(g.top); f.style.transform = `translate(-50%,0) scale(${g.scale.toFixed(3)})`; };
+    f.style.top = px(g.top); f.style.transform = `translate(-50%,0) scale(${g.scale.toFixed(3)})`;
+    // A tree is whole or absent, never cut by the frame edge: hide any whose span leaves the visible world.
+    const half = W / g.scale / 2, cx = g.bx.l + cw / 2;
+    for (const t of f.querySelectorAll(".tree")) t.style.visibility = parseFloat(t.dataset.l) >= cx - half && parseFloat(t.dataset.r) <= cx + half ? "" : "hidden"; };
   fit();
   new ResizeObserver(fit).observe(el);
   return g;
@@ -339,6 +343,7 @@ export const FENCE_CSS = `
 .isoworld{position:absolute;inset:0;overflow:visible;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 .isofit{position:absolute;left:50%;top:0;transform-origin:top center}
 .isoworld img,.isoworld .ground,.isoworld .haze,.isoworld .shd{position:absolute}
+.isoworld .tree{position:absolute;left:0;top:0}
 .isoworld *{pointer-events:none}                       /* scenery never eats a tap; only rails and hit regions are targets */
 .isoworld .hit,.isoworld .rail{pointer-events:auto}
 .isoworld .hit{position:absolute;z-index:50}
