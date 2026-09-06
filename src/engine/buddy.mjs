@@ -198,7 +198,7 @@ export function noteGate(out) {
   if (!/\?\s*$/.test(out.question.trim()) || (out.question.match(/\?/g) || []).length !== 1) return "question";
   if (BLAME.test(out.note) || BLAME.test(out.question)) return "blame";
   if (/_/.test(out.note + out.question)) return "labels";
-  if (/(sections?|segments?)/i.test(out.note + out.question)) return "vocab";   // the child hears "part"; the parent must too
+  if (/\b(sections?|segments?)\b/i.test(out.note + out.question)) return "vocab";   // the child hears "part"; the parent must too
   if (out.note.length > 400 || out.question.length > 160) return "length";
   return null;
 }
