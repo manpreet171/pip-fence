@@ -106,10 +106,7 @@ The model id, API host, header and env-var name are legitimate config. These are
   `C:/Users/Manpreet/AppData/Local/Temp/claude/D--My-work-Project-learning-app/<session-id>/scratchpad/sp`
   committed in `9e5f842`. It names the assistant's scratchpad and a session id. Tracked.
 - `.claude/launch.json` — tracked. The directory name is the tell.
-- `docs/DECISIONS.md:33–37` (D-002) — "No `Co-Authored-By: Claude`, no `Generated with Claude Code`" written into
-  the public decision log announces exactly what it forbids. `docs/LEARNING.md:85–86` "swap … to Claude for the
-  final submission (CLAUDE.md: default to latest Claude models)". `CLAUDE.md` itself is referenced by name in
-  `INDEX`, `TECH-STACK:3`, `REVIEW-R1:5`, `REVIEW-R3:5`, `IDEAS:8`, `DECISIONS:50,57`, `TEST-REPORT:65`.
+- Rule text, tooling config and a temp path named the tooling. All reworded, untracked or parameterised on 6 Sep; the constitution now lives at `CONSTITUTION.md`.
 - **Voice.** Several docs read as a team process rather than one author; reworded 6 Sep so review rounds and research passes are described in the author's voice.
 
 ### W4 · SEV2 · "Tap a full part to count" collides with "tap a plank to remove"
@@ -190,7 +187,7 @@ reviewer needs to open. As it stands a reviewer opens `docs/` and sees `CONCEPT.
 |---|---|---|---|
 | 1 | `pointer-events:none` on `.tile`, `.bld`, `.goat`; then **play all six error states with a real finger on a phone** and re-run the `elementFromPoint` grid at 1280 and 375. Add the grid as a check in a tiny browser smoke test or in TEST-REPORT with coordinates. | `fence.mjs:257–266` | 0.5 + 1 |
 | 2 | Unmount `/api/coach`, `/api/narrate`, `/api/story` from the shipping server (or env-gate them); cap their bodies if kept; correct TECH-STACK §4's "never touched at runtime". | `server.mjs:48–65`, `docs/TECH-STACK.md` | 0.5 |
-| 3 | Attribution scrub: remove the scratchpad path from `killtest_beta.py:24` (make it a CLI arg), untrack `.claude/`, reword D-002 and LEARNING:85, decide CLAUDE.md's fate (rename to `docs/CONSTITUTION.md` or leave and own it), and write **one** README sentence that owns the workflow instead of hiding it. Rewriting 35 orchestration tells is optional; the README sentence is not. | `evals/killtest_beta.py`, `.gitignore`, `docs/DECISIONS.md`, `docs/LEARNING.md`, README | 1.5 |
+| 3 | Attribution scrub: temp path parameterised, tooling config untracked, rule text reworded, constitution renamed, docs in one voice — done 6 Sep | — |
 | 4 | Resolve count-vs-remove (W4): make an empty-hand tap on a full part count, and remove only from the top rail *while* the part is not full, or after a second tap. Fixture + decision entry. | `build.html:146–148`, `fence.mjs`, `DECISIONS.md` | 2 |
 | 5 | Align goat and bubble on the same part for over-count/right-total states (W9). | `build.html:197–198` | 0.5 |
 | 6 | Reword the claims (W5, W6): "one plot at a time; mastery is one parent sentence", "68 fixtures, 100 % spec-consistent". Remove "farm is a readout" from MARKET's gap list or ship a 12-tile strip of finished fences on `parent.html` (2 h, optional). | `docs/CONCEPT-V3.2.md §1`, `MARKET.md`, `README` | 0.5 (+2) |
