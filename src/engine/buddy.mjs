@@ -199,7 +199,9 @@ const BLAME = /\b(wrong|bad|lazy|slow|behind|struggling|failed|fail|stupid)\b/i;
 export function noteGate(out) {
   if (!out || typeof out.note !== "string" || typeof out.question !== "string") return "schema";
   if (out.note.trim().split(/[.!?]+/).filter(s => s.trim()).length > 3) return "sentences";
-  if (!/\?\s*$/.test(out.question.trim()) || (out.question.match(/\?/g) || []).length !== 1) return "question";
+  // "one thing to ask out loud" may be an instruction ("Show me one full part.") or a question; never a speech.
+  const q = out.question.trim();
+  if (!q || q.split(/[.!?]+/).filter(x => x.trim()).length > 2 || (q.match(/\?/g) || []).length > 1) return "question";
   if (BLAME.test(out.note) || BLAME.test(out.question)) return "blame";
   if (/_/.test(out.note + out.question)) return "labels";
   if (/\b(sections?|segments?)\b/i.test(out.note + out.question)) return "vocab";   // the child hears "part"; the parent must too
@@ -208,7 +210,7 @@ export function noteGate(out) {
 }
 export function noteFallback(b) {
   const done = b.solo.length + b.helped.length;
-  const note = (done ? `This week ${done === 1 ? "one fence went up" : "several fences went up"}${b.helped.length ? ", some with a hint" : ""}. ` : "No fences went up this week yet. ")
+  const note = (done ? `This week ${done === 1 ? "one fence went up" : done + " fences went up"}${b.helped.length ? (b.solo.length ? ", some with a hint" : ", with a hint") : ""}. ` : "No fences went up this week yet. ")
     + (b.open_id ? PARENT_WORDS[b.open_id][0] : "Nothing is open right now.");
   return { note, question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
 }
