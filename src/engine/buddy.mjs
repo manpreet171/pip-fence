@@ -126,16 +126,19 @@ const SCHEMA = { type: "object", additionalProperties: false, required: ["tier",
 // hint (60 tokens, no numbers) and the parent's weekly note (CONCEPT §7: AI pointed at the adult).
 export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120,
   extra: " Reply with only a JSON object with the keys tier, misconception_id and text. Copy tier and misconception_id from the input exactly." };
-const NOTE_SYSTEM = () => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
+const NOTE_SYSTEM = (open = true) => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
   "count groups by building fences in a game. Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +
   "Do not use the words wrong, bad, lazy, slow, behind, struggling, failed. Do not name the game's internal labels. " +
   "Mention only what the input lists; invent nothing. Call the pieces of the fence parts and planks, never sections or segments. " +
-  "note: at most three sentences saying what the child did and what they are still working on. " +
-  "question: exactly one thing the parent can ask the child out loud, ending in a question mark.";
+  (open
+    ? "note: at most three sentences saying what the child did and what they are still working on. "
+    : "note: at most two sentences saying what the child did. Nothing is open: do not mention anything they are still working on, practising, or should do next. ") +
+  "question: exactly one thing the parent can ask the child out loud.";
 const NOTE_SCHEMA = { type: "object", additionalProperties: false, required: ["note", "question"],
   properties: { note: { type: "string" }, question: { type: "string" } } };
 export const NOTE_JOB = { system: NOTE_SYSTEM, schema: NOTE_SCHEMA, max_tokens: 220,
   extra: " Reply with only a JSON object with the keys note and question." };
+const noteJobFor = (payload) => ({ ...NOTE_JOB, system: () => NOTE_SYSTEM(!!payload.still_working_on) });
 
 export const PROVIDERS = {
   anthropic: {
@@ -196,8 +199,9 @@ export function notePayload(b) {
     suggested_question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
 }
 const BLAME = /\b(wrong|bad|lazy|slow|behind|struggling|failed|fail|stupid)\b/i;
-export function noteGate(out) {
+export function noteGate(out, open = true) {
   if (!out || typeof out.note !== "string" || typeof out.question !== "string") return "schema";
+  if (!open && /\b(still|working on|practi[cs]|keep|next|needs? to|improve|struggl)/i.test(out.note)) return "invented";
   if (out.note.trim().split(/[.!?]+/).filter(s => s.trim()).length > 3) return "sentences";
   // "one thing to ask out loud" may be an instruction ("Show me one full part.") or a question; never a speech.
   const q = out.question.trim();
@@ -219,12 +223,13 @@ export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provi
   if (!apiKey) return fallback("no_key");
   if (!b.solo.length && !b.helped.length && !b.open_id) return fallback("nothing_to_say");   // an empty week gets the plain sentence, never an invented one
   try {
-    const [url, init] = PROVIDERS[provider].request(notePayload(b), apiKey, NOTE_JOB);
+    const pl = notePayload(b);
+    const [url, init] = PROVIDERS[provider].request(pl, apiKey, noteJobFor(pl));
     const res = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
     if (!res.ok) return fallback(`http_${res.status}`);
     const { text } = PROVIDERS[provider].parse(await res.json());
     let out; try { out = JSON.parse(text); } catch { return fallback("parse"); }
-    const why = noteGate(out);
+    const why = noteGate(out, !!b.open_id);
     return why ? fallback(why) : { note: out.note.trim(), question: out.question.trim(), source: "model" };
   } catch (e) { return fallback(e?.name === "TimeoutError" ? "timeout" : "error"); }
 }

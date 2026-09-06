@@ -132,6 +132,13 @@ console.log(`\n${fails ? fails + " FAILED" : "all checks passed"}`);
   check("note: internal label leaked -> template", n.source === "template" && n.reason === "labels", n.reason);
   n = await wn(async () => { throw new Error("boom"); });
   check("note: fetch throws -> template with fallback text", n.source === "template" && n.note === noteFallback(B).note, n.reason);
+  const B0 = { ...B, open_id: null, tier: 1 };
+  let seenSystem = "";
+  const spy = (o) => async (url, init) => { const body = JSON.parse(init.body); seenSystem = body.system || body.messages?.[0]?.content || ""; return { ok: true, status: 200, json: async () => ({ content: [{ type: "text", text: JSON.stringify(o) }] }) }; };
+  n = await writeNote(B0, { fetchImpl: spy({ note: "Two fences went up this week. They are still working on counting the parts.", question: "Which fence was your favourite?" }), apiKey: "k", timeoutMs: 50 });
+  check("note: nothing open -> prompt says so and an invented weakness is rejected", /Nothing is open/.test(seenSystem) && n.source === "template" && n.reason === "invented", seenSystem.slice(-80) + " | " + n.reason);
+  n = await writeNote(B0, { fetchImpl: spy({ note: "Two fences went up this week, both on their own.", question: "Which fence was your favourite?" }), apiKey: "k", timeoutMs: 50 });
+  check("note: nothing open -> a plain factual note passes", n.source === "model", n.reason);
 }
 
 process.exit(fails ? 1 : 0);
