@@ -4,7 +4,7 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { dirname, join, extname } from "node:path";
+import { dirname, join, extname, resolve, sep } from "node:path";
 import { coach } from "./engine/coach.mjs";
 import { makeStory, narrateBuild } from "./engine/story.mjs";
 import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist } from "./engine/buddy.mjs";
@@ -33,8 +33,12 @@ async function buddy(req, res) {
   const { text, source, reason } = out;
   return send(res, 200, JSON.stringify(reason ? { text, source, reason } : { text, source }), "application/json");
 }
-const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript",
-  ".css": "text/css", ".svg": "image/svg+xml" };
+const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript", ".css": "text/css",
+  ".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon", ".json": "application/json", ".txt": "text/plain" };
+// Static routing: short URLs map to real files (no duplication). Only these files plus src/public/** are servable.
+const ROUTES = { "/": "/public/index.html", "/measure": "/public/measure.html", "/build": "/public/build.html",
+  "/engine.mjs": "/engine/engine.mjs", "/buddy.mjs": "/engine/buddy.mjs", "/village.mjs": "/public/village.mjs", "/fence.mjs": "/public/fence.mjs" };
+const PUBLIC = join(HERE, "public");
 
 const send = (res, code, body, type = "text/plain") =>
   res.writeHead(code, { "Content-Type": type, "Cache-Control": "no-store" }).end(body);
@@ -59,22 +63,14 @@ const server = createServer(async (req, res) => {
       const out = await makeStory(problem, theme, {});
       return send(res, 200, JSON.stringify(out), "application/json");
     }
-    // static: / -> index.html ; /engine.mjs -> the real engine module (no duplication)
-    let path = req.url.split("?")[0];
-    if (path === "/") path = "/public/index.html";
-    if (path === "/measure") path = "/public/measure.html";
-    if (path === "/engine.mjs") path = "/engine/engine.mjs";
-    if (path === "/village.mjs") path = "/public/village.mjs";
-    if (path === "/build") path = "/public/build.html";
-    if (path === "/fence.mjs") path = "/public/fence.mjs";
-    if (path === "/buddy.mjs") path = "/engine/buddy.mjs";
-    if (path.startsWith("/assets/")) path = "/public" + path;
-    const file = join(HERE, path.replace(/^\/+/, ""));
-    if (!file.startsWith(HERE)) return send(res, 403, "no");
+    const path = req.url.split("?")[0];
+    const file = resolve(HERE, (ROUTES[path] || path.replace(/^\/assets\//, "/public/assets/")).replace(/^\/+/, ""));
+    const routed = Object.values(ROUTES).some(p => file === join(HERE, p));
+    if (path.includes("..") || !(routed || file.startsWith(PUBLIC + sep))) return send(res, 404, "not found");
     const body = await readFile(file);
     return send(res, 200, body, TYPES[extname(file)] || "application/octet-stream");
   } catch (e) {
-    if (e.code === "ENOENT") return send(res, 404, "not found");
+    if (e.code === "ENOENT" || e.code === "EISDIR") return send(res, 404, "not found");
     return send(res, 500, "server error");   // never a stack or a path
   }
 });

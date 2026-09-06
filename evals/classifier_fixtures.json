@@ -14,7 +14,7 @@
     {"node": "3x4_concrete", "seq": "p0*6 p1*6 c", "expect": "right_total_wrong_grouping", "note": "[6,6,0]"}, 
     {"node": "3x4_concrete", "seq": "p0*4 p1*4 p2*3 f2 c", "expect": "interface_failure", "note": "missed tap on the short part right before commit"}, 
     {"node": "3x4_concrete", "seq": "p0*4 p1*4 p2*3 f0 c", "expect": "off_by_one_in_one_group", "note": "missed tap aimed at a FULL part is not the cause"}, 
-    {"node": "3x4_concrete", "seq": "p0*4 p1*4 p2*3 w35 c", "expect": "idle_off_task", "note": "commit 35 s after last act"}, 
+    {"node": "3x4_concrete", "seq": "p0*4 p1*4 p2*3 w35 c", "expect": "off_by_one_in_one_group", "note": "Done pressed 35 s after the last act is still her answer (idle_off_task only from the idle timer)"}, 
     {"node": "3x4_concrete", "seq": "p0*4 p1*4 p2*3 c:idle", "expect": "idle_off_task", "note": "45 s idle commit"}, 
     {"node": "3x4_concrete", "seq": "p0*4 c:idle", "expect": "idle_off_task", "note": "[4,0,0] but she wandered off"}, 
     {"node": "3x4_concrete", "seq": "p0*4 p1*4 p2*3 p2 r2 p2 r2 p2 r2 p2 r2 c", "expect": "off_by_one_in_one_group", "flag": "wheel_spinning", "note": "four place/remove cycles on part three"}, 

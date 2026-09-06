@@ -31,7 +31,7 @@
   .pack img{position:absolute;left:0;width:24px;height:14px}
   #addpack{width:44px;height:44px;border:2px dashed var(--wood);border-radius:10px;background:#fbf6ea;display:grid;place-items:center;padding:0}
   #addpack .pack{opacity:.45;cursor:inherit}
-  #grown{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;padding:12px 4px}
+  #grown{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;padding:13px 4px}
   #grown:hover{text-decoration:underline}
   #bubble{position:absolute;z-index:6;background:#fff;border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.35;box-shadow:0 4px 16px rgba(20,30,40,.18);animation:fade .25s both}
   #bubble::after{content:"";position:absolute;left:var(--tx,50%);bottom:-8px;width:16px;height:16px;background:#fff;transform:translateX(-50%) rotate(45deg)}
@@ -41,7 +41,7 @@
     font-weight:800;font-size:17px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pip 2s both}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes pip{0%{opacity:0;scale:.5}15%{opacity:1;scale:1}80%{opacity:1}100%{opacity:0}}
-  @media (prefers-reduced-motion:reduce){#bubble,.pip{animation-duration:.01s}}
+  @media (prefers-reduced-motion:reduce){#bubble{animation-duration:.01s}.pip{animation:none}}
 </style>
 </head>
 <body>
@@ -55,10 +55,11 @@
   <div id="slip" hidden><button id="addpack" title="add a pack"></button><div id="slipn"></div><button class="btn" id="deliver">Deliver</button></div>
   <button class="btn quiet" id="again" hidden>Order again</button>
   <button class="btn" id="done">Done</button>
+  <button class="btn" id="restart" hidden>Start again</button>
   <a id="grown" href="/public/parent.html">For grown-ups</a>
 </footer>
 <script type="module">
-  import { IDS, shape, next, classify, mountScene, appendPlank, removePlank, onTap, partTop, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
+  import { IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, partTop, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
   import { TEMPLATES, hint } from "/buddy.mjs";
   document.head.insertAdjacentHTML("beforeend", `<style>${FENCE_CSS}</style>`);
 
@@ -73,7 +74,7 @@
   const S = { mastery: {}, node: null, parts: [], cart: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, retry: false, idle: 0, tok: 0, last: null };
   const scene = $("scene");
   const sh = () => shape(S.node);
-  const lvl = () => S.events.slice(S.events.findLastIndex(e => e.e === "level_start"));
+  const lvl = () => level(S.events);
   const delivered = () => sh().mode !== "packs" || lvl().some(e => e.e === "order");
 
   function log(e) {
@@ -117,15 +118,17 @@
 
   // --- input -----------------------------------------------------------------------------------
   $("cart").onclick = () => {
-    if (S.done || !S.cart) return;
-    S.held = S.held ? null : (sh().mode === "packs" ? "pack" : "plank");
-    if (S.held) log({ e: "plank_held", held: S.held });
+    if (S.done || !S.cart || S.held) return;          // already holding: no-op, the hand stays held (D-065)
+    S.held = sh().mode === "packs" ? "pack" : "plank";
+    log({ e: "plank_held", held: S.held });
     render();
   };
   $("addpack").onclick = () => { const s = sh(); if (S.slip < s.groups * s.per) { S.slip++; render(); } };
   $("slipn").onclick = e => { if (e.target.closest(".pack")) { S.slip--; render(); } };
   $("deliver").onclick = () => { if (!S.slip) return; S.cart = S.slip; log({ e: "order", packs: S.slip }); render(); };
-  $("again").onclick = () => { S.retry = true; start(S.node); };
+  // Same level, so earlier hints still count and the tier escalates; level() drops the old order and rails.
+  $("again").onclick = () => { S.retry = true; Object.assign(S, { parts: S.parts.fill(0), cart: 0, held: null, slip: 0, pre: null, probe: false }); log({ e: "order_reset" }); mount(); };
+  $("restart").onclick = () => { S.mastery = {}; save(); $("restart").hidden = true; start("3x4_concrete"); };
   $("done").onclick = () => {
     if (S.done) return advance();
     if (!delivered()) return;
@@ -172,28 +175,30 @@
   // Tap-to-count: code walks the rails that are on screen with a pip. Never what should be there.
   function count(part) {
     log({ e: "tap_count", group: part });
-    const n = S.parts[part];
+    const n = S.parts[part], still = matchMedia("(prefers-reduced-motion:reduce)").matches;  // reduced motion: all pips at once, static, gone after 1.2 s
     for (let i = 0; i < n; i++) {
       const p = railPoint(scene, part, i), el = document.createElement("span");
       el.className = "pip"; el.textContent = i + 1;
       el.style.cssText = `left:${px(p.x)};top:${px(p.y)};animation-delay:${i * .45}s`;
-      $("stage").appendChild(el); setTimeout(() => el.remove(), i * 450 + 2100);
+      $("stage").appendChild(el); setTimeout(() => el.remove(), still ? 1200 : i * 450 + 2100);
     }
     if (S.probe) { S.probe = false; const r = classify(lvl()); if (r.id !== "ambiguous" && IDS.includes(r.id)) setTimeout(() => showHint(r), n * 450 + 400); }
   }
 
   // --- commit → classify → hint on the gap ------------------------------------------------------
   function onCommit() {
-    const r = classify(lvl()), s = sh(), c = r.counts;
+    S.held = null;                                     // Done is where the hand opens; a full part can then be tap-counted
+    const r = classify(lvl());
     if (r.id === "correct") return finish(r);
-    const gap = c.findIndex(n => n < s.per);
-    if (gap >= 0 && c.some(n => n > 0)) goatWalk(scene, gap, true);
+    goatToGap(r.counts);
     if (IDS.includes(r.id)) showHint(r);
     render();
   }
+  function goatToGap(c) { const gap = c.findIndex(n => n < sh().per); if (gap >= 0 && c.some(n => n > 0)) goatWalk(scene, gap, true); }
+  const gapAt = c => Math.max(0, c.findIndex(n => n !== sh().per));
   async function showHint(r) {
     log({ e: "hint", id: r.id, tier: r.tier });
-    const s = sh(), at = Math.max(0, r.counts.findIndex(n => n !== s.per));
+    const at = gapAt(r.counts);
     if (r.id === "ambiguous") { S.probe = true; return bubble(TEMPLATES.ambiguous[1], "template", at); }
     const tok = ++S.tok, key = r.id + r.tier;
     const h = await (S.pre?.key === key ? S.pre.h : hint(r)); S.pre = null;
@@ -211,8 +216,14 @@
   function advance() {
     const amb = lvl().some(e => e.e === "hint" && e.id === "ambiguous");
     const n = next(S.mastery, amb ? { id: "ambiguous", node: S.node } : S.last);
-    if (n) return start(n);
-    S.mastery = {}; save(); start("3x4_concrete");   // every plot fenced: begin again
+    n ? start(n) : end();
+  }
+  // Every plot fenced. Mastery stays (the parent screen reads it) until she taps Start again.
+  function end() {
+    S.done = true; clearTimeout(S.idle); hideBubble();
+    $("task").textContent = "Every plot has a fence.";
+    for (const id of ["cart", "slip", "done", "again"]) $(id).hidden = true;
+    $("restart").hidden = false;
   }
 
   // --- bubble ----------------------------------------------------------------------------------
@@ -236,8 +247,16 @@
   if (Q.get("node") && shape(Q.get("node"))) start(Q.get("node"));
   else if (saved.build?.node && ls?.node === saved.build.node && shape(saved.build.node)) {
     Object.assign(S, { events: saved.events, node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, at: ls.at || Date.now() });
-    mount(); S.done = classify(lvl()).id === "correct"; render(); arm();
-  } else start(Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : "3x4_concrete");
+    mount(); const L = lvl(), r = classify(L); S.done = r.id === "correct";
+    // Put the goat back in the gap after a commit; re-say the hint that was still up (a place/remove hides it).
+    if (!S.done && L.some(e => e.e === "commit")) goatToGap(r.counts);
+    const h = L.findLast(e => e.e === "hint" || e.e === "place" || e.e === "remove");
+    if (!S.done && h?.e === "hint") { S.probe = h.id === "ambiguous"; bubble(TEMPLATES[h.id][S.probe ? 1 : h.tier], "template", gapAt(r.counts)); }
+    render(); arm();
+  } else {
+    const n = Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : "3x4_concrete";
+    if (n) start(n); else { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(); }
+  }
 </script>
 </body>
 </html>

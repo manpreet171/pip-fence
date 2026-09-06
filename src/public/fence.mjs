@@ -68,8 +68,10 @@ export function classify(events) {
 
   // Interface, not maths: the last act was a failed tap, while holding, aimed at a part that is short.
   if (prev?.e === "place_failed" && c[prev.nearest_group] < s.per) return out("interface_failure");
-  // Disengagement, not maths: the commit came from idle, or >30 s after her last act.
-  if (commit.reason === "idle" || commit.t - lastAct > 30000) return out("idle_off_task");
+  // Disengagement, not maths: the commit came from the idle timer, not from her. A deliberate Done is
+  // always read as her answer, however long she looked at it first (QA D-3: a 30 s gap rule made a
+  // presenter's pause silence the hint on camera).
+  if (commit.reason === "idle") return out("idle_off_task");
   // Packs: one pack per part, when a pack is not a part.
   if (s.mode === "packs" && ordered === s.groups && s.pack !== s.per) return out("pack_unit_confusion");
 
@@ -102,6 +104,14 @@ function resolveAmbiguous(events, hints, c, s, out) {
 // Sprites are the Kenney cut-outs from scripts/make_parts.py. Geometry is in source px, scaled by
 // K so one fence part (122 source px between post centres) spans one tile edge (66 world px).
 import { iso, BB, VILLAGE_CSS } from "./village.mjs";
+
+// The slice classify() reads: the current level, and after an `order_reset` ("Order again") only the
+// events since it — plus the earlier hints, so the tier keeps climbing. Pure; here so the parent page
+// reads the log the same way the game does.
+export function level(events) {
+  const L = events.slice(events.findLastIndex(e => e.e === "level_start")), i = L.findLastIndex(e => e.e === "order_reset");
+  return i < 0 ? L : [L[0], ...L.slice(1, i).filter(e => e.e === "hint"), ...L.slice(i + 1)];
+}
 
 const TW = 132, TH = 66, GRASS = "/assets/iso/landscapeTiles_015.png";
 const K = 66 / 122, KF = TW / 256;                    // KF: farm sprites (256-wide canvas) onto a 132 tile

@@ -1284,3 +1284,40 @@ reasoning off also keeps the attacker comparable with the UPDATE 1–3 runs (`de
 non-reasoning). **Rejected.** A bigger token budget (tried: 2000 and 8000, still truncated);
 replicating the payload in Python (the number would be about a copy); silently dropping unparsed
 fixtures from the denominator.
+
+
+---
+
+## D-064 — `idle_off_task` fires only from the idle timer, never from a deliberate Done
+6 Sep 2026 · Status: **Decided** (QA D-3, docs/TEST-REPORT.md)
+
+CONCEPT §4 read "final gap >30 s with no commit → idle_off_task". The classifier had applied the 30 s
+gap to explicit commits too, so a child (or a presenter) who looked at the fence for half a minute and
+then tapped Done got silence. A Done tap is her answer regardless of how long she took; only the 45 s
+idle timer's own commit is disengagement. Fixture updated; 68 fixtures, 0 mismatches.
+**Rejected:** keeping the gap rule and scripting the demo tap inside 30 s — a demo-only workaround
+for a real product defect.
+
+## D-065 — QA fixes that change behaviour: cart tap while holding is a no-op; "Order again" stays in the level; twelve fences end calmly
+6 Sep 2026 · Status: **Decided** (QA D-1, D-2, D-4, D-8, D-9, docs/TEST-REPORT.md). No D-050 exists in this log — the numbering
+jumps D-049 → D-060 — so the cart decision the principal asked to file "under D-050" lives here.
+
+**Cart (QA D-4).** A cart tap while already holding does nothing; the hand stays held. The old toggle
+made the spec's own rhythm ("tap the cart, tap the part") drop every second plank. Consequence: a held
+plank can only leave the hand by being placed — so **Done opens the hand** (`onCommit` clears `held`),
+otherwise the demo beat "Done → tap a full part → pips" would place a fifth plank instead of counting.
+Rejected: keeping the toggle and relying on the "In hand" label (QA showed hands-only filming misfires).
+
+**Order again (QA D-9).** Appends `order_reset` instead of a new `level_start`. `level()` (fence.mjs,
+pure, used by both pages) hands classify() the events since the reset plus the earlier hints, so the
+tier escalates (verified: 12 packs → t1, Order again, 3 packs → t2) and the parent screen reads the
+level the same way. Part 1 is untouched; `tally()` never sees the pre-reset order or rails. Rejected:
+synthetic `remove`/negative `order` events to zero Part 1's state (pollutes the log the evals read).
+
+**Twelve fences (QA D-2).** `next()` → null now shows a finished fence, "Every plot has a fence." and
+a Start again button; mastery is wiped only when that button is tapped, never on reload or advance,
+because the parent screen is built from it.
+
+**Also.** Reduced motion: pips are static (`animation:none`), all shown at once, removed by code after
+1.2 s (QA D-1). Reload restores the goat in the gap after any commit and re-says the last hint unless
+a place/remove had already hidden it (QA D-8). "For grown-ups" link 44 px (QA D-7).

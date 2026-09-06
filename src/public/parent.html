@@ -33,7 +33,7 @@
   <p class="foot"><a href="/build">Back to the plots</a></p>
 </main>
 <script type="module">
-  import { classify, shape, IDS } from "/fence.mjs";
+  import { classify, shape, IDS, level } from "/fence.mjs";
   // Plain words for each misconception, and the one question to ask. Same register as the hints:
   // short, no blame, points at the fence rather than at the child.
   const WORDS = {
@@ -50,7 +50,7 @@
   let d = {}; try { d = JSON.parse(localStorage.getItem("rung.v1")) || {}; } catch {}
   const levels = [];
   for (const e of d.events || []) { if (e.e === "level_start") levels.push([]); if (levels.length) levels.at(-1).push(e); }
-  const res = levels.flatMap(L => { try { return [{ node: L[0].node, at: L[0].at || 0, r: classify(L), hints: L.filter(e => e.e === "hint") }]; } catch { return []; } });
+  const res = levels.map(level).flatMap(L => { try { return [{ node: L[0].node, at: L[0].at || 0, r: classify(L), hints: L.filter(e => e.e === "hint") }]; } catch { return []; } });
   const week = Date.now() - 7 * 864e5;
   const done = res.filter(x => x.r.id === "correct" && x.at >= week);
   document.getElementById("n").innerHTML = `${done.length}<small>${done.length === 1 ? "fence finished" : "fences finished"}</small>`;
