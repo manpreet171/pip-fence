@@ -121,7 +121,7 @@ phrases, and is not on the critical path.
 `"groups"` is the single word **`"some"`** for every count. It was `"a couple"` for groups==2, which
 identified shape (2,3) exactly — a real leak, found by the red-team run today and closed.
 
-**The gate is lexical, and that is the honest claim.** It rejects any digit and 25 number words, so
+**The gate is lexical, and that is the honest claim.** It rejects any digit and 36 number words (cardinals, quantity words, and ordinals from *second* up — D-068), so
 it protects the **target total**: the model cannot emit "twelve" or "4". It does **not** close the
 semantic channel — "add another plank" is legal and as informative as "add one more". That is
 deliberate: the next action is exactly what a tutor hints. What must not be derivable is the answer

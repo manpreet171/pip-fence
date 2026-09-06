@@ -6,7 +6,7 @@ Scores each template in data/hints_v2.txt (id<TAB>tier<TAB>text) against data/wo
   - DOMAIN = the game's own screen vocabulary (reported separately, never counted as Dolch)
 Per hint: sentence count, words/sentence, % in BASE, % in BASE+DOMAIN, out-of-list words,
 number-word flag. Inflections -s/-es/-ing/-ed are stripped before lookup (CONCEPT-V3.2 s3).
-No LLM involved - pure code. NUMBER_WORDS is the same 25-word list as gate() in buddy.mjs.
+No LLM involved - pure code. NUMBER_WORDS is the same 36-word list as gate() in buddy.mjs.
 
 Run:  python evals/readinglevel.py            (table for every template)
       python evals/readinglevel.py hints.txt  (same format, another file)
@@ -17,8 +17,9 @@ import re, sys, io, statistics
 
 NUMBER_WORDS = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "fifteen", "twenty", "hundred", "dozen", "half", "twice", "once", "single",
-    "pair", "couple", "both", "double"}
-assert len(NUMBER_WORDS) == 25
+    "pair", "couple", "both", "double",
+    "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth"}   # ordinals leak the group count; "first" allowed (D-068)
+assert len(NUMBER_WORDS) == 36
 
 def load_list(path="data/wordlist.txt"):
     base, dom, sect = set(), set(), None

@@ -1367,3 +1367,20 @@ child. Residual: the attacker family and the coach family are now the same; publ
 
 **Rejected.** Waiting for an Anthropic key (unmeasured headline numbers for the whole submission);
 DeepSeek-only (throws away the strict-schema path that is already written and unit-tested).
+
+
+---
+
+## D-068 — Output-side red-team added; ordinals join the gate
+6 Sep 2026 · Status: **Decided**
+
+With a live coach (D-067) the red-team can attack what the child sees, not only what the coach
+receives. `evals/redteam_leak.py --output` has the shipped `phrase()` write 60 gated hints, then shows
+the attacker the hint text alone. Result (REDTEAM-RESULTS UPDATE 5): total recovery 28.3% vs 31.7%
+baseline overall; 37.2% vs 41.9% on model-written hints; the attacker's constant guess of 12
+explains every hit but two. PASS on both sides of the gate.
+
+Preventive: no model hint used an ordinal, but *"the third part"* would leak the group count and
+the gate did not stop it. `second`…`twelfth` are now number words in both gate implementations
+(36 words, identity asserted). *first* stays allowed: it is in the templates and names a position,
+not a count. **Rejected:** blocking *first* too — it would fail four shipped templates for no gain.

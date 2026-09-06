@@ -73,7 +73,8 @@ export function payload(result) {
 // ---- the output gate (lexical; CONCEPT §3 says exactly what it does and does not protect) ----
 export const NUMBER_WORDS = new Set(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
   "nine", "ten", "eleven", "twelve", "fifteen", "twenty", "hundred", "dozen", "half", "twice", "once", "single",
-  "pair", "couple", "both", "double"]);
+  "pair", "couple", "both", "double",
+  "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth"]);   // ordinals name a position and leak the group count; "first" stays allowed (D-068)
 const AFFECT = /\b(sad|disappointed|wrong|bad)\b|miss you/;
 
 // data/wordlist.txt text → Set of lowercase words (BASE ∪ DOMAIN; comments dropped).

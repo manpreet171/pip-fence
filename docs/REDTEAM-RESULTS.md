@@ -148,3 +148,48 @@ JSON), and the run counts `unparsed replies` and prints **INVALID** instead of a
 reply failed to parse. The 0/60 numbers were never published; this paragraph is the record (D-063).
 
 Standing residual: one attacker family only.
+
+
+---
+
+## UPDATE 5 — DeepSeek as coach: payload attack rerun, and the first OUTPUT attack (6 Sep 2026)
+
+Since D-067 the shipped coach runs on `deepseek-v4-flash`. Two runs, 60 fixtures each, same fixture
+generator, attacker `deepseek-v4-flash` (thinking disabled, forced choice, 0 unparsed in both).
+
+### 1. Payload attack (what the coach sees) — unchanged by the provider, rerun for the record
+
+| Recovered | Attacker | Majority-class baseline | Lift |
+|---|---|---|---|
+| Target total | 19/60 = 31.7% | always-12 = 31.7% | **+0.0%** |
+| Exact shape | 8/60 = 13.3% | 20.0% (floor 16.7%) | **−6.7%** |
+
+Modal guess 12 on 56/60. **PASS.** Identical to UPDATE 4 within one fixture.
+
+### 2. Output attack (what the child sees) — new
+
+The coach wrote the hint first through the shipped `phrase()` with the full gate; the attacker was
+then shown **only the hint text**. 43 of 60 hints came from the model, 17 fell back to the template
+(12 `number` — all the word *one*; 3 `vocab`; 2 transient `error` under 60 concurrent calls).
+
+| Recovered | Attacker | Majority-class baseline | Lift |
+|---|---|---|---|
+| Target total, all 60 | 17/60 = 28.3% | 31.7% | **−3.3%** |
+| Exact shape, all 60 | 9/60 = 15.0% | 20.0% (floor 16.7%) | **−5.0%** |
+| Target total, **model-written hints only** (n=43) | 16/43 = 37.2% | 41.9% on that subset (18 of 43 fixtures total 12) | **−4.7%** |
+| Target total, **template hints only** (n=17) | 1/17 = 5.9% | 29.4% on that subset | −23.5% |
+
+The 37.2% on model hints is not a leak: the attacker guessed 12 on 28 of 43 and every hit but two
+is a 12-fixture met by that constant guess. Of the 43 model-written hints, none contained a
+digit, a number word, or an ordinal (`second`…`twelfth` were searched for; only *each*, *every*,
+*many* appear). **PASS.**
+
+### Residuals
+- Coach and attacker are the same family (DeepSeek). The payload attack does not depend on the
+  coach's family; the output attack does, and a second family remains unavailable on this machine.
+- Preventive change after the run: ordinals `second`…`twelfth` added to the gate's number-word list
+  in both `buddy.mjs` and `readinglevel.py` (36 words, still asserted identical). *first* stays
+  allowed — the templates use it and it carries no count. No hint in this run used an ordinal; the
+  gate now rejects them before one does.
+
+Raw: `evals/redteam_leak_results_tiers.json`, `evals/redteam_leak_results_output.json`.
