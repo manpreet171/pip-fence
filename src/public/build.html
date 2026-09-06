@@ -36,8 +36,8 @@
   #sign::before,#sign::after{content:"";position:absolute;top:7px;width:8px;height:8px;border-radius:50%;
     background:radial-gradient(circle at 35% 35%,#efe0c4,#5a3a1c 70%)}
   #sign::before{left:8px}#sign::after{right:8px}
-  .brand{display:block;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
-  #task{display:block;font-size:24px;font-weight:800;line-height:1.15}
+  .brand{display:block;font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+  #task{display:block;font-size:24px;font-weight:700;line-height:1.15}
 
   /* --- the cart tray and the buttons ------------------------------------------------------- */
   #hud{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 14px;
@@ -52,11 +52,11 @@
   .tray::before{left:22px}.tray::after{right:22px}
   #cart{cursor:pointer}
   #cart.held{box-shadow:0 6px 0 var(--wood2),0 0 0 4px rgba(255,214,120,.75),0 0 28px rgba(255,200,90,.85)}
-  .lbl{font-size:15px;font-weight:700;line-height:1.2;min-width:64px;max-width:110px;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+  .lbl{font-size:15px;font-weight:600;line-height:1.2;min-width:64px;max-width:110px;text-shadow:0 1px 0 rgba(0,0,0,.35)}
   #pile{position:relative;flex:1;height:64px;min-width:240px;border-radius:8px;background:rgba(45,22,6,.5);box-shadow:inset 0 3px 8px rgba(0,0,0,.45),inset 0 -1px 0 rgba(255,225,180,.15)}
-  .plank{width:58px;height:35px;display:block;filter:brightness(1.28) saturate(1.1) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+  .plank{width:58px;display:block;filter:brightness(1.18) saturate(1.05) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
   .pack{position:relative;display:inline-block;width:36px;height:34px;cursor:pointer}
-  .pack img{position:absolute;left:0;width:34px;height:20px;filter:brightness(1.28) saturate(1.1) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+  .pack img{position:absolute;left:0;width:34px;filter:brightness(1.18) saturate(1.05) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
   /* the delivery slip: a paper note pinned on the tray */
   #note{flex:1;display:flex;align-items:center;gap:8px;min-height:60px;padding:6px 10px;border-radius:3px;background:var(--cream);color:var(--ink);
     box-shadow:0 2px 5px rgba(0,0,0,.35);transform:rotate(-1deg)}
@@ -64,26 +64,30 @@
   #addpack{width:48px;height:48px;flex:none;border:2px dashed var(--wood);border-radius:10px;background:rgba(169,112,47,.08);display:grid;place-items:center;padding:0}
   #addpack .pack{opacity:.45;cursor:inherit}
   #slipn{display:flex;flex-wrap:wrap;gap:2px 4px;align-items:flex-end;flex:1;min-height:36px}
-  .btn{min-height:56px;min-width:56px;padding:0 28px;border-radius:16px;font-family:var(--font-display);font-weight:800;font-size:20px;
+  .btn{min-height:56px;min-width:56px;padding:0 28px;border-radius:16px;font-family:var(--font-display);font-weight:600;font-size:20px;
     background:var(--woodbg);color:var(--cream);border:3px solid var(--wood2);text-shadow:0 1px 0 rgba(0,0,0,.4);
     box-shadow:0 6px 0 var(--wood2),0 10px 14px rgba(20,30,20,.35),inset 0 0 0 2px rgba(255,235,200,.16)}
   .btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--wood2),0 4px 8px rgba(20,30,20,.3)}
   .btn.quiet{background:var(--paper);color:var(--wood2);text-shadow:none;border-color:#b58d5c;box-shadow:0 5px 0 #b58d5c,0 8px 12px rgba(20,30,20,.25);font-size:17px}
   .btn.quiet:active{box-shadow:0 1px 0 #b58d5c}
-  #grown{font-size:14px;font-weight:700;color:var(--cream);text-shadow:0 1px 2px rgba(0,0,0,.6);text-decoration:none;white-space:nowrap;
+  #grown{font-size:14px;font-weight:600;color:var(--cream);text-shadow:0 1px 2px rgba(0,0,0,.6);text-decoration:none;white-space:nowrap;
     padding:14px 8px;min-height:44px;margin-left:auto}
   #grown:hover{text-decoration:underline}
 
   /* --- bubble on the gap, pips on the rails ------------------------------------------------- */
   #bubble{pointer-events:none;position:absolute;z-index:6;background:var(--paper);border:2px solid var(--wood);border-radius:14px;padding:12px 16px;
-    font-size:18px;font-weight:600;line-height:1.35;color:var(--ink);box-shadow:0 8px 18px rgba(20,30,20,.35);animation:fade .25s both}
-  #bubble::after{content:"";position:absolute;left:var(--tx,50%);bottom:-10px;width:16px;height:16px;background:var(--paper);
-    border-right:2px solid var(--wood);border-bottom:2px solid var(--wood);transform:translateX(-50%) rotate(45deg)}
+    font-size:18px;font-weight:500;line-height:1.35;color:var(--ink);box-shadow:0 8px 18px rgba(20,30,20,.35);animation:fade .25s both}
+  /* the tail sits on whichever edge faces the gap: --tx along the top/bottom edge, --ty along a side */
+  #bubble::after{content:"";position:absolute;width:16px;height:16px;background:var(--paper);transform:rotate(45deg);border:0 solid var(--wood)}
+  #bubble[data-side=bottom]::after{left:var(--tx,50%);bottom:-10px;margin-left:-8px;border-width:0 2px 2px 0}
+  #bubble[data-side=top]::after{left:var(--tx,50%);top:-10px;margin-left:-8px;border-width:2px 0 0 2px}
+  #bubble[data-side=left]::after{top:var(--ty,50%);left:-10px;margin-top:-8px;border-width:0 0 2px 2px}
+  #bubble[data-side=right]::after{top:var(--ty,50%);right:-10px;margin-top:-8px;border-width:2px 2px 0 0}
   #bsrc{display:block;margin-top:6px;font:11px/1 ui-monospace,monospace;font-weight:400;color:var(--muted)}
   #bsrc:empty{display:none}
   .pip{position:absolute;z-index:7;pointer-events:none;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;
     background:radial-gradient(circle at 35% 30%,var(--wood3),var(--wood) 55%,var(--wood2));border:2px solid var(--wood2);color:var(--cream);
-    font-weight:800;font-size:17px;display:grid;place-items:center;box-shadow:0 3px 6px rgba(0,0,0,.35);animation:pip 2s both}
+    font-weight:700;font-size:17px;display:grid;place-items:center;box-shadow:0 3px 6px rgba(0,0,0,.35);animation:pip 2s both}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes pip{0%{opacity:0;scale:.5}15%{opacity:1;scale:1}80%{opacity:1}100%{opacity:0}}
   @media (prefers-reduced-motion:reduce){#bubble{animation-duration:.01s}.pip{animation:none}}
@@ -103,7 +107,7 @@
 <div id="stage">
   <div id="scene" class="scene"></div>
   <div id="vig"></div>
-  <div id="bubble" role="status" aria-live="polite" hidden><span id="btext"></span><span id="bsrc"></span></div>
+  <div id="bubble" role="status" aria-live="polite" data-side="bottom" hidden><span id="btext"></span><span id="bsrc"></span></div>
   <div id="sign"><span class="brand">Rung</span><span id="task"></span></div>
   <div id="hud">
     <div id="cart" class="tray"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
@@ -115,13 +119,13 @@
   </div>
 </div>
 <script type="module">
-  import { IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, partTop, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
+  import { IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
   import { TEMPLATES, hint } from "/buddy.mjs";
   document.head.insertAdjacentHTML("beforeend", `<style>${FENCE_CSS}</style>`);
 
   const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
   const Q = new URLSearchParams(location.search), DEBUG = Q.has("debug");
-  const IDLE_MS = 45000, KEY = "rung.v1", RAIL = "/assets/fence/rail.png";
+  const IDLE_MS = 45000, KEY = "rung.v1", BOARD = "/assets/fence/board.png";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart }, events: S.events })); } catch {} };
 
@@ -155,15 +159,15 @@
     hideBubble(); render();
   }
 
-  // The cart holds a heap, not a row: three rows of overlapping boards laid flat (the rail sprite is drawn
-  // at the iso slope, so it is turned level), each row leaning a little the other way from the one under it, so
-  // twelve planks read as a tidy pile of wood. Never a digit.
-  const plank = () => `<img class="plank" src="${RAIL}" alt="">`;
-  const pack = n => `<span class="pack">${Array.from({ length: n }, (_, i) => `<img src="${RAIL}" alt="" style="top:${(n - 1 - i) * 4}px">`).join("")}</span>`;
+  // The cart holds a heap, not a row: Kenney's plank slab (assets/fence/board.png) in three rows of
+  // overlapping boards, each row leaning a little the other way from the one under it, so twelve planks
+  // read as a pile of lumber. Never a digit.
+  const plank = () => `<img class="plank" src="${BOARD}" alt="">`;
+  const pack = n => `<span class="pack">${Array.from({ length: n }, (_, i) => `<img src="${BOARD}" alt="" style="top:${(n - 1 - i) * 4}px">`).join("")}</span>`;
   const heap = (n, item, step) => { const W = $("pile").clientWidth, per = Math.ceil(n / 3); step = Math.min(step, (W - 60) / per | 0);
     const x0 = Math.max(8, (W - 50 - per * step) / 2);
     return Array.from({ length: n }, (_, k) => { const row = Math.floor(k / per), col = k % per;
-      return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${5 + row * 9}px;transform:rotate(${26.5 + (row % 2 ? 3 : -3)}deg)">${item}</span>`; }).join(""); };
+      return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
   function render() {
     const s = sh(), d = delivered(), packs = s.mode === "packs";
     $("cart").hidden = !d; $("slip").hidden = d; $("done").hidden = !d;
@@ -299,11 +303,15 @@
     $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
     b.hidden = false; placeBubble();
   }
+  // Beside the gap, never on it (D-070): bubbleSpot keeps the card off every post, rail and the goat, and
+  // off the sign; on a phone with no room beside, it goes in the band under the sign.
   function placeBubble() {
     const b = $("bubble"); if (b.hidden) return;
-    const p = partTop(scene, S.bpart), W = scene.clientWidth, w = Math.min(280, W - 16);
-    const left = Math.max(8, Math.min(W - w - 8, p.x - w / 2));
-    b.style.cssText = `width:${px(w)};left:${px(left)};top:${px(Math.max(8, p.y - b.offsetHeight - 16))};--tx:${px(Math.max(16, Math.min(w - 16, p.x - left)))}`;
+    const w = Math.min(280, scene.clientWidth - 16); b.style.cssText = `width:${px(w)}`;
+    const s = $("sign").getBoundingClientRect(), o = scene.getBoundingClientRect();
+    const p = bubbleSpot(scene, S.bpart, w, b.offsetHeight, [{ l: s.left - o.left, t: s.top - o.top, r: s.right - o.left, b: s.bottom - o.top }]);
+    b.dataset.side = p.side;
+    b.style.cssText = `width:${px(w)};left:${px(p.left)};top:${px(p.top)};--tx:${px(p.at)};--ty:${px(p.at)}`;
   }
   function hideBubble() { $("bubble").hidden = true; S.tok++; }
   addEventListener("resize", placeBubble);

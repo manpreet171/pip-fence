@@ -1475,6 +1475,79 @@ Also: an inline empty favicon, which was the only 404 in the console.
 
 ---
 
+## D-070 — Real tiles, a path, a barn built from the pack, trees, boards; the card sits beside the gap
+6 Sep 2026 · Status: **Decided**
+
+**First, a repair.** The "full pack" dropped into `assets/farm/` at 23:07 was Kenney's `Angle/` folder
+(orthographic side views: a wall is a 26 px sliver, a roof a rectangle of planks), not `Isometric/`.
+Every farm sprite the scene uses had silently changed shape. The 57 east-facing files were replaced
+from the pack's `Isometric/` folder (`fenceHigh_E` is byte-identical to the `probe/` copy again) and
+six more directions were added for the barn: `woodWall_N`, `woodWall_W`, `woodWallDoorClosed_W`,
+`woodWallWindow_W`, `roofSingle_N`, `roofSingleWall_N`. Reason below.
+
+**What.**
+1. *Ground from tiles.* `scripts/make_parts.py` composites `assets/ground/grass.png`: one seamless
+   264×132 patch of eight top diamonds of landscape tile 075 (two of them 3 % darker, so the lattice
+   reads as a field rather than a single flat green), each diamond masked a pixel proud over a base
+   fill so butted edges never show a hairline. The ground is still one `div`; `background-position`
+   seats a diamond's top vertex on `iso(0,0)`, so the paddock's dirt lands on lattice cells exactly.
+   Tile 015 (a slope) is gone. 022 was rejected on measurement: also a slope. 067's top face is
+   pixel-identical to 075, so "variation" had to be synthetic.
+2. *The way in.* One-tile dirt path (`assets/ground/dirt.png`, the top diamond of tile 083) along the
+   column outside the buildable side, from the tile the goat waits on down-left off the front of the
+   stage; 8 tiles on 3×4. It runs under nothing that matters and exits at the bottom-left at both sizes.
+3. *Barn.* Two tiles along the row direction behind the back-left fence, its long face parallel to the
+   fence with a one-tile alley between: `woodWallWindow_W` (back) and `woodWallDoorClosed_W` (front) on
+   the front-right edges, `woodWall_N` as the gable end on the front tile's front-left edge, `roofSingle_N`
+   on the back tile and `roofSingleWall_N` (closed gable) on the front one — two single-tile roofs in a
+   line make one continuous gable because their inner gables coincide. Every piece is seated by its
+   canvas (source (128,512) = the tile's bottom vertex), the roof 170 source px up = the measured wall
+   top at the near post, so nothing floats. `roof_E` is not a two-tile roof: measured, it is one pitch
+   of a full-tile slab (eave on the front-left edge, high edge on the back-right, 142 px), which is
+   why the D-069 barn read as a tilted slab; and an `_E` wall stands on a tile's back-left edge, which
+   in any barn behind the paddock is an interior wall — hence the non-E files.
+   *Scale.* The barn is 0.8 of a world tile. At full scale its apex is 188 world px above its back
+   tile's ground; behind the paddock that puts the roof under the sign on desktop unless the paddock
+   drops to ~55 % of the scene height, and beside the paddock it either crops on the phone or costs the
+   phone fence 13 %. At 0.8, desktop fits at the brief's 70 % (`fit` height budget 0.77 → 0.70, scale
+   1.82 → 1.63) and the phone pays nothing (bbox unchanged). Fully in frame, clear of the sign, at
+   1280×720 and 375×812 (checked from measured art bounds, not canvas bounds).
+4. *Trees.* One sprite (`assets/ground/tree.png`, 180×240 at farm density): two-tone trunk, three flat
+   green blobs, no outlines, drawn at 2× and downsampled. Four in the scene — two behind-right, two
+   front-left, alternate ones mirrored — each with a ground shadow; none in the paddock, on the path
+   or under the tray. **Verdict: kept.** At scene scale they sit with the flat landscape tiles; next
+   to the rendered barn they are plainer, but they do not read as amateur. The blobs are geometric;
+   the fix would be a hand-drawn canopy, not a script change.
+5. *Boards.* `assets/fence/board.png` is `planks_E` cropped to its opaque bounds (256×148). The cart
+   heap is three rows of these slabs, ∓3° per row, 34 px steps; packs are slabs stacked 4 px apart.
+   Twelve reads as a pile of lumber. No digits anywhere on the tray.
+6. *Card placement.* `bubbleSpot()` in `fence.mjs` Part 2 tries, in order: right of the part level with
+   its top, right of it below the fence line, left level, left below, under it, above it; the first
+   spot that fits the scene and overlaps no post, no rail (over-count rail included), not the goat's
+   destination and not the sign wins; otherwise the band under the sign, tail pointing down at the
+   gap. The tail moves to whichever edge faces the gap (`data-side`). Measured: 0 cue overlaps on
+   [4,4,3] and [5,4,3] at both sizes; on the phone [4,4,3] lands under the sign, [5,4,3] under part 0.
+7. *Font.* Fredoka loads (`document.fonts.check` true on build and parent pages, no 404). Weights:
+   sign task 700, buttons 600, labels 600, card 500, pips 700, body 400; 800 is above the file's range
+   and was synthesising bold. Parent page `.big` 800 → 700; an inline favicon there too (its only 404).
+8. *Pond.* **Skipped.** The only spot that fits — behind the back-right fence — is where the hay and a
+   tree already are; a 2×2 pond there crowds the corner and on desktop its far edge lands 17 px past
+   the frame at 70 %.
+
+**Verified** (Playwright `page.mouse.click`, never `.click()`): [4,4,3] 11/11 planks on parts 0/1/2,
+[5,4,3] 12/12, 0 `place_failed`, both sizes; `elementFromPoint` sweep 145/145 per part on desktop,
+144/145 per part on the phone (the same edge point on every part); `classifier_eval` mismatches 0;
+`run_all.py` ALL PASS; 0 console errors, 0 failed requests including the font and every tile; scene
+element count 71 clean, 82–83 with rails (budget 200); packs slip → deliver → pack placed; reload
+restores rails and cart; parent page loads in Fredoka. Part 1 of `fence.mjs` unchanged.
+
+**Rejected.** Tiling the grass as ~120 `img` elements (the patch does it with one). A per-viewport
+barn slot (behind on a phone, beside on desktop: two layouts to keep right). Cutting one board strip
+out of `planks_E` (thinner than the rail it would replace). Placing the card above the part (covers
+the bare post and the over-count rail, the two cues it describes). A cheaper roof (`roof_E` alone).
+
+---
+
 ## D-071 — Three AI additions, decided by the engineering role, not requested
 6 Sep 2026 · Status: **Decided**
 

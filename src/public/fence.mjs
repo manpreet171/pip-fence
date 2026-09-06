@@ -115,10 +115,13 @@ export function level(events) {
 
 const TW = 132, TH = 66, DEEP = 3;                    // the paddock is `groups` tiles wide and DEEP tiles back
 const K = 66 / 122;                                   // farm art is scaled per call from its 256-wide canvas
+const KT = TW / 256;                                  // a 256-wide farm canvas on one 132-wide tile
 const POST_W = 14, RAIL_W = 108, RAIL_H = 65, SLAB = 11, PITCH = 24;
 const postH = per => 65 + PITCH * (per - 1);          // the post height encodes how tall a full part is
-const A = "/assets/", SPRITE = { post: A + "fence/post.png", rail: A + "fence/rail.png", goat: A + "animals/goat.png", fence: A + "farm/fenceHigh_E.png" };
+const A = "/assets/", SPRITE = { post: A + "fence/post.png", rail: A + "fence/rail.png", goat: A + "animals/goat.png", fence: A + "farm/fenceHigh_E.png",
+  grass: A + "ground/grass.png", dirt: A + "ground/dirt.png", tree: A + "ground/tree.png" };
 const GOAT_W = 52, GOAT_H = 52 * 171 / 184;
+const BARN = 0.8;                                     // the barn's tile size as a fraction of a world tile (D-070)
 const px = n => n.toFixed(1) + "px";
 
 // Post feet (bottom-centre, world px) for part p. The buildable side is the paddock's FRONT-RIGHT
@@ -140,12 +143,17 @@ function goatFeet(p, inside, g) {
   const { x, y } = iso(g.rows - 1 - p, DEEP - 1, g.originX, g.originY);
   return inside ? { x, y: y + TH / 2 } : { x: x + TW / 2, y: y + TH };
 }
+const goatBox = (p, inside, g) => { const q = goatFeet(p, inside, g); return { l: q.x - GOAT_W / 2, t: q.y - GOAT_H, w: GOAT_W, h: GOAT_H }; };
 const at = (b, g) => `left:${px(b.l - g.bx.l)};top:${px(b.t - g.bx.t)};width:${px(b.w)};height:${px(b.h)}`;  // explicit height: the box is hittable before the image decodes
 
 // Farm art anchored by the bottom-centre of its measured opaque bounds (BB), the way village.mjs seats
-// buildings; (x,y) is the ground point, w the on-screen canvas width.
+// buildings; (x,y) is the ground point, w the on-screen canvas width. For props (hay, sack).
 const farm = (key, x, y, z, g, w = TW) => { const bb = BB[key], k = w / 256;
   return `<img class="bld" src="${A}farm/${key}_E.png" alt="" style="z-index:${z};left:${px(x - ((bb[0] + bb[2]) / 2) * k - g.bx.l)};top:${px(y - bb[3] * k - g.bx.t)};width:${px(w)}">`; };
+// Farm art seated by its canvas: (128,512) of the 256x512 source is the tile's bottom vertex, so walls
+// and roofs land on the tile edges they were drawn on. dy is in source px, up is negative. For buildings.
+const seat = (key, x, y, z, k, g, dy = 0) =>
+  `<img class="bld" src="${A}farm/${key}.png" alt="" style="z-index:${z};left:${px(x - 128 * k - g.bx.l)};top:${px(y - (512 - dy) * k - g.bx.t)};width:${px(256 * k)}">`;
 // A finished Kenney fence along one tile edge, seated by its LOW post's foot. Measured in the source:
 // low post foot (6,449), high post foot (127,388), i.e. one tile edge at K. The sprite rises to the
 // right; the perpendicular edges use the same sprite mirrored with scaleX(-1), so the low post is then
@@ -155,12 +163,18 @@ const staticFence = (lx, ly, mirror, z, g) =>
   `<img class="bld${mirror ? " mir" : ""}" src="${SPRITE.fence}" alt="" style="z-index:${z};left:${px(lx - (mirror ? FW - 6 * K : 6 * K) - g.bx.l)};top:${px(ly - 449 * K - g.bx.t)};width:${px(FW)}">`;
 // Soft elliptical ground shadow centred on (x,y).
 const shadow = (x, y, w, h, z, g) => `<div class="shd" style="z-index:${z};left:${px(x - w / 2 - g.bx.l)};top:${px(y - h / 2 - g.bx.t)};width:${px(w)};height:${px(h)}"></div>`;
+// One flat landscape tile (its top diamond only) with its top vertex at (x,y).
+const tile = (src, x, y, z, g) => `<img class="bld" src="${src}" alt="" style="z-index:${z};left:${px(x - TW / 2 - g.bx.l)};top:${px(y - g.bx.t)};width:${TW}px">`;
+// A tree with its trunk foot at (x,y): the 180x240 sprite at farm density, plus its ground shadow.
+const tree = (x, y, z, g, mirror) => shadow(x, y - 2, 70, 22, z, g) +
+  `<img class="bld${mirror ? " mir" : ""}" src="${SPRITE.tree}" alt="" style="z-index:${z + 1};left:${px(x - 90 * KT - g.bx.l)};top:${px(y - 236 * KT - g.bx.t)};width:${px(180 * KT)}">`;
 
 // Draws ground + paddock + three finished sides + the buildable side's posts + goat + one transparent
 // hit region per part, and pins bbox from the FINISHED fence (every rail present, goat at every rest
 // spot) so the camera never moves as planks land. Only the scale follows the viewport. Returns geometry.
 export function mountScene(el, plan) {
   const R = plan.groups, g = { rows: R, cols: DEEP, per: plan.per, originX: 400, originY: 400, goat: { part: Math.floor(R / 2), inside: false } };
+  g.goat.dest = { ...g.goat };
   const vis = [], box = (l, t, w, h) => vis.push({ l, t, r: l + w, b: t + h });
   // bbox first: everything below positions itself relative to it
   for (let r = 0; r < R; r++) for (let c = 0; c < DEEP; c++) { const { x, y } = iso(r, c, g.originX, g.originY); box(x - TW / 2, y, TW, TH); }
@@ -168,20 +182,23 @@ export function mountScene(el, plan) {
     const f = feet(p, g);
     for (const b of [postBox(f.lx, f.ly, g.per), postBox(f.rx, f.ry, g.per)]) box(b.l, b.t, b.w, b.h);
     for (let i = 0; i < g.per; i++) { const b = railBox(p, i, g); box(b.l, b.t, b.w, b.h); }
-    const q = goatFeet(p, false, g); box(q.x - GOAT_W / 2, q.y - GOAT_H, GOAT_W, GOAT_H);
+    const q = goatBox(p, false, g); box(q.l, q.t, q.w, q.h);
   }
   { const { x, y } = iso(0, 0, g.originX, g.originY); box(x - TW / 2, y - (449 - 277) * K + TH / 2, TW, TH); }   // back corner's finished posts
   g.bx = { l: Math.min(...vis.map(v => v.l)), t: Math.min(...vis.map(v => v.t)), r: Math.max(...vis.map(v => v.r)), b: Math.max(...vis.map(v => v.b)) };
   const cw = g.cw = g.bx.r - g.bx.l, ch = g.ch = g.bx.b - g.bx.t;
 
-  // Ground: one div, the iso seam lattice as two 1 px diagonals of a 132x66 repeating tile (the Kenney
-  // grass tile is a flat colour, so this is the same picture with no per-tile element and no island
-  // edge). background-position seats the tile on a lattice vertex so the seams meet the paddock's
-  // edges exactly. The top edge is the horizon; a translucent haze softens the cut.
+  // Ground: one div repeating a pre-composited 264x132 patch of eight flat grass diamonds (Kenney
+  // landscape tile 075, scripts/make_parts.py), seated by background-position so a diamond's top vertex
+  // lands on iso(0,0) and every lattice cell is a real tile edge. The top edge is the horizon; a
+  // translucent haze softens the cut.
   g.hy = g.bx.t - 10;
   const GL = g.originX - TW * 12, GW = TW * 24, mod = (v, m) => ((v % m) + m) % m;
-  let html = `<div class="ground" style="left:${px(GL - g.bx.l)};top:${px(g.hy - g.bx.t)};width:${GW}px;height:${px(g.bx.b + 1400 - g.hy)};background-position:${px(mod(g.originX - GL, TW))} ${px(mod(g.originY - g.hy, TH))}"></div>` +
+  let html = `<div class="ground" style="left:${px(GL - g.bx.l)};top:${px(g.hy - g.bx.t)};width:${GW}px;height:${px(g.bx.b + 1400 - g.hy)};background-position:${px(mod(g.originX - GL, 2 * TW))} ${px(mod(g.originY - g.hy, 2 * TH))}"></div>` +
     `<div class="haze" style="left:${px(GL - g.bx.l)};top:${px(g.hy - 30 - g.bx.t)};width:${GW}px;height:100px"></div>`;
+  // The way in: a one-tile dirt path (landscape tile 083) along the column outside the buildable side,
+  // from the tile the goat waits on down-left off the front of the stage.
+  for (let r = R - 1 - g.goat.part; r <= R + 5; r++) { const { x, y } = iso(r, DEEP, g.originX, g.originY); html += tile(SPRITE.dirt, x, y, 2, g); }
   // Paddock: dirt with corn, tall at the back, young in front so the buildable side stays legible.
   for (let r = 0; r < R; r++) for (let c = 0; c < DEEP; c++) {
     const { x, y } = iso(r, c, g.originX, g.originY), corn = c === DEEP - 1 ? "cornYoungDouble" : c === 0 || r % 2 ? "cornDouble" : "cornYoungDouble";
@@ -204,23 +221,31 @@ export function mountScene(el, plan) {
   }
   const gf = goatFeet(g.goat.part, false, g);
   html += `<div class="goat" style="left:${px(gf.x - GOAT_W / 2 - g.bx.l)};top:${px(gf.y - GOAT_H - g.bx.t)};width:${px(GOAT_W)};height:${px(GOAT_H)}"><span class="shd"></span><img src="${SPRITE.goat}" alt=""></div>`;
-  // Context, sparse: a cottage-sized barn behind the back-left fence (the verified
-  // single-tile stack from village.mjs, smaller than the paddock), hay behind the back-right fence, a
-  // sack in front-left. All three sit inside the pinned bbox horizontally so nothing crops on a phone.
-  { const bx = g.originX - 70, by = g.originY + 10, w = 96, k = w / 256;
-    g.oh = g.bx.t - (by - (120 + BB.roofSingle[3] - BB.roofSingle[1]) * k);     // how far the roof rises above the bbox
-    html += shadow(bx, by - 4, 100, 30, 4, g) + farm("woodWallDoorClosed", bx, by, 6, g, w) + farm("roofSingle", bx, by - 120 * k, 7, g, w); }
+  // Context. The barn stands behind the back-left fence, its long face parallel to it: two tiles along
+  // the row direction, a wall on each front-right edge (window at the back, door at the front), a gable
+  // wall on the front tile's front-left edge, one roof per tile (roofSingle's ridge runs along the row, so
+  // two in a line make one continuous gable; the front one is the closed-gable roofSingleWall). Roof sits
+  // 170 source px up: the measured wall top at the near post (D-070). At BARN of a world tile so the
+  // paddock keeps 70 % of the height on desktop.
+  { const k = BARN * KT, x1 = g.originX - 28, y1 = g.originY - 15, x2 = x1 - TW / 2 * BARN, y2 = y1 + TH / 2 * BARN;
+    g.oh = g.bx.t - (y1 - 368 * k);                                  // roof apex (y = 144 in the canvas after dy) above the bbox
+    html += shadow((x1 + x2) / 2, (y1 + y2) / 2 - TH / 4 * BARN, 210 * BARN, 90 * BARN, 4, g) +
+      seat("woodWallWindow_W", x1, y1, 6, k, g) + seat("roofSingle_N", x1, y1, 7, k, g, -170) +
+      seat("woodWallDoorClosed_W", x2, y2, 8, k, g) + seat("woodWall_N", x2, y2, 9, k, g) + seat("roofSingleWall_N", x2, y2, 10, k, g, -170); }
   { const { x, y } = iso(-2, 0, g.originX, g.originY); html += shadow(x, y + TH - 4, 105, 28, 4, g) + farm("hayBalesStacked", x, y + TH, 6, g, 125); }
   { const { x, y } = iso(R - 0.5, 0.5, g.originX, g.originY); html += shadow(x, y + TH - 2, 60, 18, 20, g) + farm("sacksCrate", x, y + TH, 70, g, 120); }
+  // Trees at the edges: two behind-right, two front-left, every other one mirrored; none in the paddock,
+  // on the path or under the tray.
+  for (const [r, c, z, m] of [[-2, 2, 5, 0], [-1, 4, 5, 1], [3, -2, 64, 0], [4, 0, 66, 1]]) { const { x, y } = iso(r, c, g.originX, g.originY); html += tree(x, y + TH / 2, z, g, m); }
 
   el.innerHTML = `<div class="isoworld"><div class="isofit" style="width:${px(cw)};height:${px(ch)}">${html}</div></div>`;
   el.geom = g;
   // Camera: bbox is pinned for the life of the level; the scale and the vertical seat follow the
-  // viewport. The paddock takes up to 96% of the width or 77% of the height, centred in the band
+  // viewport. The paddock takes up to 96% of the width or 70% of the height, centred in the band
   // under the sign (top 15%), pushed down only as far as keeps the barn roof on screen.
   const fit = () => { const f = el.querySelector(".isofit"); if (!f) return;
     const W = el.clientWidth, H = el.clientHeight, T = 0.15 * H;
-    g.scale = Math.min(0.96 * W / cw, 0.77 * H / ch);
+    g.scale = Math.min(0.96 * W / cw, 0.70 * H / ch);
     g.top = Math.max(T + (H - T - ch * g.scale) / 2, g.oh * g.scale + 8);
     f.style.top = px(g.top); f.style.transform = `translate(-50%,0) scale(${g.scale.toFixed(3)})`; };
   fit();
@@ -245,6 +270,7 @@ function toScene(el, wx, wy) {
   const g = el.geom;
   return { x: el.clientWidth / 2 + (wx - g.bx.l - g.cw / 2) * g.scale, y: g.top + (wy - g.bx.t) * g.scale };
 }
+const sceneBox = (el, b) => { const p = toScene(el, b.l, b.t), s = el.geom.scale; return { l: p.x, t: p.y, r: p.x + b.w * s, b: p.y + b.h * s }; };
 // Where a speech bubble points: just above the middle of part p.
 export function partTop(el, part) {
   const g = el.geom, f = feet(part, g);
@@ -255,11 +281,30 @@ export function railPoint(el, part, i) {
   const b = railBox(part, i, el.geom);
   return toScene(el, b.l + b.w / 2, b.t + b.h * 0.55);
 }
+// Where the hint card goes so it never covers what it talks about: no post, no rail (the tilted
+// over-count rail included), not the goat where it is heading, nor a keep-out rect (the sign). Tried in
+// order: beside the part on the outside (camera-right: level with its top, then below the fence line),
+// beside it on the left, under it, above it, and last the band under the sign, which always fits. Returns
+// scene px and the tail: which edge it is on and how far along.
+export function bubbleSpot(el, part, w, h, keep = []) {
+  const g = el.geom, f = feet(part, g), W = el.clientWidth, H = el.clientHeight, aim = partTop(el, part);
+  const R = toScene(el, f.rx, f.ry), L = toScene(el, f.lx, f.ly), o = el.getBoundingClientRect();
+  const cues = [...el.querySelectorAll(".post,.rail")].map(n => { const r = n.getBoundingClientRect();
+    return { l: r.left - o.left, t: r.top - o.top, r: r.right - o.left, b: r.bottom - o.top }; });
+  cues.push(sceneBox(el, goatBox(g.goat.dest.part, g.goat.dest.inside, g)), ...keep);
+  const hits = (l, t) => l < 8 || t < 8 || l + w > W - 8 || t + h > H - 8 || cues.some(c => l < c.r + 6 && l + w > c.l - 6 && t < c.b + 6 && t + h > c.t - 6);
+  const tries = [[R.x + 14, aim.y, "left"], [R.x + 14, R.y - 10, "left"], [L.x - 14 - w, aim.y, "right"], [L.x - 14 - w, L.y - 10, "right"],
+    [aim.x - w / 2, L.y + 14, "top"], [aim.x - w / 2, aim.y - h - 16, "bottom"]];
+  const [l, t, side] = tries.find(([l, t]) => !hits(l, t)) || [(W - w) / 2, Math.max(8, ...keep.map(k => k.b + 8)), "bottom"];
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  return { left: l, top: t, side, at: side === "left" || side === "right" ? clamp(aim.y - t, 16, h - 16) : clamp(aim.x - l, 16, w - 16) };
+}
 
 // The goat walks, one leg at a time: along the outside to the part, then through it. CSS does the
 // moving (a transition on transform); this only sets waypoints. Reduced motion: it steps.
 export function goatWalk(el, part, inside) {
   const g = el.geom, s = g.goat, img = el.querySelector(".goat"), base = goatFeet(Math.floor(g.rows / 2), false, g);
+  s.dest = { part, inside };
   const legs = [];
   if (s.inside && s.part !== part) legs.push([s.part, false]);
   if (inside) legs.push([part, false]);
@@ -288,8 +333,8 @@ export function onTap(el, fn) {
   });
 }
 
-// z bands: ground 0 · haze 1 · dirt 10+ · shadows 20 · back fences 22+ · corn 30+ · goat inside 45 · hit 50 ·
-// front-left fence 60 · sack 70 · rails 100+part · posts 200+part · goat outside 300.
+// z bands: ground 0 · haze 1 · path 2 · shadows 4 · trees behind 5 · barn/hay 6+ · dirt 10+ · shadows 20 · back fences 22+ ·
+// corn 30+ · goat inside 45 · hit 50 · front-left fence 60 · trees in front 64+ · sack 70 · rails 100+part · posts 200+part · goat outside 300.
 export const FENCE_CSS = `
 .isoworld{position:absolute;inset:0;overflow:visible;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 .isofit{position:absolute;left:50%;top:0;transform-origin:top center}
@@ -297,9 +342,7 @@ export const FENCE_CSS = `
 .isoworld *{pointer-events:none}                       /* scenery never eats a tap; only rails and hit regions are targets */
 .isoworld .hit,.isoworld .rail{pointer-events:auto}
 .isoworld .hit{position:absolute;z-index:50}
-.isoworld .ground{z-index:0;background-color:#8ebb4b;background-size:132px 66px;background-image:
-  linear-gradient(153.435deg,transparent calc(50% - .6px),rgba(70,110,30,.07) calc(50% - .6px),rgba(70,110,30,.07) calc(50% + .6px),transparent calc(50% + .6px)),
-  linear-gradient(26.565deg,transparent calc(50% - .6px),rgba(70,110,30,.07) calc(50% - .6px),rgba(70,110,30,.07) calc(50% + .6px),transparent calc(50% + .6px))}
+.isoworld .ground{z-index:0;background:#8ab549 url(${SPRITE.grass}) repeat;background-size:264px 132px}
 .isoworld .haze{position:absolute;z-index:1;background:linear-gradient(180deg,rgba(223,240,216,0) 0,rgba(223,240,216,.92) 30%,rgba(223,240,216,0) 100%)}
 .isoworld .shd{border-radius:50%;background:radial-gradient(ellipse at center,rgba(25,45,15,.42) 0,rgba(25,45,15,.18) 45%,rgba(25,45,15,0) 72%)}
 .isoworld .bld.mir{transform:scaleX(-1)}
