@@ -185,9 +185,13 @@ export const validNote = (b) => b && typeof b === "object" && Object.keys(b).eve
   && Number.isInteger(b.days) && b.days >= 0 && b.days <= 7;
 // What the model is told: fence names (the parent may know the sizes), the meaning of the open
 // misconception in parent words, the template question. No event log, no counts, no ids alone.
+// "3 parts of 4 (packs)" -> an unambiguous object; the model once read "2 parts of 3" as two fences.
+const fenceObj = (name) => { const m = /^(\d) parts of (\d)( \(packs\))?$/.exec(name);
+  return { parts: +m[1], planks_in_each_part: +m[2], ordered_in_packs: !!m[3] }; };
 export function notePayload(b) {
   return { audience: "parent", child_age: 8, days_played_this_week: b.days,
-    fences_finished_without_a_hint: b.solo, fences_finished_with_a_hint: b.helped,
+    fences_finished_without_a_hint: { how_many_fences: b.solo.length, fences: b.solo.map(fenceObj) },
+    fences_finished_with_a_hint: { how_many_fences: b.helped.length, fences: b.helped.map(fenceObj) },
     still_working_on: b.open_id ? { what_happens: PARENT_WORDS[b.open_id][0], hints_reached: b.tier } : null,
     suggested_question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
 }
