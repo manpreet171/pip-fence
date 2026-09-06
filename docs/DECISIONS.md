@@ -1384,3 +1384,90 @@ Preventive: no model hint used an ordinal, but *"the third part"* would leak the
 the gate did not stop it. `second`…`twelfth` are now number words in both gate implementations
 (36 words, identity asserted). *first* stays allowed: it is in the templates and names a position,
 not a count. **Rejected:** blocking *first* too — it would fail four shipped templates for no gain.
+
+---
+
+## D-069 — The scene is a farm, the child builds the side facing her; the interface is wood and paper
+6 Sep 2026 · Status: **Decided** (owner's verdict on the previous screen: "it looks bad, the orientation is off,
+unprofessional, like a school project")
+
+**What.**
+1. **The buildable fence is the paddock's front-right edge** (from the bottom vertex to the right vertex of
+   the front column, rising to the right at the iso slope), one part per tile, same post/rail sprites and
+   the same rail geometry as D-048 (24 px pitch, post height encodes `per`, over-count rail tilted above the
+   post). The goat rests OUTSIDE that edge, nearest the camera, and walks in through the gap, away from the
+   camera. `feet()`/`goatFeet()` in `fence.mjs` Part 2 changed; `goatWalk`'s contract (in through the first
+   short/empty part, back out when correct), `onTap`, `data-part` and the hit-region polygon are unchanged.
+   Part 1 (the classifier) is byte-identical.
+2. **The paddock is enclosed**: three finished sides use Kenney's `fenceHigh_E` as-is where the edge rises to
+   the right (back-left) and the same sprite mirrored with `transform:scaleX(-1)` where it falls to the right
+   (back-right, front-left). Seated by the measured post feet in the source: low post (6,449), high post
+   (127,388) — one tile edge at the existing `K`. Interior: `dirtFarmland` under `cornDouble` at the back and
+   `cornYoungDouble` in the front column, so the buildable side stays legible against low plants.
+3. **Full-bleed ground, one element.** The Kenney grass tile (`landscapeTiles_015`) is a flat green *slope*
+   block (top face is not a diamond, measured), so it is not tiled any more. The ground is one `div` in the
+   tile's green with the iso seam lattice drawn as the two diagonals of a 132×66 repeating CSS tile, seated on
+   a lattice vertex by `background-position` so the seams meet the paddock edges. Sky in the stage
+   background, a world-space translucent haze at the horizon, vignette and a darker bottom edge as overlays.
+4. **Camera.** bbox still pinned from the finished fence + paddock + goat rest spots (never re-zooms on
+   placement); the fit now takes ≤70 % of the scene height and seats the world so the horizon sits about a
+   third of the way down when width-limited (phone), or as high as needed to keep the front on screen.
+5. **Depth.** Elliptical CSS-gradient shadows under each buildable post, the goat (inside its wrapper, so it
+   walks with it), barn, hay and sack. z bands: ground 0 · haze 1 · dirt 10+ · shadows 20 · back fences 22+ ·
+   corn 30+ · goat inside 45 · hit 50 · front-left fence 60 · sack 70 · rails 100+part · posts 200+part ·
+   goat outside 300. Scene element count: 51–63 (3×4), 61 (4×5).
+6. **Context.** One barn off the left corner (two `woodWallWindow` faces on one canvas, one mirrored, `roof`
+   on top), a hay stack back-right, a sack front-left. Nothing else, no text in the scene.
+7. **HUD.** One CSS wood (`--woodbg`: base, plank seams, grain, top light) for a rotated sign board top-left
+   (brand small, task line large — the only digits on screen), a cart tray bottom holding the planks as a heap
+   in a dark bed (never a count), a glow when a plank is in hand, wooden 3D buttons (Done / Next plot / Deliver
+   / Start again), a parchment quiet variant (Order again), "For grown-ups" as a small link bottom-right. Packs:
+   the delivery slip is a pinned paper note on the tray. Hint bubble: parchment, 2 px wood border, tail on the
+   gap, 18 px; pips are 32 px wood discs with cream numerals. One display stack via `--font-display`.
+8. Parent page: same variable, cream cards on parchment, no white panels.
+
+**Why.** The previous fence stood on the back-left edge as a line of posts behind an island of six tiles in an
+empty sky — no enclosure, nothing to protect, the child building the far side. Building the side that faces
+her, with the goat between her and the fence, is what "the goat gets in" means on screen. Everything else is
+the difference between a web form over a sprite test and a shipped children's game.
+
+**Verified (real input, not `.click()`).** Playwright `page.mouse.click` at each hit region's centre: 22/22
+planks placed, 0 `place_failed`, desktop and phone. `elementFromPoint` sweep over each part's polygon:
+93/93/93 % reachable on desktop (the rest is the clip-path edge, identical on every part), 100/100/100 %
+interior on the phone. Place, count with pips, two-tap remove, over-rail tap removes, goat in/out, bubble on
+the gap, prefetch, packs slip → deliver → pack placed, persistence on reload (parts, goat in the gap, hint
+re-said), Next plot, end screen, parent page: all pass. `classifier_eval` mismatches 0; `run_all.py` ALL PASS;
+0 console errors; no horizontal scroll at 375; tap targets ≥ 44 px; `[4,4,3]` legible at 320 px.
+
+**Rejected.**
+- Tiling the grass sprite across the stage (it is a slope block; ~120 elements on a phone; a visible field
+  edge on rotate). Re-rendering on resize (would drop rail state; the bbox rule forbids it anyway).
+- Keeping the buildable side at the back with the enclosure added around it (still the far side).
+- Putting the bubble beside the fence instead of on the gap (no room on a phone; the contract says on the gap).
+- Including the barn in the camera bbox (would shrink the fence by a quarter for decoration).
+- A bundled display font (R5: no build step; the variable is there for when one is chosen).
+- New art or `fenceHighBroken`; base64 images.
+
+**Known issues.** The bubble for part 0 covers the rails of part 1 on desktop (it is above the gap, and the
+gap is now at the front). The subtle CSS clouds are nearly invisible against the haze. (Barn, hay cropping and the plank heap: fixed in the
+addendum below.)
+
+**Addendum, 6 Sep 2026 (review punch list).** Five changes after the screenshot review, verified the same way
+(real `page.mouse.click` taps: 22/22 planks on parts 0/1/2, 0 `place_failed`, `elementFromPoint` sweep
+100/100/100 % interior on both sizes; `classifier_eval` mismatches 0; `run_all.py` ALL PASS; 0 console errors).
+1. *Barn.* The two-tile `roof` over one mirrored wall read as a tilted slab on a shed. Replaced with the verified
+   single-tile cottage stack from `village.mjs` (`woodWallDoorClosed` + `roofSingle`, dy −120 at the sprite's own
+   scale), 96 px wide, foot 25 px behind the back-left fence, with its ground shadow; inside the pinned bbox
+   horizontally so nothing crops on a phone, and clear of the sign at 1280×720 and 375×812.
+2. *Phone framing.* The paddock takes 96 % of the width (the dirt itself ≈90 %) and sits centred in the band
+   under the sign (top 15 % of the scene), so it is midway between the sign and the tray. bbox rule unchanged.
+3. *Desktop framing.* Height fit raised from 70 % to 77 % (paddock ~10 % larger). The hay stack moved from
+   beyond the right vertex to behind the back-right fence, inside the bbox; the sack moved half a tile in from
+   the left vertex. Nothing is cropped at a frame edge at either size. The seat is pushed down only as far as
+   keeps the barn roof on screen (`g.oh`).
+4. *Ground lattice.* Seam lines at 0.07 alpha instead of 0.32: a field, not graph paper.
+5. *Plank heap.* Three rows of boards laid level (the rail sprite is turned 26.5° to lie flat), rows leaning
+   ∓3° alternately, centred in the bed. Twelve reads as a tidy pile of boards. Still no digits.
+Also: an inline empty favicon, which was the only 404 in the console.
+
+
