@@ -2,7 +2,7 @@
 
 Independent QA pass, round 2. Build under test: the committed tree at `e104a9a` ("Parent note: the thing to ask may be an
 instruction; fallback counts fences plainly"); the working tree differs from it only by line endings and the gitignored
-`CLAUDE.md`. Server under test: the running `node src/server.mjs` on :5177 with a DeepSeek key live (every `/api/buddy`
+the local pointer file. Server under test: the running `node src/server.mjs` on :5177 with a DeepSeek key live (every `/api/buddy`
 answer below is `source:"model"`). No source, data or eval file was edited; no git command other than the one clone.
 
 **Harness (the round-1 lesson, applied).** Every browser case was driven by Playwright 1.63 (installed in the QA temp

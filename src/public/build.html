@@ -87,10 +87,11 @@
   #bubble[data-side=left]::after{top:var(--ty,50%);left:-10px;margin-top:-8px;border-width:0 0 2px 2px}
   #bubble[data-side=right]::after{top:var(--ty,50%);right:-10px;margin-top:-8px;border-width:2px 2px 0 0}
   #bsrc{display:block;margin-top:6px;font:11px/1 ui-monospace,monospace;font-weight:400;color:var(--muted)}
-  #bsrc:empty{display:none}
-  .pip{position:absolute;z-index:7;pointer-events:none;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;
+  #bsrc:empty,body.judge #bsrc{display:none}
+  body.judge #scene{top:88px}   /* with the panel open the stage is narrow: seat the world under the sign */
+  .pip{position:absolute;z-index:7;pointer-events:none;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;
     background:radial-gradient(circle at 35% 30%,var(--wood3),var(--wood) 55%,var(--wood2));border:2px solid var(--wood2);color:var(--cream);
-    font-weight:700;font-size:17px;display:grid;place-items:center;box-shadow:0 3px 6px rgba(0,0,0,.35);animation:pip 2s both}
+    font-weight:700;font-size:13px;display:grid;place-items:center;box-shadow:0 3px 6px rgba(0,0,0,.35);animation:pip 2s both}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes pip{0%{opacity:0;scale:.5}15%{opacity:1;scale:1}80%{opacity:1}100%{opacity:0}}
   @media (prefers-reduced-motion:reduce){#bubble{animation-duration:.01s}.pip{animation:none}}

@@ -139,6 +139,9 @@ console.log(`\n${fails ? fails + " FAILED" : "all checks passed"}`);
   check("note: nothing open -> prompt says so and an invented weakness is rejected", /Nothing is open/.test(seenSystem) && n.source === "template" && n.reason === "invented", seenSystem.slice(-80) + " | " + n.reason);
   n = await writeNote(B0, { fetchImpl: spy({ note: "Two fences went up this week, both on their own.", question: "Which fence was your favourite?" }), apiKey: "k", timeoutMs: 50 });
   check("note: nothing open -> a plain factual note passes", n.source === "model", n.reason);
+  const BZ = { ...B, solo: [], helped: [], days: 1 };
+  n = await writeNote(BZ, { fetchImpl: spy({ note: "Your child built a fence this week and is still counting the parts.", question: "Show me one full part." }), apiKey: "k", timeoutMs: 50 });
+  check("note: zero fences -> a claimed fence is rejected", n.source === "template" && n.reason === "invented", n.reason);
 }
 
 process.exit(fails ? 1 : 0);

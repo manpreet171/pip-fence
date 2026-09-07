@@ -105,7 +105,7 @@ export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fe
       body: JSON.stringify(payload(result)), signal: AbortSignal.timeout(timeoutMs) });
     if (!res.ok) return { text: template, source: "template", reason: `http_${res.status}` };
     const out = await res.json();
-    if (out?.source === "model" && typeof out.text === "string" && out.text) return { text: out.text, source: "model" };
+    if (out?.source === "model" && typeof out.text === "string" && out.text) return { text: out.text, source: "model", ...(out.model && { model: out.model }) };
     return { text: template, source: "template", reason: out?.reason || "server_fallback" };
   } catch (e) {
     return { text: template, source: "template", reason: e?.name === "TimeoutError" ? "timeout" : "network" };
@@ -164,7 +164,6 @@ export const PROVIDERS = {
       usage: data?.usage && { input_tokens: data.usage.prompt_tokens, output_tokens: data.usage.completion_tokens } }),
   },
 };
-export const MODEL = PROVIDERS.anthropic.model;
 export const request = (payload, apiKey, provider = "anthropic") => PROVIDERS[provider].request(payload, apiKey);
 
 // ---- the parent note: the same architecture pointed at the adult (CONCEPT §7, Tutor CoPilot shape) ----
@@ -199,8 +198,9 @@ export function notePayload(b) {
     suggested_question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
 }
 const BLAME = /\b(wrong|bad|lazy|slow|behind|struggling|failed|fail|stupid)\b/i;
-export function noteGate(out, open = true) {
+export function noteGate(out, open = true, fences = 1) {
   if (!out || typeof out.note !== "string" || typeof out.question !== "string") return "schema";
+  if (fences === 0 && /\b(built|finished|completed|made|put up)\b/i.test(out.note)) return "invented";   // a thin week is not a built fence
   if (!open && /\b(still|working on|practi[cs]|keep|next|needs? to|improve|struggl)/i.test(out.note)) return "invented";
   if (out.note.trim().split(/[.!?]+/).filter(s => s.trim()).length > 3) return "sentences";
   // "one thing to ask out loud" may be an instruction ("Show me one full part.") or a question; never a speech.
@@ -229,7 +229,7 @@ export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provi
     if (!res.ok) return fallback(`http_${res.status}`);
     const { text } = PROVIDERS[provider].parse(await res.json());
     let out; try { out = JSON.parse(text); } catch { return fallback("parse"); }
-    const why = noteGate(out, !!b.open_id);
+    const why = noteGate(out, !!b.open_id, b.solo.length + b.helped.length);
     return why ? fallback(why) : { note: out.note.trim(), question: out.question.trim(), source: "model" };
   } catch (e) { return fallback(e?.name === "TimeoutError" ? "timeout" : "error"); }
 }

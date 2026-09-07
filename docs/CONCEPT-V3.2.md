@@ -151,7 +151,7 @@ family; the final-template rerun is **done** (REDTEAM-RESULTS UPDATE 2: 40.0% vs
 used the old shape set, so the rebalanced-fixture rerun is **also done** (REDTEAM UPDATE 3: PASS on the v3.2 shape set). No red-team rerun remains; only a second attacker family is outstanding. The output gate's 0/60 is reported separately, labelled as a measurement of the
 gate.
 
-Model `claude-haiku-4-5-20251001`, structured output strict, ~$0.0007/hint, age re-injected every
+Model `claude-haiku-4-5-20251001`, structured output strict, ~$0.0007/hint *(Errata 4: the provider now follows the key; the live path was measured on `deepseek-v4-flash` at $0.00015/hint, p50 757 ms — D-067, LATENCY-RESULTS)*, age re-injected every
 turn (KIDBench multi-turn degradation 6–24%), prefetch on the wrong placement.
 
 **Wordlist, named.** `data/wordlist.txt` = **Dolch sight words (220 service + 95 nouns)** ∪ **Fry's

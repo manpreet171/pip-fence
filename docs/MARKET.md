@@ -28,7 +28,7 @@ Vendor claims are labelled as such throughout. Companion to `docs/AI-ARCHITECTUR
 ## What is genuinely unoccupied
 No product combines all four of:
 1. the arithmetic literally IS the build action (not a tollgate before, not a coin spent after);
-2. the world is a **readout of mastered skills**, not a decorated reward shop;
+2. the fence the child builds **is the record of the skill** (the parent page reads the same log), not a decorated reward shop;
 3. an AI buddy architecturally barred from stating answers **and this is measured** (hint-tier escalation / leakage rate tracked);
 4. a shipped near-transfer + delayed-retest + intrinsic-vs-tollgate A/B harness inside the product.
 

@@ -46,7 +46,7 @@ export function mount(snap) {
       `<h3>level</h3><pre>${esc(s.node)}  ·  ${s.events.length} events</pre>` +
       `<h3>events (last ten)</h3>${ev || "<pre class=dim>none yet</pre>"}` +
       `<h3>classifier · now · classify(level)</h3><pre>id         ${esc(r.id)}\ntier       ${r.tier}\nconfirmed  ${r.confirmed}\ncounts     ${j(r.counts)}\nflags      ${j(r.flags)}</pre>` +
-      `<h3>last hint</h3><pre>${h ? `for        ${esc(h.id)} tier ${h.tier}\nsource     ${esc(h.source)}${h.reason ? `  (${esc(h.reason)})` : ""}\nround trip ${h.ms} ms\nprovider   follows the server key` : "<span class=dim>none yet</span>"}</pre>` +
+      `<h3>last hint</h3><pre>${h ? `for        ${esc(h.id)} tier ${h.tier}\nsource     ${esc(h.source)}${h.reason ? `  (${esc(h.reason)})` : ""}\nround trip ${h.ms} ms\nmodel      ${esc(h.model || (h.source === "model" ? "server key" : "template, no call"))}` : "<span class=dim>none yet</span>"}</pre>` +
       `<h3>payload · ${h?.payload ? "what the model got for the last hint" : "what the next hint would get"} <span class="${clean ? "ok" : "bad"}">[${clean ? "no digits" : "DIGITS FOUND"}]</span></h3>` +
       `<pre>${h?.payload || IDS.includes(r.id) ? "" : "<span class=dim>(not sent: no misconception to phrase)</span>\n"}${esc(JSON.stringify(p, null, 1))}</pre>` +
       `<h3>mastery · ${GRAPH.length} nodes</h3><pre>${GRAPH.map(g => `${g.node.padEnd(14)} ${s.mastery[g.node] ?? 0}`).join("\n")}</pre>`;

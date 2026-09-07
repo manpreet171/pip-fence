@@ -14,11 +14,12 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **TECH-STACK.md** | Principal-engineer specification of every layer (AI/ML, visuals, frontend, backend, evals, deploy) and the file plan. |
 | **REVIEW-R3.md** | Final round of independent design review: **SATISFIED** — "build it." (R1, R2 in `history/`.) |
 | **BUDDY-CONTRACT.md** | The one interface the game and the hint layer share. |
-| **TEST-REPORT.md** | Independent QA over 16 user cases; 10 defects, all closed (D-064–D-066). |
+| **TEST-REPORT.md → TEST-REPORT-2.md** | Independent QA, two rounds: 16 cases / 10 defects closed (D-064–D-066); then 15 cases on the rebuilt scene and AI features / 9 defects closed (D-073). |
+| **PRODUCT-REVIEW.md → PRODUCT-REVIEW-2.md** | Hiring-panel style review, two rounds. Round 1: "Promising, fix X first". Round 2: **"Talk to this person"**, with the pre-filming fix list. |
 | **PRODUCT-REVIEW.md** | Hiring-panel style review of the finished product; what to fix before filming. |
 | **DEMO-V2.md** | The 3-minute shot list for the built product: timings, what is on screen, what is said, what is never said. |
 | **TRANSFER-TEST.md** | The paper instrument for the three-child pilot, with the pre-registered null. |
-| **DECISIONS.md** | D-001 … D-049. Read D-043 (stop; research the learner), D-044 (concept v3), D-045 (loop converged; v3.2 adopted), D-047/D-048 (spec corrections found in code), D-049 (schedule). |
+| **DECISIONS.md** | D-001 … D-074. Read D-043 (stop; research the learner), D-045 (v3.2 adopted), D-047/D-048 (spec corrections found in code), D-066/D-069 (real taps; the scene), D-071 (what the AI is), D-074 (review-2 fixes). |
 
 ## Evidence produced during the review loop (measured, not asserted)
 
@@ -31,7 +32,7 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **V3.2-ARITHMETIC-CHECK.md** | Verified the shape rebalance; caught 4×5 mis-listed as non-colliding (design unaffected). |
 
 Harnesses: `evals/redteam_leak.py`, `evals/readinglevel.py` (`--assert` = build-time gate check),
-`evals/classifier_eval.mjs` over `evals/classifier_fixtures.json` (67 sequences → confusion matrix),
+`evals/classifier_eval.mjs` over `evals/classifier_fixtures.json` (68 sequences → confusion matrix),
 `data/wordlist.txt` (Dolch 315 ∪ Fry 300 ∪ domain), `data/hints_v2.txt`.
 
 ## History — `docs/history/` (superseded, kept for the record of what was killed and why)

@@ -102,10 +102,8 @@ attribution tells, and film. Then it is a "talk to this person".
 
 ### W3 · SEV2 · R1 (no AI-assistant attribution) is violated in the places a panel actually reads
 The model id, API host, header and env-var name are legitimate config. These are not:
-- `evals/killtest_beta.py:24` — a hard-coded absolute path
-  `C:/Users/Manpreet/AppData/Local/Temp/claude/D--My-work-Project-learning-app/<session-id>/scratchpad/sp`
-  committed in `9e5f842`. It names the assistant's scratchpad and a session id. Tracked.
-- `.claude/launch.json` — tracked. The directory name is the tell.
+- `evals/killtest_beta.py:24` committed an absolute temp path with a session id in it. Tracked. *(fixed 6 Sep: now an argument)*
+- A local tooling config file was tracked. *(fixed 6 Sep: untracked)*
 - Rule text, tooling config and a temp path named the tooling. All reworded, untracked or parameterised on 6 Sep; the constitution now lives at `CONSTITUTION.md`.
 - **Voice.** Several docs read as a team process rather than one author; reworded 6 Sep so review rounds and research passes are described in the author's voice.
 

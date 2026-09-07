@@ -1341,7 +1341,7 @@ a place/remove had already hidden it (QA D-8). "For grown-ups" link 44 px (QA D-
    server exposes one model endpoint, `/api/buddy`.
 4. Timeouts: server-side phrase 800 ms inside the client's 1500 ms, so the server answers with a
    template before the browser gives up. Bubble carries `role="status"`.
-5. `.claude/` untracked; the eval that hard-coded a temp path now takes it as an argument;
+5. Local tooling config untracked; the eval that hard-coded a temp path now takes it as an argument;
    `evals/requirements.txt` lists the eval-only Python packages (the app itself has none).
 
 
@@ -1642,3 +1642,27 @@ Speaking on reload (the browser's own autoplay rule declines it without a gestur
 **Verified** (Playwright `page.mouse.click`, never `.click()`): 375 and 320 with 12 packs, posts clear of the tray, slip tray 78 px = cart tray; 320 `[12,0,0]` card at the band top; desktop judge after a tier-1 hint reads now tier 2 / last hint tier 1 / payload tier 1; Hide then one J press opens; 12th fence → end screen → reload → end screen, Start again clears; parent page with a 10-day-old fence lists only the week's; `classifier_eval` mismatches 0; `run_all.py` ALL PASS; 0 console errors on `/build`, `/build?judge=1`, `/build?node=3x4_packs`, `parent.html` at 1280×720 and 375×812. Part 1 of `fence.mjs` untouched.
 
 **Known residual.** At 320 the card for a 12-rail tower still touches its top three over-count rails (no spot in a 320×418 scene clears a 280×118 card); the post tops the hint points at stay visible.
+
+
+---
+
+## D-074 — Second product review closed: root serves the game; note gate for thin weeks; rate limit
+8 Sep 2026 · Status: **Decided** (docs/PRODUCT-REVIEW-2.md, verdict "Talk to this person")
+
+1. `/` serves the game unless `CONTROL_ARM=1`; `/measure` exists only with the control arm. A judge
+   typing the bare origin no longer lands on the frozen tollgate build.
+2. Parent note: with zero fences finished the gate rejects any claim of building one (`built`,
+   `finished`, `completed`, `made`, `put up`) → template. Unit check added. Live: 1 of 3 notes on a
+   thin week had claimed a fence; that path is now closed lexically.
+3. Model endpoints carry a fixed-window per-IP limit (60 a minute → 429). Inputs are enums, so
+   there is no chatbot to abuse; the limit protects the key's credit. Not a DDoS answer, and said so.
+4. `/api/buddy` returns the model id when the model wrote the hint; the judge overlay prints it in
+   place of the static "follows the server key" line. The debug source tag is hidden while the
+   overlay is open; the stage seats under the sign when the panel narrows it.
+5. Counting pips 22 px so they no longer overlap on the rail pitch.
+6. Docs: INDEX rows for both QA rounds and both reviews; CONCEPT §3 erratum for the provider and the
+   measured cost; MARKET "readout" claim reworded to what is built; stale server header; dead export.
+7. Tracked text that named the tooling (ignore file, two doc lines, two commit messages) reworded;
+   local ignore rules moved out of the tracked ignore file.
+**Not done, deliberately:** a side-view goat (no CC0 art exists; the flat sprite is the honest
+compromise, D-048); a second attacker family (no key).
