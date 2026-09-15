@@ -25,3 +25,15 @@ guessing	3	Put your hand on the pit you picked up. Point to the next pit for eac
 ambiguous	1	Show me where your first seed goes.
 ambiguous	2	Point to the pit where your first seed goes. Then we will count on from there.
 ambiguous	3	Put your hand on the pit you picked up. Now tap the pit where the first seed goes.
+count_low_by_one	1	Your count is a seed short. The seed that lands there counts too.
+count_low_by_one	2	Count the seeds already in that pit. Then add the seed that lands.
+count_low_by_one	3	Look at that pit. Count what is in it, then count the seed that lands there as well.
+count_high_by_one	1	Your count is a seed too many. Only the last seed lands in that pit.
+count_high_by_one	2	Count the seeds already in that pit. Then add just the seed that lands.
+count_high_by_one	3	Look at that pit and count what is in it. Only the last seed from your hand goes there.
+count_off	1	Your count and the pit do not match. Count the seeds in that pit again.
+count_off	2	Count the seeds in that pit before you sow. Then think about the seed that lands.
+count_off	3	Tap the pit to count what is in it. Then count the seed that lands there.
+parity_wrong	1	Even or odd went the other way. Count the seeds in that pit after the sow.
+parity_wrong	2	Count the seeds in that pit, then add the seed that lands. Match them up to see even or odd.
+parity_wrong	3	Match the seeds in that pit up. A seed left on its own means odd.

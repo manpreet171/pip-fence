@@ -6,7 +6,7 @@
 // number or a seed count it was never given. Any failure anywhere → the template ships.
 
 export const IDS = ["correct", "counted_start_pit", "overshot_by_one", "stopped_at_corner", "stopped_at_first_lap",
-  "direction_reversed", "miscounted_seeds", "guessing", "ambiguous"];
+  "direction_reversed", "miscounted_seeds", "count_low_by_one", "count_high_by_one", "count_off", "parity_wrong", "guessing", "ambiguous"];
 
 // Mirror of data/hints.txt (the source of truth; evals/run_all.py asserts set-equality).
 // The browser cannot read a file, hence the copy.
@@ -36,7 +36,19 @@ guessing	2	Look at the seeds in your hand first. Then point along the pits befor
 guessing	3	Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.
 ambiguous	1	Show me where your first seed goes.
 ambiguous	2	Point to the pit where your first seed goes. Then we will count on from there.
-ambiguous	3	Put your hand on the pit you picked up. Now tap the pit where the first seed goes.`;
+ambiguous	3	Put your hand on the pit you picked up. Now tap the pit where the first seed goes.
+count_low_by_one	1	Your count is a seed short. The seed that lands there counts too.
+count_low_by_one	2	Count the seeds already in that pit. Then add the seed that lands.
+count_low_by_one	3	Look at that pit. Count what is in it, then count the seed that lands there as well.
+count_high_by_one	1	Your count is a seed too many. Only the last seed lands in that pit.
+count_high_by_one	2	Count the seeds already in that pit. Then add just the seed that lands.
+count_high_by_one	3	Look at that pit and count what is in it. Only the last seed from your hand goes there.
+count_off	1	Your count and the pit do not match. Count the seeds in that pit again.
+count_off	2	Count the seeds in that pit before you sow. Then think about the seed that lands.
+count_off	3	Tap the pit to count what is in it. Then count the seed that lands there.
+parity_wrong	1	Even or odd went the other way. Count the seeds in that pit after the sow.
+parity_wrong	2	Count the seeds in that pit, then add the seed that lands. Match them up to see even or odd.
+parity_wrong	3	Match the seeds in that pit up. A seed left on its own means odd.`;
 
 export const TEMPLATES = {};
 for (const line of HINTS.split("\n")) {
@@ -63,7 +75,8 @@ export function redact(id, tier, shape) {
 // result = classify() output {id, tier, confirmed, called, landed, path, node}. The shape is fixed by
 // the id (ENGINE-CONTRACT: "derived from the id"); miscounted_seeds adds which side of the landing the
 // marker sits — a comparison of two path positions, so a boolean, never the distance or a pit number.
-const SHAPE_OF = { counted_start_pit: ["early", "by_one"], overshot_by_one: ["late", "by_one"], stopped_at_corner: ["early", "past_corner"],
+const SHAPE_OF = { count_low_by_one: ["early", "by_one"], count_high_by_one: ["late", "by_one"],
+  counted_start_pit: ["early", "by_one"], overshot_by_one: ["late", "by_one"], stopped_at_corner: ["early", "past_corner"],
   stopped_at_first_lap: ["early", "relay"], direction_reversed: ["reversed"] };
 export function payload(result) {
   const on = new Set(SHAPE_OF[result?.id] || []);
@@ -132,7 +145,7 @@ const NOTE_SYSTEM = (open = true) => "You write a short weekly note to a parent 
   "count on around a ring of pits in a sowing game: she calls the pit where the last seed will land before the seeds move. " +
   "Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +
   "Do not use the words wrong, bad, lazy, slow, behind, struggling, failed. Do not name the game's internal labels. " +
-  "Mention only what the input lists; invent nothing. Call the pieces seeds and pits, never holes or beads; call each game a board, never a level. " +
+  "Mention every fact the input lists and nothing else; invent nothing. Call the pieces seeds and pits, never holes or beads; call each game a board, never a level. " +
   (open
     ? "note: at most three sentences and sixty words, saying what the child did and what they are still working on. "
     : "note: at most two sentences and forty words, saying what the child did. Nothing is open: do not mention anything they are still working on, practising, or should do next. ") +
@@ -180,11 +193,15 @@ export const PARENT_WORDS = {
   stopped_at_first_lap: ["On relay levels the call stops where the first sowing ends. When the last seed lands in a pit that already has seeds, that pit is picked up and sown again, and the second sowing is not being counted.", "Sow a handful of stones into a row of bowls. If the last one lands in a bowl with stones in it, what happens next?"],
   direction_reversed: ["The call is the right distance but the other way round. The seeds always go the same way round the board, and the count is going the opposite way.", "Which way do the seeds go round the board? Show me with your finger."],
   miscounted_seeds: ["The call is on the path but a few pits off. The seeds in the hand are being counted as more, or fewer, than there are.", "Put some stones in a row. Start on one and count on — where do you land?"],
+  count_low_by_one: ["When she says how many seeds a pit will hold, she leaves out the seed that lands there.", "Put some stones in a pit and drop one more in. How many are there now?"],
+  count_high_by_one: ["When she says how many seeds a pit will hold, she adds one too many; only the last seed from the hand lands there.", "Put some stones in a pit. If one more lands, how many is that?"],
+  count_off: ["Her count of a pit after the sow is well off; she is not counting the pit first and then adding the seed.", "Count the stones in this cup. Now add one. How many?"],
+  parity_wrong: ["She is mixing up even and odd after the sow; matching the seeds in twos would settle it.", "Put these stones in twos. Is one left over?"],
   guessing: ["The last few calls were not counted at all; they landed nowhere near the seeds. The game goes quiet when this happens, so the marker says nothing until counting starts again.", "Pick up a handful of stones. Before you drop them, tell me where the last one will go — then check."],
   ambiguous: ["The call is a pit short, and it is not clear yet whether the picked-up pit was counted as the first drop or the count stopped at the corner. The game asks her to show where the first seed goes.", "Pick up a handful of stones. Show me where the first one goes."],
 };
 export const NOTE_KEYS = ["open_id", "tier", "solo", "helped", "days"];
-const LEVEL_NAME = /^[2346] seeds a pit(, with a relay)?$/;
+const LEVEL_NAME = /^[2346] seeds a pit(, with a relay|, calling the count|, even or odd)?$/;
 export const validNote = (b) => b && typeof b === "object" && Object.keys(b).every(k => NOTE_KEYS.includes(k))
   && (b.open_id === null || IDS.includes(b.open_id)) && [1, 2, 3].includes(b.tier)
   && [b.solo, b.helped].every(a => Array.isArray(a) && a.length <= 12 && a.every(x => LEVEL_NAME.test(x)))
@@ -192,7 +209,7 @@ export const validNote = (b) => b && typeof b === "object" && Object.keys(b).eve
 // What the model is told: level names (the parent may know the seed counts), the meaning of the open
 // misconception in parent words, the template question. No event log, no board, no ids alone.
 // "3 seeds a pit, with a relay" -> an unambiguous object; a bare name once read as a count of levels.
-const levelObj = (name) => { const m = /^(\d) seeds a pit(, with a relay)?$/.exec(name);
+const levelObj = (name) => { const m = /^(\d) seeds a pit(, with a relay|, calling the count|, even or odd)?$/.exec(name);
   return { seeds_in_each_pit: +m[1], with_a_relay: !!m[2] }; };
 export function notePayload(b) {
   return { audience: "parent", child_age: 8, days_played_this_week: b.days,

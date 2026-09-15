@@ -56,7 +56,7 @@ const send = (res, code, body, type = "text/plain") =>
   res.writeHead(code, { "Content-Type": type, "Cache-Control": "no-store" }).end(body);
 
 // ponytail: fixed window per IP, in memory; enough to stop a script spending the key, not a DDoS answer
-const HITS = new Map(), LIMIT = 60, WINDOW = 60_000;
+const HITS = new Map(), LIMIT = 240, WINDOW = 60_000;
 function limited(req) {
   const ip = req.socket.remoteAddress || "?", now = Date.now(), h = HITS.get(ip) || { t: now, n: 0 };
   if (now - h.t > WINDOW) { h.t = now; h.n = 0; }

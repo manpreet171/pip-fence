@@ -117,7 +117,7 @@ check("payload: miscounted_seeds carries only the side of the landing", early.ea
 check("payload: template is TEMPLATES[id][tier]", payload(R1).template === TPL);
 
 // ---- TEMPLATES coverage and the gate on the templates themselves ----
-check("TEMPLATES covers 9 ids x 3 tiers", IDS.length === 9 && IDS.every(id => [1, 2, 3].every(t => typeof TEMPLATES[id]?.[t] === "string" && TEMPLATES[id][t])));
+check("TEMPLATES covers 13 ids x 3 tiers", IDS.length === 13 && IDS.every(id => [1, 2, 3].every(t => typeof TEMPLATES[id]?.[t] === "string" && TEMPLATES[id][t])));
 check("every template passes gate()", IDS.every(id => [1, 2, 3].every(t => gate(TEMPLATES[id][t], wordlist) === null)));
 check("gate: 'one'/'both'/'second' are number words", ["Add one seed.", "Both rows.", "The second pit."].every(t => gate(t, wordlist) === "number"));
 check("gate: 'wrong' and 'miss you' are affect words", gate("That is wrong.", wordlist) === "affect" && gate("I miss you.", wordlist) === "affect");

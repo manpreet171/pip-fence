@@ -75,3 +75,47 @@ Tier = 1 + number of prior `hint` events with the same id in this level, max 3.
 
 ## Redacted payload shape (to the model; booleans only)
 `{ early, late, by_one, past_corner, reversed, relay }` derived from the id — never a pit number, seed count or path.
+
+---
+
+## Revision 2 (16 Sep 2026, after PRODUCT-REVIEW W1, W3, W5, W8) — supersedes the conflicting lines above
+
+### A stake on every call
+A wrong call costs a seed: **the last seed of her move goes to the other side's store instead of the
+landing pit** (the seed visibly flies past the marker to the far store). The landing pit is then one
+seed lighter than the path predicts; relay and capture are computed from the board as it is after
+that loss. A right call sows normally and keeps any capture. `applyMove` returns `lost: boolean`
+and the event `sow` carries `lost`. Code's moves never lose a seed. `guessing` still silences the hint
+and the note, but the seed is still lost — that is the consequence at seven.
+
+### The attested relay
+Relay is from the **next** pit, as in Pallanguzhi and Ali Guli Mane (RESEARCH-INDIA §3): when the
+last seed lands, look at `next(landed)`; if it holds seeds, pick it up and sow on (depth one, relay
+levels only); if it is empty, capture `next(next(landed))` if it has seeds. `landing()` and
+`hops` follow the same rule. `stopped_at_first_lap` = called === hops[0] when a relay followed.
+
+### The ladder: two more question kinds
+Nodes, in order: `2_single, 3_single, 4_single, 6_single, 3_relay, 4_relay, 4_count, 6_count, 4_even, 6_even`.
+`shape(node) -> { node, seeds, kind: "single"|"relay"|"count"|"even", relay, four }` with
+`relay = kind === "relay"`, `four = seeds >= 4`.
+- **count**: after calling the pit she also calls **how many seeds that pit will hold after the sow**
+  (`call{pit, count}`; the page offers a strip of seed silhouettes to tap, never digits). Right pit
+  and right count → normal; wrong count with the right pit → the seed is lost as above. Ids:
+  `count_low_by_one` (count === actual − 1: forgot the seed that lands), `count_high_by_one`,
+  `count_off` (|diff| ≥ 2), evaluated only when the pit was right; a wrong pit is classified by the
+  pit rules first.
+- **even**: the Toguz Korgool capture — when the last seed makes the landing pit hold an **even**
+  number, she captures that pit (replaces the beyond-the-empty-pit capture on these levels). She
+  calls the pit and whether it will be even or odd (`call{pit, parity:"even"|"odd"}`). Ids:
+  `parity_wrong` (right pit, wrong parity). A wrong pit is classified by the pit rules first.
+
+### IDS (revision 2)
+`correct, counted_start_pit, overshot_by_one, stopped_at_corner, stopped_at_first_lap, direction_reversed, miscounted_seeds, count_low_by_one, count_high_by_one, count_off, parity_wrong, guessing, ambiguous`
+
+### Difficulty is tuned, not asserted
+`evals/policy_sim.mjs` plays 2,000 games per level between `policy(p_best)` and a child model that
+picks a random legal pit and always calls right; `p_best` is chosen per level so that child wins
+45–55%; the chosen values live in `GRAPH[i].p_best` and HD-012 carries the table.
+
+### Fixture DSL additions
+`c<pit>:<count>` calls a pit and a count; `c<pit>:even` / `c<pit>:odd` calls a pit and a parity.

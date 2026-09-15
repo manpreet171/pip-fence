@@ -227,3 +227,30 @@ Each step keeps the root repository untouched.
 5. **Seeds on a screen are small.** The sow animation must be legible at 320 px or the mechanic is
    invisible; tested before the hint layer is written.
 6. **Same model family for coach and attacker**, as in Rung, published as such.
+
+---
+
+## Revision 2 (16 Sep 2026) — what the product review changed
+
+The hiring-panel review (`PRODUCT-REVIEW.md`) found two design faults, not polish: on three moves
+in four a wrong call cost nothing, and the live tier-1 rephrases read worse than the templates.
+It also caught a mislabel: our relay was the Congkak rule, not the attested Tamil and Kannada one.
+All three are fixed by design (HD-012, HD-013):
+
+- **A stake on every call.** A wrong call costs a seed: the last seed of her move goes to the other
+  side's store instead of the landing pit. She sees it fly past her marker. A right call sows
+  normally and keeps any capture. This replaces "the capture is forfeited", which only bit when a
+  capture happened to be available.
+- **The attested relay.** When the last seed lands, look at the *next* pit: seeds there are picked up
+  and sown on (once); an empty next pit captures the pit beyond it. `landing()` predicts the same.
+- **Tier 1 is the template.** The model phrases tiers 2 and 3 only, at temperature 0.2, and is
+  never asked to give an instruction about which pit to pick up. The demo beat shows the template
+  on the first miss and the model on the second.
+- **The ladder is ten nodes.** After the six call levels, two *count* levels (call the pit and how
+  many seeds it will hold after the sow: addition, with a strip of seed silhouettes to tap, never a
+  digit) and two *even* levels (the Toguz Korgool capture: call the pit and whether it will be even or
+  odd). Four new misconception ids, four new template sets, four new parent-words entries. One skill
+  became a ladder from counting on to addition and parity, all inside the same board and log.
+- **Difficulty is tuned, not asserted.** `evals/policy_sim.mjs` plays two thousand games a level;
+  `p_best` per level is chosen so a random-picking child who always calls right wins about half.
+
