@@ -138,7 +138,7 @@ check("latency_cost: summarise p50/p95/$ and gate pass rate", s.p95 === 900 && s
   check("note: payload carries no internal id and no event log", !JSON.stringify(notePayload(B)).includes("counted_start") && !("events" in notePayload(B)));
   const noteReply = (o) => async () => ({ ok: true, status: 200, json: async () => ({ content: [{ type: "text", text: JSON.stringify(o) }] }) });
   const wn = (f) => writeNote(B, { fetchImpl: f, apiKey: "k", timeoutMs: 50 });
-  let n = await wn(noteReply({ note: "Two levels were finished on their own this week. The call that stops a pit short is the one to watch.", question: "Which pit does the first seed go in?" }));
+  let n = await wn(noteReply({ note: "Two boards were finished on their own this week. The call that stops a pit short is the one to watch.", question: "Which pit does the first seed go in?" }));
   check("note: good model note passes -> source model", n.source === "model" && n.question.endsWith("?"), JSON.stringify(n));
   n = await wn(noteReply({ note: "Fine. Fine. Fine. Fine.", question: "Ok?" }));
   check("note: four sentences -> template", n.source === "template" && n.reason === "sentences", n.reason);
@@ -157,12 +157,12 @@ check("latency_cost: summarise p50/p95/$ and gate pass rate", s.p95 === 900 && s
   const B0 = { ...B, open_id: null, tier: 1 };
   let seenSystem = "";
   const spy = (o) => async (url, init) => { const body = JSON.parse(init.body); seenSystem = body.system || body.messages?.[0]?.content || ""; return { ok: true, status: 200, json: async () => ({ content: [{ type: "text", text: JSON.stringify(o) }] }) }; };
-  n = await writeNote(B0, { fetchImpl: spy({ note: "Two levels were finished this week. They are still working on counting round the corner.", question: "Which level did you like best?" }), apiKey: "k", timeoutMs: 50 });
+  n = await writeNote(B0, { fetchImpl: spy({ note: "Two boards were finished this week. They are still working on counting round the corner.", question: "Which board did you like best?" }), apiKey: "k", timeoutMs: 50 });
   check("note: nothing open -> prompt says so and an invented weakness is rejected", /Nothing is open/.test(seenSystem) && n.source === "template" && n.reason === "invented", seenSystem.slice(-80) + " | " + n.reason);
-  n = await writeNote(B0, { fetchImpl: spy({ note: "Two levels were finished this week, both on their own.", question: "Which level did you like best?" }), apiKey: "k", timeoutMs: 50 });
+  n = await writeNote(B0, { fetchImpl: spy({ note: "Two boards were finished this week, both on their own.", question: "Which board did you like best?" }), apiKey: "k", timeoutMs: 50 });
   check("note: nothing open -> a plain factual note passes", n.source === "model", n.reason);
   const BZ = { ...B, solo: [], helped: [], days: 1 };
-  n = await writeNote(BZ, { fetchImpl: spy({ note: "Your child finished a level this week and is still counting round the corner.", question: "Show me where the first seed goes." }), apiKey: "k", timeoutMs: 50 });
+  n = await writeNote(BZ, { fetchImpl: spy({ note: "Your child finished a board this week and is still counting round the corner.", question: "Show me where the first seed goes." }), apiKey: "k", timeoutMs: 50 });
   check("note: zero games finished -> a claimed level is rejected", n.source === "template" && n.reason === "invented", n.reason);
   const BE = { open_id: null, tier: 1, solo: [], helped: [], days: 0 };
   let called = false;
