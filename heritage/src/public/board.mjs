@@ -31,13 +31,21 @@ const timed = r => { const t0 = performance.now(); return hint(r).then(h => ({ .
 // --- geometry: pit centres in board px, from the scene size. Landscape: her row is the near row, left to
 // right, her store at the right end; portrait: the board turns so her row is the right-hand column running
 // up, her store at the top, code's at the bottom. Sowing is anticlockwise either way.
-const G = { c: 80, pit: [], store: [], w: 0, h: 0, portrait: false };
+const G = { c: 80, pit: [], store: [], w: 0, h: 0, portrait: false }, MIN = 47;   // 47 in board px keeps every tilted pit >= 44 on screen
+// Spacing sets, tried in order until the pits reach MIN px: portrait's second set tightens the gaps and stores.
+const KS = { land: [{ GAP: .15, ST: 1.2, SG: .28, PAD: .42, RG: .3 }], port: [{ GAP: .1, ST: 1, SG: .2, PAD: .3, RG: .3 }, { GAP: .06, ST: .7, SG: .1, PAD: .12, RG: .3 }] };
 function layout() {
-  const W = scene.clientWidth, H = scene.clientHeight, top = $("sign").getBoundingClientRect().bottom + 6;
-  const portrait = W < 640, K = portrait ? { GAP: .1, ST: 1, SG: .2, PAD: .3, RG: .3 } : { GAP: .15, ST: 1.2, SG: .28, PAD: .42, RG: .3 };
-  const along = 2 * K.PAD + 2 * K.ST + 2 * K.SG + 7 + 6 * K.GAP, across = 2 * K.PAD + 2 + K.RG;
-  const c = Math.min(96, portrait ? Math.min((H - top) * .97 / along, W * .96 / across) : Math.min(W * .96 / along, (H - top) * .86 / across));
+  const W = scene.clientWidth, hud = $("hud").offsetHeight, top = $("sign").getBoundingClientRect().bottom - stage.getBoundingClientRect().top + 6;
+  const portrait = W < 640, H0 = document.documentElement.clientHeight - hud;   // what the viewport can hold beside the HUD
+  let K, along, across, c = 0;
+  for (K of KS[portrait ? "port" : "land"]) {
+    along = 2 * K.PAD + 2 * K.ST + 2 * K.SG + 7 + 6 * K.GAP; across = 2 * K.PAD + 2 + K.RG;
+    c = Math.min(96, portrait ? Math.min((H0 - top) * .97 / along, W * .96 / across) : Math.min(W * .96 / along, (H0 - top) * .86 / across));
+    if (c >= MIN) break;
+  }
+  c = Math.max(c, MIN);                                    // never under MIN: the page scrolls instead of crushing the board
   Object.assign(G, { c, portrait, w: (portrait ? across : along) * c, h: (portrait ? along : across) * c });
+  const need = top + G.h + hud; stage.style.height = need > H0 + hud ? px(need) : ""; const H = scene.clientHeight;
   const first = K.PAD + K.ST + K.SG, step = 1 + K.GAP, near = K.PAD + 1 + K.RG + .5, far = K.PAD + .5;
   for (let i = 0; i < 7; i++) {
     G.pit[i] = portrait ? { x: near * c, y: G.h - (first + i * step + .5) * c } : { x: (first + i * step + .5) * c, y: near * c };
@@ -312,14 +320,17 @@ function speak(text) {
   tts.speak(u);
 }
 new ResizeObserver(() => requestAnimationFrame(layout)).observe(scene);
+new ResizeObserver(() => document.documentElement.style.setProperty("--hud", px($("hud").offsetHeight))).observe($("hud"));
 
 // --- boot: the board mid-game exactly as she left it, else the first level ---------------------------------
 mount();
-const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];
+const saved = load();                                     // right keys, wrong types: treat as no save
+S.mastery = Object(saved.mastery) === saved.mastery && !Array.isArray(saved.mastery) ? saved.mastery : {};
+S.events = Array.isArray(saved.events) && saved.events.every(e => Object(e) === e) ? saved.events : [];
 const g = saved.game;
 if (Q.get("node") && shape(Q.get("node"))) start(Q.get("node"));
 else if (g?.ended) { Object.assign(S, { node: g.node, state: g.state, at: g.at }); $("task").textContent = "Every board is played."; end(); }
-else if (g?.state && shape(g.node) && lvl().at(0)?.node === g.node) {
+else if (Array.isArray(g?.state?.pits) && shape(g.node) && lvl().at(0)?.node === g.node) {
   Object.assign(S, { node: g.node, state: g.state, at: g.at, over: !!g.over, last: g.last || null, phase: g.state.side === 1 ? "code" : "pick" });
   taskLine(); snap(S.state);
   // The marker and card of a move she has not answered yet come back with it; a pick since then has cleared them.

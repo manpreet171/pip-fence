@@ -47,7 +47,7 @@ export function mount(snap) {
     document.getElementById("jbody").innerHTML =
       `<h3>level</h3><pre>${esc(s.node)}  ·  ${s.events.length} events  ·  pits ${j(s.state?.pits)}  stores ${j(s.state?.stores)}</pre>` +
       `<h3>events (last ten)</h3>${ev || "<pre class=dim>none yet</pre>"}` +
-      `<h3>classifier · now · classify(level)</h3><pre>id         ${esc(r.id)}\ntier       ${r.tier}\nconfirmed  ${r.confirmed}\ncalled     ${r.called ?? "-"}   landed ${r.landed ?? "-"}\npath       ${j(r.path ?? [])}\nflags      ${j(r.flags ?? [])}</pre>` +
+      `<h3>classifier · now (next tier) · classify(level)</h3><pre>id         ${esc(r.id)}\ntier       ${r.tier}\nconfirmed  ${r.confirmed}\ncalled     ${r.called ?? "-"}   landed ${r.landed ?? "-"}\npath       ${j(r.path ?? [])}\nflags      ${j(r.flags ?? [])}</pre>` +
       `<h3>last hint</h3><pre>${h ? `for        ${esc(h.id)} tier ${h.tier}\nsource     ${esc(h.source)}${h.reason ? `  (${esc(h.reason)})` : ""}\nround trip ${h.ms} ms\nmodel      ${esc(h.model || (h.source === "model" ? "server key" : "template, no call"))}` : "<span class=dim>none yet</span>"}</pre>` +
       `<h3>payload · ${h?.payload ? "what the model got for the last hint" : "what the next hint would get"} <span class="${clean ? "ok" : "bad"}">[${clean ? "no digits" : "DIGITS FOUND"}]</span></h3>` +
       `<pre>${h?.payload || IDS.includes(r.id) ? "" : "<span class=dim>(not sent: no misconception to phrase)</span>\n"}${esc(JSON.stringify(p, null, 1))}</pre>` +

@@ -204,3 +204,34 @@ parent note from the model, source page; 0 console errors, 0 failed requests.
   filmed with the template if the live rephrase reads wrong. **Rejected:** templates only at tier 1
   (hides the AI in the demo beat); a second model as a judge (cost, latency, and the same family).
 - `/judge.mjs` route points at `public/judge.mjs`, matching the contract.
+
+## HD-011 — QA round 1, screen side: the HUD is measured, the pits have a floor, the page scrolls before the board shrinks
+16 Sep 2026 · **Decided**
+
+**What.** Fixes for TEST-REPORT D1, D4, D5 and the principal's short-landscape finding, in `board.html`,
+`board.mjs`, `judge.mjs` only.
+
+- **`--hud` is measured, not reserved.** A `ResizeObserver` on `#hud` writes its height to the root
+  variable, so the scene ends where the tray really ends (was a fixed 172 px against a 210–250 px
+  wrapped HUD, which put pit 0 under the tray at 320 px). At ≤ 640 px Sound and the two links share
+  one row (the links stacked beside the button), the sign and tray tighten, and ≤ 360 px trims the
+  gaps once more, so the pits get the height back. **Rejected:** a bigger fixed reservation (wrong
+  again on the next font or link).
+- **Pits never go under 47 board px** (≥ 44 px on screen after the tilt). `layout()` tries the normal
+  spacing, then a tighter portrait set (smaller gaps, shorter stores), and only then clamps; when
+  the board plus HUD still exceed the viewport the stage grows and the page scrolls vertically
+  (386×322 scrolls to 656 px) rather than crushing the board. Horizontal overflow stays hidden.
+  **Rejected:** a landscape board on short landscape phones (too wide for 386 px without horizontal
+  scroll); shrinking tap targets below 44 px.
+- **Storage with the right keys and wrong types boots a fresh level.** `mastery` must be a plain
+  object, `events` an array of objects, `game.state.pits` an array; anything else is treated as no
+  save. No migration code: the format has one version.
+- **The overlay labels the live classifier block "classifier · now (next tier)"**, since its tier
+  is by contract one past the last logged hint; "last hint" stays as logged.
+
+**Verified** with real pointer input at 320×640, 375×667, 375×812, 386×322 and 1280×720: every
+pit of hers ≥ 44 px on screen (47.7–46.3 on the tight sizes, 99 at desktop), `elementFromPoint` at
+each pit centre returns the pit (35/35), no horizontal scroll, `--hud` equals the measured HUD, a
+wrong call's card never overlaps the marker, 0 console errors; the two wrong-type storage probes
+boot `2_single` with no error; the overlay label; judge open/close byte-identical at 1280×720 and
+375×812; `run_all.py` ALL PASS.
