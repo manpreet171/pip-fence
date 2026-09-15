@@ -147,3 +147,43 @@ Calls made while copying, so nobody has to rediscover them:
 **Rejected.** A `relay` boolean from the node name (leaks the level); a stdlib rewrite of the attacker
 client (a divergence from Rung's harness for no measured gain); templates that say *one pit early*
 (the gate bans *one*; the templates say *a pit early*).
+
+---
+
+## HD-009 — The board page: judgment calls made while building `src/public/`
+16 Sep 2026 · **Decided**
+
+**What.** `board.html` + `board.mjs` (the wooden board, the call marker, the quarter-second sow, pips,
+the hint card, spoken hints, the code opponent, persistence), `judge.mjs`, `source.html`. `sow.mjs`
+stays Part 1 only: the page imports it and never edits it, so Part 2's "appended below the marker"
+plan in CONCEPT §9 is dropped in favour of one page module.
+
+- **Seeds are CSS, not a sprite.** A shaded oval with a highlight, laid in a sunflower spiral inside
+  each pit, sized from the pit (`--c`), so one rule draws every seed at every viewport. **Rejected:**
+  a Pillow-composited PNG (`scripts/make_seeds.py`) — a second asset pipeline for a 12 px oval.
+- **Every seed she sows leaves the tray.** The seed in the air starts at the hand strip on the HUD and
+  lands in the pit, one per quarter second, so the hand visibly empties as the count runs. Code's
+  seeds leave its lifted pit. The flight layer sits on the stage, positioned from live rects, so the
+  board's tilt costs nothing. **Rejected:** pit-to-pit hops (the hand never empties on screen).
+- **The diagnostic board perturbs, it does not solve.** After `ambiguous`, every pit gets one seed
+  more or fewer at random until no legal move of hers lands one past a corner (`landing()`, up to 50
+  tries, then the last candidate ships). The level's seed count stays on the sign.
+- **The probe never traps her.** One tap after the probe answers it, resolved or not; a tap on a pit
+  she could sow from is her next pick, not an answer. The contract's "else stays ambiguous" holds
+  in the log; the page just stops waiting.
+- **Mid-call reload replays the call.** A `pick` with no `sow` puts the seeds back in her hand with
+  the pit lifted; a `call` with no `sow` drops the marker and runs the sow, so the log never holds a
+  call the board did not honour.
+- **The end line is a card, not just a voice.** "The seeds are in." plus the stores compared in words
+  (more / fewer / the same), in the band under the sign, spoken once. Never a digit off the sign.
+- **The overlay names the opponent on every `turn` line** ("other side: code, p_best = 0.6") and once
+  more in its own section, so a reviewer scrolling the log and one reading the summary both see it.
+- **Storage is exactly the contract's** `{v, mastery, game, events}`; the sound choice lives in
+  `kuzhi.sound` only.
+
+**Verified** with real pointer input (Playwright `page.mouse.click` at rect centres, 68/68): the full
+move, the wrong call (marker stays, card beside it, spoken once at rate 0.92 with the card's text),
+pips one per seed, capture earned and forfeited, pasu, relay, the code move with its tag, reload
+mid-game and mid-call, the end line, the end screen, mastery 1 after seven of eight, the overlay open
+and closed at 1280×720 and 375×812, the `elementFromPoint` sweep (7/7 pits at both sizes, ≥ 44 px),
+parent note from the model, source page; 0 console errors, 0 failed requests.
