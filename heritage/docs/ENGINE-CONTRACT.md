@@ -119,3 +119,22 @@ picks a random legal pit and always calls right; `p_best` is chosen per level so
 
 ### Fixture DSL additions
 `c<pit>:<count>` calls a pit and a count; `c<pit>:even` / `c<pit>:odd` calls a pit and a parity.
+
+### As built (HD-012) — where the engine deviates from the lines above
+- `applyMove(state, from, called)`: `called` is `{pit, count?, parity?}`, a bare number (the pit) or `null` (code).
+  Returns `{state, path, landed, hops, fours, capture, lost, held}`; **`held`** is what the landing pit held as the
+  last seed dropped, the answer to the count and parity questions. The `sow` event carries `lost` and `held`
+  (the classifier needs `held` to tell `count_low_by_one` from `count_off`; it has no board).
+- The lost seed is the last seed of the **whole** move (after a relay); relay and pasu are decided on the board as
+  it stands, so a lost seed can leave a pit at four, which pasu then takes. A wrong call also forfeits the capture
+  (`earned:false`, seeds stay), as before. On a count or even level a call with no count/parity is a wrong call.
+- The relay picks up `next(landed)` whether or not the landing pit was empty, and sows on from the pit after it;
+  the pickup pit is not on `path`. The `relay` event's `from` is the pickup pit. A call on the pickup pit is off
+  the path (`ambiguous`); on a one-seed relay hop the pickup pit is the fencepost (`counted_start_pit`).
+- Even levels: the capture is judged on `held` (even → the landing pit is the capture), earned only by a right
+  call; pasu at four comes first, so a pit reaching four is a pasu, not an even capture; no beyond-the-empty
+  capture on these levels; any pit counts (Toguz Korgool's own-row exclusion not adopted). Code captures too.
+- On count levels a landing pit that reaches four reads `held = 4` (then pasu takes it).
+- `policy(state, p_best = shape(state.node).p_best, rng)`.
+- The sweep runs `p_best` 0.0–1.0 (not 0.3–1.0): every value from 0.2 up leaves the random-picking child under 40%.
+  Chosen: 0.0 on eight levels, 0.1 on `4_relay` and `6_even`. Draws count half; games are capped at 400 moves.

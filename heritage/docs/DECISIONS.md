@@ -235,3 +235,57 @@ each pit centre returns the pit (35/35), no horizontal scroll, `--hud` equals th
 wrong call's card never overlaps the marker, 0 console errors; the two wrong-type storage probes
 boot `2_single` with no error; the overlay label; judge open/close byte-identical at 1280×720 and
 375×812; `run_all.py` ALL PASS.
+
+---
+
+## HD-012 — Engine revision 2: the stake, the next-pit relay, the ladder, the tuned knob
+16 Sep 2026 · **Decided**
+
+**What.** `src/sow.mjs` Part 1 rebuilt to ENGINE-CONTRACT revision 2 (PRODUCT-REVIEW W1, W3, W4, W5, W8);
+`evals/engine_test.mjs` (63 asserts), `evals/classifier_fixtures.json` (139 fixtures, 13 ids, 0 mismatches),
+`evals/policy_sim.mjs` (new). Nothing outside `src/sow.mjs` and `evals/` touched; `buddy.mjs` still lacks
+templates for the four new ids, so `buddy_test.mjs` fails on them until it gains them.
+
+- **A stake on every call (W1).** A wrong call sends the last seed of the move to the far store; the landing
+  pit is one lighter and the next move from it lands one short. Judgment calls: the lost seed is the last of the
+  whole move, after any relay (she called the final landing, the marker sits there); relay and pasu read the
+  board as it stands, so a lost seed can leave a pit at four and pasu takes it; a wrong call still forfeits the
+  capture as before; a bare pit call on a count or even level is wrong. **Rejected:** losing the first hop's
+  last seed (the call is about the final landing); a bonus seed for a right call (a pile to lay out, a second
+  rule to explain).
+- **The attested relay (W5).** Pick up `next(landed)` when it holds seeds, sow on from the pit after it, once.
+  The pickup pit is not on the path, so a call on it is `ambiguous`; on a one-seed relay hop it is the
+  fencepost. An empty landing pit no longer stops the relay, and pasu on the first landing does not either.
+  The `relay` event's `from` is the pickup pit. Nine relay fixtures moved with the rule.
+- **The ladder (W8).** Ten nodes: `count` asks how many the landing pit will hold, `even` asks its parity
+  (Toguz Korgool's capture: an even landing pit is taken, on any row; pasu at four first; no
+  beyond-the-empty capture there). `applyMove` returns `held`, the count as the last seed dropped, and the
+  `sow` event carries it: the classifier has no board and needs it to grade the count. A wrong pit is graded
+  by the pit rules; the count or parity is graded only on the right pit.
+- **The knob is tuned (W4).** `policy_sim.mjs`: 2,000 games per level per `p_best`, code's one-ply policy
+  against a child who picks a random legal pit and always calls right (calling right is `called: null` in the
+  engine, since only a wrong call changes the board). Draws count half; 400-move cap. The brief said sweep
+  0.3–1.0; nothing there is inside 45–55%, so the sweep is 0.0–1.0:
+
+  | node | 0.0 | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 | 0.9 | 1.0 | chosen |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | 2_single | **49.9** | 41.0 | 36.6 | 29.1 | 26.6 | 23.4 | 19.9 | 18.7 | 18.5 | 16.9 | 15.7 | 0.0 |
+  | 3_single | **49.2** | 38.8 | 30.6 | 25.1 | 18.8 | 16.7 | 15.5 | 12.7 | 11.8 | 9.9 | 10.5 | 0.0 |
+  | 4_single | **51.3** | 45.3 | 38.8 | 30.8 | 25.0 | 23.2 | 18.5 | 15.0 | 10.3 | 9.1 | 8.3 | 0.0 |
+  | 6_single | **51.3** | 41.9 | 32.8 | 26.4 | 20.3 | 16.5 | 12.4 | 9.1 | 7.7 | 4.4 | 3.0 | 0.0 |
+  | 3_relay | **51.7** | 40.6 | 33.1 | 25.8 | 21.4 | 15.9 | 12.1 | 9.9 | 9.0 | 7.5 | 5.1 | 0.0 |
+  | 4_relay | 54.4 | **47.1** | 38.8 | 33.4 | 27.5 | 21.9 | 17.5 | 14.0 | 10.0 | 7.9 | 4.5 | 0.1 |
+  | 4_count | **51.3** | 45.3 | 38.8 | 30.8 | 25.0 | 23.2 | 18.5 | 15.0 | 10.3 | 9.1 | 8.3 | 0.0 |
+  | 6_count | **51.3** | 41.9 | 32.8 | 26.4 | 20.3 | 16.5 | 12.4 | 9.1 | 7.7 | 4.4 | 3.0 | 0.0 |
+  | 4_even | **53.2** | 45.0 | 39.0 | 33.6 | 31.8 | 25.4 | 23.0 | 18.4 | 16.5 | 14.3 | 12.7 | 0.0 |
+  | 6_even | 54.5 | **46.3** | 37.1 | 32.5 | 27.3 | 23.6 | 18.3 | 17.1 | 13.3 | 11.9 | 10.1 | 0.1 |
+
+  Child win % (draw = half). `4_count`/`6_count` equal `4_single`/`6_single` because a right-calling child plays
+  the same board. The finding is blunt: against a random picker the one-ply policy is too strong at any
+  setting, so the tuned opponent is a random sower at seven, and one best move in ten on the two levels where
+  random alone tips past 55%. `policy()` reads the node's `p_best` when none is passed; the page still passes
+  its own. **Rejected:** a policy that avoids captures on her row (a second policy to explain and test, when the
+  knob already reaches the band); finer steps than 0.1 (the band is two points wide at this resolution).
+- **Fixtures.** 45 added: the seed-loss cases (a wrong call, a code move, then the lighter pit sown), the
+  next-pit relay and its one-seed hop, the count and parity ids on all four new nodes, the probe both ways on
+  a count node, tiers and guessing on the new ids.

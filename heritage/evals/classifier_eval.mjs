@@ -20,11 +20,15 @@ export function expand(node, seq) {
     if (op === "n") { st = newGame(arg); ev.push({ t, e: "level_start", node: arg }); }
     else if (op === "b") st.pits = arg.split(",").map(Number);
     else if (op === "p") { from = pit; ev.push({ t, e: "pick", pit, seeds: st.pits[pit] }); }
-    else if (op === "c") { called = pit; ev.push({ t, e: "call", pit }); }
+    else if (op === "c") {   // c4, c4:5 (a count), c4:even / c4:odd (a parity)
+      const [p, x] = arg.split(":");
+      called = { pit: +p, ...(x === "even" || x === "odd" ? { parity: x } : x ? { count: +x } : {}) };
+      ev.push({ t, e: "call", ...called });
+    }
     else if (op === "s") {
       const seeds = st.pits[from], r = move(from, 0);
-      ev.push({ t, e: "sow", from, landed: r.hops[0], path: r.path.slice(0, seeds) });
-      if (r.hops.length > 1) ev.push({ t, e: "relay", from: r.hops[0], landed: r.hops[1], path: r.path.slice(seeds) });
+      ev.push({ t, e: "sow", from, landed: r.hops[0], path: r.path.slice(0, seeds), lost: r.lost, held: r.held });
+      if (r.hops.length > 1) ev.push({ t, e: "relay", from: (r.hops[0] + 1) % 14, landed: r.hops[1], path: r.path.slice(seeds) });
       for (const f of r.fours) ev.push({ t, e: "four", ...f });
       if (r.capture) ev.push({ t, e: "capture", ...r.capture });
     }
