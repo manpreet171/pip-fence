@@ -1,0 +1,23 @@
+ 1250 ms  model              counted_start_pit/1  Your marker sits in a pit that is early. The pit you pick up does not get a seed.
+  738 ms  template number    overshot_by_one/2  Count the seeds in your hand again. The last seed stops where the seeds run out.   [rejected: Touch each seed in your hand and say a word for it. The last seed you touch is the one right before the pit.]
+  965 ms  template vocab     stopped_at_corner/3  Count up to the corner, then keep counting into the other row. The seeds go round.   [rejected: You stopped at the corner, but the path keeps going into the next row. Follow the seeds around the bend and keep counting them there.]
+  981 ms  template vocab     stopped_at_first_lap/1  Your marker is where the first sowing ended. That pit had seeds in it, so the sowing went on.   [rejected: Your marker sits where the first sowing ended, but that pit already held seeds, so the sowing kept going past it. Look for the next marker to find where the sowing truly stopped.]
+ 1062 ms  template vocab     direction_reversed/2  Look at which way the seeds went on your last turn. They go that way every turn.   [rejected: Watch the way your seed moved when you last played. Your seed always travels that same way, so send it along that path again.]
+  779 ms  model              miscounted_seeds/3  Point at a pit for every seed in your hand, starting with the next pit. The last seed shows you the pit.
+  880 ms  model              guessing/1  Your marker sits far away from where the seeds landed. Point to each seed and say its spot before you call.
+  892 ms  model              ambiguous/2  Point to the pit where your first seed goes. Then we will count on from there.
+  965 ms  model              counted_start_pit/3  Put your hand on the pit you picked up. The first seed goes in the next pit, so count from there.
+  768 ms  model              overshot_by_one/1  Your marker is a pit late. The last seed landed before it.
+  537 ms  model              stopped_at_corner/2  The row ends at the corner, but the seeds do not stop there. Look at the other row.
+ 1016 ms  model              stopped_at_first_lap/3  You put your seed in the first pit, but that is not the end of your turn. Pick up that seed and keep going, and your marker goes where your last seed lands.
+  556 ms  model              direction_reversed/1  Your marker is the other way from the pit you picked up. The seeds always go round the same way.
+  777 ms  model              miscounted_seeds/2  Look at the seeds in your hand. Say each seed as you point along the pits.
+  810 ms  model              guessing/3  Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.
+  803 ms  model              ambiguous/1  Point to the spot where your very first seed should go. Then point to the spot where the next seed should go.
+ 1032 ms  template number    counted_start_pit/2  The first seed goes in the pit after the pit you picked up. Start counting there.   [rejected: The seed you drop in the pit is the one you count first. Point to that pit, then count the next pits after it.]
+  512 ms  model              overshot_by_one/3  Put a seed in the next pit each time you count. When your hand is empty, that pit is the last pit.
+  697 ms  model              stopped_at_corner/1  Your marker is on the corner. The seeds keep going round the corner.
+  603 ms  model              stopped_at_first_lap/2  When the last seed lands in a pit with seeds, pick that pit up and keep sowing. Look where the next sowing ends.
+
+LATENCY/COST — 20 live hints, deepseek-v4-flash, gate applied, list price $0.44/$1.32 per MTok
+  p50 803 ms | p95 1062 ms | tokens in 235 / out 46 | $0.000164 per hint | gate pass 75%

@@ -1,0 +1,2681 @@
+[
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 6,
+    "called": 0,
+    "landed": 1,
+    "path": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      0,
+      1
+    ],
+    "mid": "counted_start_pit",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 1,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is a pit early. The pit you pick up does not get a seed.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 4,
+    "called": 3,
+    "landed": 11,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_single",
+    "seeds": 3,
+    "src": 0,
+    "called": 2,
+    "landed": 3,
+    "path": [
+      1,
+      2,
+      3
+    ],
+    "mid": "counted_start_pit",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 1,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is a pit early. The pit you pick up does not get a seed.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 6,
+    "called": 9,
+    "landed": 10,
+    "path": [
+      7,
+      8,
+      9,
+      10
+    ],
+    "mid": "counted_start_pit",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The first seed goes in the pit after the pit you picked up. Start counting there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 6,
+    "called": 5,
+    "landed": 8,
+    "path": [
+      7,
+      8
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 6,
+    "called": 7,
+    "landed": 10,
+    "path": [
+      7,
+      8,
+      9,
+      10
+    ],
+    "mid": "miscounted_seeds",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "miscounted_seeds",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Point at a pit for every seed in your hand, starting with the next pit. The last seed shows you the pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 2,
+    "called": 10,
+    "landed": 11,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "mid": "counted_start_pit",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. The first seed goes in the next pit, so count from there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.4
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 2,
+    "called": 5,
+    "landed": 9,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "stopped_at_first_lap",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_first_lap",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": true
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "When the last seed lands in a pit with seeds, pick that pit up and keep sowing. Look where the next sowing ends.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 2,
+    "called": 12,
+    "landed": 11,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "mid": "direction_reversed",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Look at which way the seeds went on your last turn. They go that way every turn.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.1
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 0,
+    "called": 4,
+    "landed": 6,
+    "path": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "mid": "miscounted_seeds",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "miscounted_seeds",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Point at a pit for every seed in your hand, starting with the next pit. The last seed shows you the pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 4,
+    "called": 11,
+    "landed": 10,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 5,
+    "called": 6,
+    "landed": 7,
+    "path": [
+      6,
+      7
+    ],
+    "mid": "ambiguous",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "ambiguous",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Now tap the pit where the first seed goes.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": true,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 5,
+    "called": 4,
+    "landed": 0,
+    "path": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      0
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 4,
+    "called": 8,
+    "landed": 13,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "mid": "stopped_at_first_lap",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_first_lap",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": true
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Sow to the first pit in your head, then pick it up and sow again. Your marker goes where the last seed of that sowing lands.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.4
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 4,
+    "called": 3,
+    "landed": 13,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "mid": "guessing",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Look at the seeds in your hand first. Then point along the pits before you call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 1,
+    "called": 10,
+    "landed": 3,
+    "path": [
+      2,
+      3
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 4,
+    "called": 10,
+    "landed": 10,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "mid": "correct",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker was on the pit where the last seed landed. Keep counting like that.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.5
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 5,
+    "called": 13,
+    "landed": 0,
+    "path": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      0
+    ],
+    "mid": "ambiguous",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "ambiguous",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Point to the pit where your first seed goes. Then we will count on from there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.25
+    },
+    "hit_pit": true,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 1,
+    "called": 5,
+    "landed": 7,
+    "path": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "mid": "miscounted_seeds",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "miscounted_seeds",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Point at a pit for every seed in your hand, starting with the next pit. The last seed shows you the pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": true,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 1,
+    "called": 0,
+    "landed": 7,
+    "path": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "mid": "guessing",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is far from where the seeds landed. Count before you call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": true,
+    "hit_seeds": false
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 4,
+    "called": 6,
+    "landed": 6,
+    "path": [
+      5,
+      6
+    ],
+    "mid": "correct",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your call and the last seed met in the same pit. Sow the next turn the same way.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 5,
+    "called": 1,
+    "landed": 9,
+    "path": [
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "direction_reversed",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is the other way from the pit you picked up. The seeds always go round the same way.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.4
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 2,
+    "called": 5,
+    "landed": 4,
+    "path": [
+      3,
+      4
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 1,
+    "called": 9,
+    "landed": 8,
+    "path": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 3,
+    "called": 6,
+    "landed": 5,
+    "path": [
+      4,
+      5
+    ],
+    "mid": "overshot_by_one",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "overshot_by_one",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": true,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is a pit late. The last seed landed before it.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 12,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 6,
+    "called": 13,
+    "landed": 12,
+    "path": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "mid": "overshot_by_one",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "overshot_by_one",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": true,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put a seed in the next pit each time you count. When your hand is empty, that pit is the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_single",
+    "seeds": 3,
+    "src": 3,
+    "called": 6,
+    "landed": 6,
+    "path": [
+      4,
+      5,
+      6
+    ],
+    "mid": "correct",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The last seed landed on your marker. That was the right call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 0,
+    "called": 6,
+    "landed": 6,
+    "path": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "mid": "correct",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker was on the pit where the last seed landed. Keep counting like that.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 2,
+    "called": 11,
+    "landed": 11,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "mid": "correct",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The last seed landed on your marker. That was the right call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 3,
+    "called": 0,
+    "landed": 10,
+    "path": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "mid": "direction_reversed",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. The first seed goes in the next pit along the way the seeds go.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 13,
+      "seeds_in_hand": 6,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 3,
+    "called": 13,
+    "landed": 7,
+    "path": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "mid": "direction_reversed",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is the other way from the pit you picked up. The seeds always go round the same way.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.5
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 3,
+    "called": 10,
+    "landed": 9,
+    "path": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "overshot_by_one",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "overshot_by_one",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": true,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is a pit late. The last seed landed before it.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 4,
+    "called": 6,
+    "landed": 11,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "mid": "stopped_at_corner",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_corner",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": true,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The row ends at the corner, but the seeds do not stop there. Look at the other row.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 2,
+    "called": 1,
+    "landed": 9,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 5,
+    "called": 0,
+    "landed": 0,
+    "path": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      0
+    ],
+    "mid": "correct",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The last seed landed on your marker. That was the right call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 4,
+    "called": 6,
+    "landed": 13,
+    "path": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "mid": "stopped_at_corner",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_corner",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": true,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Count up to the corner, then keep counting into the other row. The seeds go round.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "3_single",
+    "seeds": 3,
+    "src": 1,
+    "called": 5,
+    "landed": 4,
+    "path": [
+      2,
+      3,
+      4
+    ],
+    "mid": "overshot_by_one",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "overshot_by_one",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": true,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Count the seeds in your hand again. The last seed stops where the seeds run out.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 3,
+    "called": 6,
+    "landed": 7,
+    "path": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "mid": "ambiguous",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "ambiguous",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Point to the pit where your first seed goes. Then we will count on from there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": true,
+    "hit_seeds": true
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 6,
+    "called": 10,
+    "landed": 12,
+    "path": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "mid": "miscounted_seeds",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "miscounted_seeds",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Look at the seeds in your hand. Say each seed as you point along the pits.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 6,
+      "seeds_in_hand": 4,
+      "confidence": 0.5
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 6,
+    "called": 9,
+    "landed": 10,
+    "path": [
+      7,
+      8,
+      9,
+      10
+    ],
+    "mid": "counted_start_pit",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 1,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is a pit early. The pit you pick up does not get a seed.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "3_single",
+    "seeds": 3,
+    "src": 0,
+    "called": 2,
+    "landed": 3,
+    "path": [
+      1,
+      2,
+      3
+    ],
+    "mid": "counted_start_pit",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The first seed goes in the pit after the pit you picked up. Start counting there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 2,
+    "called": 9,
+    "landed": 11,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "mid": "miscounted_seeds",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "miscounted_seeds",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Point at a pit for every seed in your hand, starting with the next pit. The last seed shows you the pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "3_single",
+    "seeds": 3,
+    "src": 0,
+    "called": 11,
+    "landed": 3,
+    "path": [
+      1,
+      2,
+      3
+    ],
+    "mid": "direction_reversed",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is the other way from the pit you picked up. The seeds always go round the same way.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.5
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 5,
+    "called": 6,
+    "landed": 12,
+    "path": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "mid": "stopped_at_corner",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_corner",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": true,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Count up to the corner, then keep counting into the other row. The seeds go round.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 1,
+    "called": 7,
+    "landed": 8,
+    "path": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "mid": "counted_start_pit",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The first seed goes in the pit after the pit you picked up. Start counting there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 3,
+    "called": 6,
+    "landed": 5,
+    "path": [
+      4,
+      5
+    ],
+    "mid": "overshot_by_one",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "overshot_by_one",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": true,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is a pit late. The last seed landed before it.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 0,
+    "called": 10,
+    "landed": 9,
+    "path": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "direction_reversed",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. The first seed goes in the next pit along the way the seeds go.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.3
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_single",
+    "seeds": 3,
+    "src": 5,
+    "called": 7,
+    "landed": 8,
+    "path": [
+      6,
+      7,
+      8
+    ],
+    "mid": "counted_start_pit",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. The first seed goes in the next pit, so count from there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 2,
+    "called": 5,
+    "landed": 6,
+    "path": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "mid": "counted_start_pit",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The first seed goes in the pit after the pit you picked up. Start counting there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 0,
+    "called": 6,
+    "landed": 6,
+    "path": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "mid": "correct",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The last seed landed on your marker. That was the right call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 5,
+    "called": 6,
+    "landed": 7,
+    "path": [
+      6,
+      7
+    ],
+    "mid": "ambiguous",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "ambiguous",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Now tap the pit where the first seed goes.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": true,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 2,
+    "called": 0,
+    "landed": 6,
+    "path": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "mid": "guessing",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "guessing",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. Point to the next pit for each seed, and call the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 2,
+    "called": 6,
+    "landed": 8,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "mid": "stopped_at_corner",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_corner",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": true,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Count up to the corner, then keep counting into the other row. The seeds go round.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 3,
+    "called": 8,
+    "landed": 9,
+    "path": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "counted_start_pit",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 3,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put your hand on the pit you picked up. The first seed goes in the next pit, so count from there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 5,
+      "seeds_in_hand": 4,
+      "confidence": 0.6
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_single",
+    "seeds": 4,
+    "src": 5,
+    "called": 1,
+    "landed": 9,
+    "path": [
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "direction_reversed",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "direction_reversed",
+      "tier": 2,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": true,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Look at which way the seeds went on your last turn. They go that way every turn.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 0,
+      "seeds_in_hand": 2,
+      "confidence": 0.1
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 6,
+    "called": 0,
+    "landed": 1,
+    "path": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      0,
+      1
+    ],
+    "mid": "counted_start_pit",
+    "tier": 2,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "counted_start_pit",
+      "tier": 2,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The first seed goes in the pit after the pit you picked up. Start counting there.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.3
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "6_single",
+    "seeds": 6,
+    "src": 2,
+    "called": 8,
+    "landed": 8,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "mid": "correct",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your call and the last seed met in the same pit. Sow the next turn the same way.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "4_relay",
+    "seeds": 4,
+    "src": 0,
+    "called": 10,
+    "landed": 9,
+    "path": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "overshot_by_one",
+    "tier": 3,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "overshot_by_one",
+      "tier": 3,
+      "shape": {
+        "early": false,
+        "late": true,
+        "by_one": true,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Put a seed in the next pit each time you count. When your hand is empty, that pit is the last pit.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.5
+    },
+    "hit_pit": false,
+    "hit_seeds": true
+  },
+  {
+    "node": "2_single",
+    "seeds": 2,
+    "src": 0,
+    "called": 2,
+    "landed": 2,
+    "path": [
+      1,
+      2
+    ],
+    "mid": "correct",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "correct",
+      "tier": 1,
+      "shape": {
+        "early": false,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": false
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "The last seed landed on your marker. That was the right call.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 7,
+      "seeds_in_hand": 4,
+      "confidence": 0.25
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  },
+  {
+    "node": "3_relay",
+    "seeds": 3,
+    "src": 2,
+    "called": 5,
+    "landed": 9,
+    "path": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "mid": "stopped_at_first_lap",
+    "tier": 1,
+    "payload": {
+      "age": 8,
+      "reading_level": "500-word list, max 2 sentences",
+      "misconception_id": "stopped_at_first_lap",
+      "tier": 1,
+      "shape": {
+        "early": true,
+        "late": false,
+        "by_one": false,
+        "past_corner": false,
+        "reversed": false,
+        "relay": true
+      },
+      "nouns": {
+        "unit": "seed",
+        "place": "pit",
+        "marker": "marker"
+      },
+      "template": "Your marker is where the first sowing ended. That pit had seeds in it, so the sowing went on.",
+      "constraint": "Use no numbers of any kind. Point with words, not digits."
+    },
+    "guess": {
+      "landing_pit": 6,
+      "seeds_in_hand": 4,
+      "confidence": 0.35
+    },
+    "hit_pit": false,
+    "hit_seeds": false
+  }
+]

@@ -88,3 +88,62 @@ panel sees through it); model table-talk (cosmetic; revisit only if everything e
 Rung's within-child pre/post/48 h design with a paper ring-counting instrument and two
 pre-registered controls; the same falsification sentence. New: call accuracy over the session as a
 learning curve, which this mechanic produces on every move and Rung could not.
+
+---
+
+## HD-007 — Engine judgment calls, recorded while building Part 1
+15 Sep 2026 · **Decided**
+
+- **First-lap stop outranks the corner.** On a relay level the first hop can stop on a corner
+  (from 3 on `3_relay`: 4, 5, 6, pick up, on to 10). The contract's collision rule would have
+  called that `ambiguous` and sent the fencepost probe, which asks about the first seed and cannot
+  tell the two apart. The child's count of the first hop was exact, so `stopped_at_first_lap` is
+  reported alone. Contract edited. **Rejected:** ambiguous + probe (wrong question).
+- **The probe resolves only to an id that matched.** `overshot_by_one` and `direction_reversed`
+  coincide on every fresh `4_relay` move (from + 10 ≡ from − 4 mod 14); a tap after that hint must
+  not turn into `counted_start_pit`. Contract edited.
+- **The 1-seed "fencepost = reversal" note was false** (2·seeds ≡ 1 mod 14 has no solution) and is
+  removed from the contract; on a 1-seed move the fencepost call is the source pit itself.
+- **`in_progress`** is returned before the first completed move of a level, as in Rung, with
+  `confirmed:false`; not one of the nine ids, never hinted.
+- **`next()` on ambiguous returns the same node name;** the page owns the diagnostic layout (it can
+  test candidate boards with `landing()` for corner-adjacent landings). No second return shape.
+- **`policy()` scores store difference** (own minus hers after the move), which counts captures and
+  fours together; ties go to the lowest pit; returns `null` when there is no legal move.
+- **The expander forces the side** (`p` → hers, `o` → code's) so a fixture can play two child moves
+  in a row on a reset board without the engine crediting a capture to the wrong store.
+
+---
+
+## HD-008 — The AI layer and server: Rung's, constants swapped, with these judgment calls
+15 Sep 2026 · **Decided**
+
+**What.** `src/buddy.mjs`, `src/server.mjs`, `data/hints.txt`, `evals/{readinglevel.py, buddy_test.mjs,
+latency_cost.mjs, redteam_leak.py, run_all.py}`, `docs/BUDDY-CONTRACT.md` are copies of Rung's with
+the game constants swapped; gate, providers, timeouts, trust boundary and rate limit are unchanged.
+Calls made while copying, so nobody has to rediscover them:
+
+- **27 templates, `correct` included.** `correct` is never hinted, but `TEMPLATES[id][tier]` exists for
+  every id in `IDS` so the set-equality assert and the overlay never meet a hole; its three lines are
+  number-free acknowledgements. `guessing` has templates too, though the page may choose silence.
+- **The shape is fixed by the id.** ENGINE-CONTRACT says "derived from the id". The six booleans are a
+  lookup table; `miscounted_seeds` alone adds which side of the landing the marker sits (a comparison
+  of two path positions, never the distance). `relay` is true only for `stopped_at_first_lap`; it is
+  *not* read from the node name, because "relay level" would narrow the seed count to {3, 4}.
+- **DOMAIN list = 15 words** (pit, pits, seed, seeds, marker, corner, sow, sowing, hand, row, turn, lap,
+  store, count, empty). Four out-of-list words survive across the 27 templates (*early, met, path, tap*),
+  never more than one per line.
+- **The number-word list is the same 36 words**; *first* stays allowed (the probe needs it).
+- **Parent note vocab gate** rejects *holes/beads* (the child hears *pit* and *seed*); the at-home
+  question may say *stones* and *bowls* because the parent has no board. Level names for `validNote`
+  are `"<2|3|4|6> seeds a pit"` with an optional `", with a relay"`. "Zero fences" became "zero levels
+  finished": a note claiming a finished level in a week with none is rejected as invented.
+- **No control arm, no other POST routes.** Any POST that is not `/api/buddy` or `/api/note` is 404.
+- **Red-team answer space** is the landing pit 0–13 and the seeds in hand {2, 3, 4, 6}, scored against
+  the majority-class baseline on the drawn fixtures. Known, accepted: the `ambiguous` id only arises one
+  past a corner, so the label alone narrows the landing to {0, 7}; and `openai` stays an evals-only
+  dependency exactly as in Rung (`evals/requirements.txt`); the shipped app has none.
+
+**Rejected.** A `relay` boolean from the node name (leaks the level); a stdlib rewrite of the attacker
+client (a divergence from Rung's harness for no measured gain); templates that say *one pit early*
+(the gate bans *one*; the templates say *a pit early*).

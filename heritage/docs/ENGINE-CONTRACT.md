@@ -27,7 +27,7 @@ export function applyMove(state, from, called) // -> { state: newState, path, la
 export function isOver(state)                // true when the side to move has no legal move
 export function finish(state)                // remaining seeds go to the side that still has them; -> state
 export function classify(events)             // -> { id, tier, confirmed, called, landed, path, node, flags: [] }
-export function next(mastery, last)          // first node with mastery < 1; `ambiguous` -> a diagnostic on the same node
+export function next(mastery, last)          // first node with mastery < 1; `ambiguous` -> the same node again (the page lays out the diagnostic board)
 export function policy(state, p_best, rng)   // code's move: best one-ply move with prob p_best else random legal; rng() in [0,1)
 export const IDS                             // the nine ids below in this order
 ```
@@ -43,15 +43,16 @@ move end: if `next(landed)` is empty, take `next(next(landed))` if it has seeds 
 
 Definitions on the LAST child move (`pick` … `sow` [… `relay`]), with `called`, `landed`, `path`:
 - `correct`: called === landed.
-- `counted_start_pit`: called is the pit immediately before `landed` on the path (she counted the source pit as the first drop). For a 1-seed move this coincides with `direction_reversed`… see ambiguous.
+- `counted_start_pit`: called is the pit immediately before `landed` on the path (she counted the source pit as the first drop; on a 1-seed move that pit is `from` itself). It never coincides with `direction_reversed` (2·seeds ≡ 1 mod 14 has no solution); the collision that does occur is with `stopped_at_corner`, see ambiguous.
 - `overshot_by_one`: called === next(landed).
 - `stopped_at_corner`: called is a corner (6 or 13) that lies on the path strictly before `landed`.
-- `stopped_at_first_lap`: relay levels; called === hops[0] and there was a relay (hops.length > 1).
+- `stopped_at_first_lap`: relay levels; called === hops[0] and there was a relay (hops.length > 1). When hops[0] is a corner this outranks `stopped_at_corner` (HD-007): her count of the first hop was exact.
 - `direction_reversed`: called === (from − seeds mod 14), i.e. the clockwise landing, and it differs from the true landing.
 - `miscounted_seeds`: called is on the path and |index(called) − index(landed)| ≥ 2 and none of the above.
 - `guessing`: across the last three child moves, every call was off the path, OR the same pit was called on the last three moves while the source differed. Overrides everything except `correct`.
 - `ambiguous`: two of the above match at once (e.g. `counted_start_pit` and `stopped_at_corner` when landed is one past a corner), or the call is off the path and none match.
-Precedence when exactly one matches: that one. Collision → `ambiguous` with `confirmed:false`, then the probe: a `tap_count{pit}` after an `ambiguous` hint resolves — tap on `from` → `counted_start_pit`; tap on next(from) → `stopped_at_corner`; else stays ambiguous.
+Precedence when exactly one matches: that one. Collision → `ambiguous` with `confirmed:false`, then the probe: a `tap_count{pit}` after an `ambiguous` hint resolves — tap on `from` → `counted_start_pit`; tap on next(from) → `stopped_at_corner`; else stays ambiguous. The probe only resolves to an id that matched (an `overshot_by_one`/`direction_reversed` collision, possible on relay boards, stays ambiguous).
+Before the first completed child move of a level (no `pick`…`sow` yet) classify returns `{id:"in_progress", confirmed:false}`; the page never hints on it.
 Tier = 1 + number of prior `hint` events with the same id in this level, max 3.
 
 ## Event log (written by the page, read by classify)
