@@ -187,3 +187,20 @@ pips one per seed, capture earned and forfeited, pasu, relay, the code move with
 mid-game and mid-call, the end line, the end screen, mastery 1 after seven of eight, the overlay open
 and closed at 1280×720 and 375×812, the `elementFromPoint` sweep (7/7 pits at both sizes, ≥ 44 px),
 parent note from the model, source page; 0 console errors, 0 failed requests.
+
+
+---
+
+## HD-010 — QA round 1, server side: note budget, fallback wording, hint temperature, route
+16 Sep 2026 · **Decided** (heritage/docs/TEST-REPORT.md D2, D3, D6)
+
+- **Parent note.** The prompt now sets a word budget the model can hit (sixty words open, forty
+  closed), the length gate is 520 characters (a three-sentence note was being cut at 400), and the
+  server waits six seconds (client seven). The fallback spells counts in words and says *board*,
+  never *level*: "This week two boards were finished, with a hint."
+- **Hint phrasing at temperature 0.2**, and the system prompt forbids instructions about which pit to
+  pick up. The lexical gate cannot see a reversed instruction; a cooler model and a narrower brief
+  reduce them. Residual, published: a semantic slip is still possible; tier 1 on the demo shape is
+  filmed with the template if the live rephrase reads wrong. **Rejected:** templates only at tier 1
+  (hides the AI in the demo beat); a second model as a judge (cost, latency, and the same family).
+- `/judge.mjs` route points at `public/judge.mjs`, matching the contract.

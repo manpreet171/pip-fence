@@ -118,6 +118,7 @@ export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fe
 // DeepSeek (v4-flash, JSON mode, thinking disabled) with DEEPSEEK_API_KEY. Same payload, same gate,
 // same template fallback either way; the gate is what makes the output safe, not the vendor.
 const SYSTEM = () => "You phrase one hint for a child aged 8 reading at a 500-word level. Max 2 sentences. " +
+  "Never tell her which pit to pick up or to move seeds; only say where to look or what to count again. " +
   "Use no numbers of any kind — no digits, no number words. Never state or imply how many. Point with words. " +
   "Never say sad, disappointed, or miss you.";
 const SCHEMA = { type: "object", additionalProperties: false, required: ["tier", "misconception_id", "text"],
@@ -125,16 +126,16 @@ const SCHEMA = { type: "object", additionalProperties: false, required: ["tier",
 
 // A job = system prompt + strict schema + token budget. Two jobs share the providers: the child's
 // hint (60 tokens, no numbers) and the parent's weekly note (CONCEPT §6: AI pointed at the adult).
-export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120,
+export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120, temperature: 0.2,
   extra: " Reply with only a JSON object with the keys tier, misconception_id and text. Copy tier and misconception_id from the input exactly." };
 const NOTE_SYSTEM = (open = true) => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
   "count on around a ring of pits in a sowing game: she calls the pit where the last seed will land before the seeds move. " +
   "Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +
   "Do not use the words wrong, bad, lazy, slow, behind, struggling, failed. Do not name the game's internal labels. " +
-  "Mention only what the input lists; invent nothing. Call the pieces seeds and pits, never holes or beads. " +
+  "Mention only what the input lists; invent nothing. Call the pieces seeds and pits, never holes or beads; call each game a board, never a level. " +
   (open
-    ? "note: at most three sentences saying what the child did and what they are still working on. "
-    : "note: at most two sentences saying what the child did. Nothing is open: do not mention anything they are still working on, practising, or should do next. ") +
+    ? "note: at most three sentences and sixty words, saying what the child did and what they are still working on. "
+    : "note: at most two sentences and forty words, saying what the child did. Nothing is open: do not mention anything they are still working on, practising, or should do next. ") +
   "question: exactly one thing the parent can ask the child out loud.";
 const NOTE_SCHEMA = { type: "object", additionalProperties: false, required: ["note", "question"],
   properties: { note: { type: "string" }, question: { type: "string" } } };
@@ -147,7 +148,7 @@ export const PROVIDERS = {
     model: "claude-haiku-4-5-20251001", usd_per_mtok: { in: 1, out: 5 },
     request: (payload, apiKey, job = HINT_JOB) => ["https://api.anthropic.com/v1/messages", {
       method: "POST", headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: job.max_tokens, temperature: 0.4, system: job.system(),
+      body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: job.max_tokens, temperature: job.temperature ?? 0.4, system: job.system(),
         messages: [{ role: "user", content: JSON.stringify(payload) }],
         output_config: { format: { type: "json_schema", schema: job.schema } } }) }],
     parse: data => ({ text: data?.content?.find(b => b.type === "text")?.text ?? "",
@@ -157,7 +158,7 @@ export const PROVIDERS = {
     model: "deepseek-v4-flash", usd_per_mtok: { in: 0.44, out: 1.32 },   // peak list price; off-peak is half
     request: (payload, apiKey, job = HINT_JOB) => ["https://api.deepseek.com/chat/completions", {
       method: "POST", headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-      body: JSON.stringify({ model: "deepseek-v4-flash", max_tokens: job.max_tokens, temperature: 0.4,
+      body: JSON.stringify({ model: "deepseek-v4-flash", max_tokens: job.max_tokens, temperature: job.temperature ?? 0.4,
         thinking: { type: "disabled" }, response_format: { type: "json_object" },
         messages: [
           { role: "system", content: job.system() + job.extra },
@@ -211,17 +212,18 @@ export function noteGate(out, open = true, levels = 1) {
   if (!q || q.split(/[.!?]+/).filter(x => x.trim()).length > 2 || (q.match(/\?/g) || []).length > 1) return "question";
   if (BLAME.test(out.note) || BLAME.test(out.question)) return "blame";
   if (/_/.test(out.note + out.question)) return "labels";
-  if (/\b(holes?|beads?)\b/i.test(out.note + out.question)) return "vocab";   // the child hears "pit" and "seed"; the parent must too
-  if (out.note.length > 400 || out.question.length > 160) return "length";
+  if (/\b(holes?|beads?|levels?)\b/i.test(out.note + out.question)) return "vocab";   // the child hears "pit" and "seed"; the parent must too
+  if (out.note.length > 520 || out.question.length > 160) return "length";
   return null;
 }
 export function noteFallback(b) {
   const done = b.solo.length + b.helped.length;
-  const note = (done ? `This week ${done === 1 ? "one level was finished" : done + " levels were finished"}${b.helped.length ? (b.solo.length ? ", some with a hint" : ", with a hint") : ""}. ` : "No level was finished this week yet. ")
+  const W = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+  const note = (done ? `This week ${done === 1 ? "one board was finished" : (W[done] || "many") + " boards were finished"}${b.helped.length ? (b.solo.length ? ", some with a hint" : ", with a hint") : ""}. ` : "No board was finished this week yet. ")
     + (b.open_id ? PARENT_WORDS[b.open_id][0] : "Nothing is open right now.");
   return { note, question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Show me how the seeds go round the board." };
 }
-export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", timeoutMs = 4000 } = {}) {
+export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", timeoutMs = 6000 } = {}) {
   const fallback = (reason) => ({ ...noteFallback(b), source: "template", reason });
   if (!apiKey) return fallback("no_key");
   if (!b.solo.length && !b.helped.length && !b.open_id) return fallback("nothing_to_say");   // an empty week gets the plain sentence, never an invented one
@@ -237,7 +239,7 @@ export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provi
   } catch (e) { return fallback(e?.name === "TimeoutError" ? "timeout" : "error"); }
 }
 // browser side: never throws
-export async function note(b, { timeoutMs = 5000, fetchImpl = globalThis.fetch } = {}) {
+export async function note(b, { timeoutMs = 7000, fetchImpl = globalThis.fetch } = {}) {
   try {
     const res = await fetchImpl("/api/note", { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify(b), signal: AbortSignal.timeout(timeoutMs) });

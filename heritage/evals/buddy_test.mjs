@@ -51,7 +51,7 @@ check("no apiKey -> template reason no_key (offline path)", r.source === "templa
 const [url, init] = request(P, "sk-test");
 const body = JSON.parse(init.body);
 check("request: url/model/max_tokens/temperature/headers", url === "https://api.anthropic.com/v1/messages"
-  && body.model === "claude-haiku-4-5-20251001" && body.max_tokens === 120 && body.temperature === 0.4
+  && body.model === "claude-haiku-4-5-20251001" && body.max_tokens === 120 && body.temperature === 0.2
   && init.headers["anthropic-version"] === "2023-06-01" && init.headers["x-api-key"] === "sk-test");
 check("request: json_schema format, no effort, no thinking", body.output_config?.format?.type === "json_schema"
   && body.output_config.format.schema.additionalProperties === false && !("effort" in body.output_config) && !("thinking" in body));

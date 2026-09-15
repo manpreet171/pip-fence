@@ -49,7 +49,7 @@ const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/ja
   ".svg": "image/svg+xml", ".png": "image/png", ".ttf": "font/ttf", ".ico": "image/x-icon", ".json": "application/json", ".txt": "text/plain" };
 // Static routing: short URLs map to real files (no duplication). Only these files plus src/public/** are servable.
 const ROUTES = { "/": "/public/board.html", "/board": "/public/board.html",
-  "/sow.mjs": "/sow.mjs", "/buddy.mjs": "/buddy.mjs", "/judge.mjs": "/judge.mjs" };
+  "/sow.mjs": "/sow.mjs", "/buddy.mjs": "/buddy.mjs", "/judge.mjs": "/public/judge.mjs" };
 const PUBLIC = join(HERE, "public");
 
 const send = (res, code, body, type = "text/plain") =>
