@@ -21,6 +21,11 @@ the next dot." Trained ring size is 14; trained step sizes are 2, 3, 4, 6.
 | 6 | **control** | "Twelve stones in a bag. Take out four. How many are left?" | 8 (subtraction, never taught) |
 | 7 | trained | "Start on the black dot. Count on eleven. Mark where you land." | 11 |
 | 8 | trained | "Start on the black dot. Count on sixteen. Mark where you land." | 2 (past a full lap) |
+| 9 | trained (ladder) | "This cup has five stones. One more goes in. How many now?" | 6 |
+| 10 | trained (ladder) | "This cup has seven stones. Is that even or odd?" | odd |
+
+Items 9 and 10 are scored only for a child who reached the count or even levels; they are marked
+"not reached" otherwise and never counted against her.
 
 Trained items use step sizes **not** in the game's set (5, 7, 9, 11, 16 and a corner crossing) on
 the game's ring size, so they are near transfer without repeating a trained move. Items 3 and 6 are
