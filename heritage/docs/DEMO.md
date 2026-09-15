@@ -30,6 +30,6 @@ register. Every number spoken comes from a committed document, named in brackets
 - "100% accurate." Say *right whenever it commits*.
 
 ## Before filming
-- Clear `kuzhi.v1`; run with `DEEPSEEK_API_KEY` set; check `?debug=1` shows `model` on the first wrong call, and if the live rephrase reads wrong, film the template (HD-010).
+- Clear `kuzhi.v1`; run with `DEEPSEEK_API_KEY` set; the first miss shows the template by design, the second miss shows `model` under `?debug=1`; if that live rephrase reads wrong, re-take the shot (HD-010, HD-013).
 - Start on `2_single`; the miss shot uses a three-seed pit on `3_single` (`?node=3_single`); the ladder shot uses `?node=4_count` then `?node=4_even`.
 - Record the eval output at 18 px or larger.
