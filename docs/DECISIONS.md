@@ -1680,3 +1680,27 @@ Anything but a clear yes ships the template; an unreadable verdict fails closed.
 (`docs/JUDGE-RESULTS.md`). Prefetch hides the second call. **Rejected:** a second model family as
 judge (no key); a rule-based semantic check (the failure is meaning, not vocabulary); judging tier one
 (tier one is the template in Kuzhi and cheap to keep as template here when the judge is unavailable).
+
+
+---
+
+## D-076 — One app, "Pip": the home page, How to play, stars and badges, and Pip on the card
+17 Sep 2026 · **Decided**
+
+**Name.** *Pip*: a seed, and the pips the games count with; one syllable a six-year-old can say; the
+mascot is a seed with eyes. **Rejected:** Rung and Kuzhi as separate brands (two names for one
+pipeline), anything with "math" or "AI" in it (a child's product, not a pitch).
+
+**One app.** `node src/server.mjs` starts the seeds game as a second process and mounts it under
+`/seeds/` on the same origin, so the home page reads both games' progress from one place. The seeds
+game's pages use relative paths and work both mounted and standalone.
+
+**What the child sees now, in both games.** How to play in three steps on first launch and behind a
+button; a level strip in the sign with gold and silver stars; a star moment when a level is mastered;
+badges on the home page across both games; and Pip on the hint card with **Say it another way**,
+which asks for the next tier through the same gate and judge and logs a hint event so the
+classifier's escalation stays honest. That button is the child's own line to the model: the AI is no
+longer only a note to the grown-up.
+
+**Rejected:** a chat box (the evidence the whole project rests on); points, coins or streaks (the
+learner research: extrinsic reward displaces the mechanic); a leaderboard.

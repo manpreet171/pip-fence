@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Rung</title>
+<title>Pip · Fence</title>
 <link rel="icon" href="data:,">
 <style>
   @font-face{font-family:"Fredoka";src:url(/assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
@@ -114,7 +114,7 @@
   <div id="scene" class="scene"></div>
   <div id="vig"></div>
   <div id="bubble" role="status" aria-live="polite" data-side="bottom" hidden><span id="btext"></span><span id="bsrc"></span></div>
-  <div id="sign"><span class="brand">Rung</span><span id="task"></span></div>
+  <div id="sign"><span class="brand">Pip · Fence</span><span id="task"></span><span id="strip"></span></div>
   <div id="hud">
     <div id="cart" class="tray"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
     <div id="slip" class="tray" hidden><span class="lbl">Order</span><div id="note"><button id="addpack" title="add a pack"></button><div id="slipn"></div></div></div>
@@ -123,12 +123,15 @@
     <button class="btn" id="done">Done</button>
     <button class="btn" id="restart" hidden>Start again</button>
     <button class="btn quiet" id="sound">Sound on</button>
+    <button class="btn quiet" id="howtob">How to play</button>
     <a id="grown" href="/public/parent.html">For grown-ups</a>
+    <a id="home" href="/" style="font-size:14px;font-weight:600;color:#f8f1e3;text-shadow:0 1px 2px rgba(0,0,0,.6);text-decoration:none;padding:14px 8px;min-height:44px">Home</a>
   </div>
 </div>
 <script type="module">
-  import { IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
+  import { GRAPH, IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
   import { TEMPLATES, hint, payload } from "/buddy.mjs";
+  import * as pip from "/public/pip.mjs";
   document.head.insertAdjacentHTML("beforeend", `<style>${FENCE_CSS}</style>`);
 
   const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
@@ -167,6 +170,7 @@
     mountScene(scene, s);
     S.parts.forEach((n, p) => { for (let i = 0; i < n; i++) appendPlank(scene, p, i); });
     $("task").textContent = `${s.groups} parts · ${s.per} planks in each part` + (s.mode === "packs" ? ` · packs\u00a0of\u00a0${s.pack}` : "");
+    pip.strip($("strip"), GRAPH.map(g => g.node), S.mastery, S.node);
     hideBubble(); render();
   }
 
@@ -284,6 +288,7 @@
     const at = gapAt(r.counts);
     if (r.id === "ambiguous") { S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0 }; J?.update(); return bubble(TEMPLATES.ambiguous[1], "template", at); }
     const tok = ++S.tok, key = r.id + r.tier;
+    S.hintR = r;
     const h = await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
     S.hint = { id: r.id, tier: r.tier, payload: payload(r), ...h }; J?.update();
     if (tok === S.tok) bubble(h.text, h.source, at);
@@ -293,6 +298,8 @@
     S.done = true; S.last = r; clearTimeout(S.idle);
     const hinted = S.retry || lvl().some(e => e.e === "hint");
     S.mastery[S.node] = hinted ? 0.5 : 1; save();
+    pip.strip($("strip"), GRAPH.map(g => g.node), S.mastery, S.node);
+    pip.star(!hinted, hinted ? "Fence done. A silver star." : "Fence done. A gold star!");
     goatWalk(scene, scene.geom.goat.part, false);
     bubble("The fence is done.", "", Math.floor(sh().groups / 2));
     render();
@@ -311,7 +318,17 @@
   }
 
   // --- bubble ----------------------------------------------------------------------------------
+  // Pip lives on the card: the face, and a button that asks for the next tier through the same gate and judge.
+  $("bubble").insertAdjacentHTML("afterbegin", pip.face());
+  const againBtn = pip.again($("bsrc"), async () => {
+    if (!S.hintR) return;
+    const nr = { ...S.hintR, tier: Math.min(3, (S.hintR.tier || 1) + 1) };
+    log({ e: "hint", id: nr.id, tier: nr.tier }); S.hintR = nr;
+    const h = await timed(nr); S.hint = { id: nr.id, tier: nr.tier, payload: payload(nr), ...h }; J?.update();
+    bubble(h.text, h.source, gapAt(nr.counts));
+  });
   function bubble(text, source, part) {
+    againBtn.hidden = !S.hintR || S.done || S.probe;
     const b = $("bubble"); S.bpart = part;
     $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
     b.hidden = false; placeBubble(); speak(text);
@@ -343,10 +360,17 @@
     b.dataset.side = p.side;
     b.style.cssText = `width:${px(w)};left:${px(p.left)};top:${px(p.top)};--tx:${px(p.at)};--ty:${px(p.at)}`;
   }
-  function hideBubble() { $("bubble").hidden = true; S.tok++; }
+  function hideBubble() { S.hintR = null; $("bubble").hidden = true; S.tok++; }
   scene.addEventListener("fit", placeBubble);          // after every re-fit of the world (a resize, the overlay, a taller HUD), never before it
   // The scene ends where the HUD really starts when the buttons wrap (phones, packs); never above --hud, so desktop framing stays pinned.
   new ResizeObserver(() => requestAnimationFrame(() => { scene.style.bottom = ""; scene.style.bottom = px(Math.max(parseFloat(getComputedStyle(scene).bottom), $("hud").offsetHeight)); })).observe($("hud"));
+
+  const showHow = pip.howto({ key: "pip.howto.fence", title: "How to play: Fence",
+    sub: "Build the fence so the goat stays out of the corn.",
+    steps: ["Tap the cart to pick up a plank. Tap a part of the fence to put it there.",
+            "Every part needs the same number of planks. The sign tells you how many.",
+            "Tap Done. If a part is short, the goat gets in. Fix it and try again."] });
+  $("howtob").onclick = showHow;
 
   // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
   const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];   // history survives every branch below, ?node= included

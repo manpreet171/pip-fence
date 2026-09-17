@@ -1,8 +1,9 @@
 // board.mjs — the board, the call, the sow. Everything the child sees; nothing here decides truth.
 // The engine (sow.mjs Part 1) owns the rules and the classifier; buddy.mjs owns the hint; this file
 // draws, animates, logs the events the contract lists, and persists. DOM only, browser only.
-import { GRAPH, shape, newGame, legalMoves, landing, applyMove, isOver, finish, classify, next, policy, IDS } from "/sow.mjs";
-import { TEMPLATES, hint, payload } from "/buddy.mjs";
+import { GRAPH, shape, newGame, legalMoves, landing, applyMove, isOver, finish, classify, next, policy, IDS } from "../sow.mjs";
+import { TEMPLATES, hint, payload } from "../buddy.mjs";
+import * as pip from "./pip.mjs";
 
 const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
 const Q = new URLSearchParams(location.search), DEBUG = Q.has("debug");
@@ -137,7 +138,8 @@ function lift(p, on) { pitEl(p).classList.toggle("up", on); }
 function snap(state) { D = { pits: [...state.pits], stores: [...state.stores] }; render(); }
 
 // --- her move: pick, call, sow, verdict ------------------------------------------------------------------
-const taskLine = () => { const s = sh(); $("task").textContent = `${s.seeds} seeds in every pit` + (s.relay ? ", with a relay" : ""); };
+const PLAYABLE = GRAPH.filter(g => g.kind === "single" || g.kind === "relay").map(g => g.node);
+const taskLine = () => { const s = sh(); $("task").textContent = `${s.seeds} seeds in every pit` + (s.relay ? ", with a relay" : ""); pip.strip($("strip"), PLAYABLE, S.mastery, S.node); };
 // The diagnostic board after an ambiguous call (CONCEPT §5): the fencepost and the corner collide only when a
 // landing is one past a corner, so every pit gets a seed more or fewer at random until no move of hers lands there.
 function diagnostic(node) {
@@ -247,7 +249,9 @@ function mastery() {
   const w = calls.filter(c => c.landed != null).slice(-8);
   if (w.length < 8 || w.filter(c => c.pit === c.landed).length < 7) return;
   const m = hints.some(i => i >= w[0].i) ? 0.5 : 1;
-  S.mastery[S.node] = Math.max(S.mastery[S.node] || 0, m);
+  const before = S.mastery[S.node] || 0;
+  S.mastery[S.node] = Math.max(before, m);
+  if (S.mastery[S.node] > before) { pip.star(m === 1, m === 1 ? "Level mastered. A gold star!" : "Level mastered. A silver star."); taskLine(); }
 }
 function advance() {
   const amb = lvl().some(e => e.e === "hint" && e.id === "ambiguous");
@@ -277,17 +281,28 @@ async function showHint(r) {
   log({ e: "hint", id: r.id, tier: r.tier });
   if (r.id === "ambiguous") { S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0, payload: payload(r) }; J?.update(); return bubble(TEMPLATES.ambiguous[1], "template"); }
   const tok = ++S.tok, key = r.id + r.tier;
+  S.hintR = r;
   // Tier one is the template, by decision (HD-013): the model phrases tiers two and three only.
   const h = r.tier === 1 ? { text: TEMPLATES[r.id]?.[1] || "", source: "template", reason: "tier1", ms: 0 }
     : await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
   S.hint = { id: r.id, tier: r.tier, payload: payload(r), ...h }; J?.update();
   if (tok === S.tok) bubble(h.text, h.source);
 }
+// Pip lives on the card: the face, and a button that asks for the next tier through the same gate and judge.
+$("bubble").insertAdjacentHTML("afterbegin", pip.face());
+const againBtn = pip.again($("bsrc"), async () => {
+  if (!S.hintR) return;
+  const nr = { ...S.hintR, tier: Math.min(3, (S.hintR.tier || 1) + 1) };
+  log({ e: "hint", id: nr.id, tier: nr.tier }); S.hintR = nr;
+  const h = await timed(nr); S.hint = { id: nr.id, tier: nr.tier, payload: payload(nr), ...h }; J?.update();
+  bubble(h.text, h.source);
+});
 function bubble(text, source) {
+  againBtn.hidden = !S.hintR || S.probe || S.over;
   $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
   $("bubble").hidden = false; placeBubble(); speak(text);
 }
-function hideBubble() { $("bubble").hidden = true; S.tok++; }
+function hideBubble() { $("bubble").hidden = true; S.tok++; S.hintR = null; }
 // Beside the marker, never on it and never on the pit the last seed landed in, off the sign, inside the scene.
 // Her row: below first (the space in front of her), the other row: above; then either side; last the band under the sign.
 function placeBubble() {
@@ -355,8 +370,15 @@ else if (Array.isArray(g?.state?.pits) && shape(g.node) && lvl().at(0)?.node ===
   n ? start(n) : end();
 }
 
+const showHow = pip.howto({ key: "pip.howto.seeds", title: "How to play: Seeds",
+  sub: "Sow the seeds round the board. Call the pit before you sow.",
+  steps: ["Tap one of your pits. The seeds jump into your hand.",
+          "Tap the pit where you think the LAST seed will land. A marker drops there.",
+          "Watch the seeds drop one by one. Right call: the marker flips and you can capture. Wrong call: that seed is lost."] });
+$("howtob").onclick = showHow;
+
 // --- the judge's overlay: opt-in by ?judge=1 or the J key, loaded only then. The only place digits appear off the sign.
 const snapJ = () => { const L = lvl(), r = cls(); return { node: S.node, events: L, result: r, payload: IDS.includes(r.id) ? payload(r) : {}, hint: S.hint, mastery: S.mastery, state: S.state, p_best: P_BEST }; };
-async function judge() { J ??= (await import("/public/judge.mjs")).mount(snapJ); J.toggle(); }
+async function judge() { J ??= (await import("./judge.mjs")).mount(snapJ); J.toggle(); }
 addEventListener("keydown", e => { if (e.key === "j" || e.key === "J") judge(); });
 if (Q.has("judge")) judge();

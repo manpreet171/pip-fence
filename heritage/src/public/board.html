@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Kuzhi</title>
+<title>Pip · Seeds</title>
 <link rel="icon" href="data:,">
 <style>
-  @font-face{font-family:"Fredoka";src:url(/assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
+  @font-face{font-family:"Fredoka";src:url(assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
   :root{--font-display:"Fredoka","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
     --ink:#22303a;--muted:#5d5246;--paper:#efe3cd;--cream:#f8f1e3;--wood:#a9702f;--wood2:#7d5122;--wood3:#c58a3f;--hud:118px;--c:80px;
     /* the one wood (Rung's): a warm base, plank seams, faint grain, a top highlight */
@@ -146,15 +146,16 @@
   <div id="vig"></div>
   <div id="fly"></div>
   <div id="bubble" role="status" aria-live="polite" data-side="bottom" hidden><span id="btext"></span><span id="bsrc"></span></div>
-  <div id="sign"><span class="brand">Kuzhi</span><span id="task"></span></div>
+  <div id="sign"><span class="brand">Pip · Seeds</span><span id="task"></span><span id="strip"></span></div>
   <div id="hud">
     <div id="hand" class="tray"><span class="lbl" id="handl"></span><div id="bed"></div></div>
     <button class="btn" id="nextb" hidden>Next board</button>
     <button class="btn" id="restart" hidden>Start again</button>
     <button class="btn quiet" id="sound">Sound on</button>
-    <nav class="links"><a id="grown" href="/public/parent.html">For grown-ups</a><a id="srcl" href="/public/source.html">Where this game comes from</a></nav>
+    <button class="btn quiet" id="howtob">How to play</button>
+    <nav class="links"><a id="grown" href="public/parent.html">For grown-ups</a><a id="srcl" href="public/source.html">Where this game comes from</a><a id="home" href="../">Home</a></nav>
   </div>
 </div>
-<script type="module" src="/public/board.mjs"></script>
+<script type="module" src="public/board.mjs"></script>
 </body>
 </html>

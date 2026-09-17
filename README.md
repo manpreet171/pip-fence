@@ -1,6 +1,12 @@
-# Rung
+# Pip
 
-A fence-building game for children aged 7–11 in which **the arithmetic is the build**. The child is
+Two games for children aged 6–11 in which **the arithmetic is the move**, and Pip, a seed with eyes, is
+the voice that talks the child through a mistake. One app, one command, one home page: `Fence` and
+`Seeds`, each with How to play, a level strip with gold and silver stars, and badges across both.
+
+## Fence
+
+A fence-building game in which **the arithmetic is the build**. The child is
 told "3 parts, 4 planks in each part" and given a cart with exactly twelve planks. If she counts
 wrong, the fence stands wrong: one part a plank short, a plank sticking out over a post, two bare
 slots. Nothing is marked wrong. The goat walks through the gap, and a short hint appears *on the
@@ -26,6 +32,9 @@ emit a number. The leak rate is measured, not asserted.
   The strongest result in the tutoring literature came from pointing AI at the adult.
 - Everything that must be true is code: the misconception classifier, the mastery graph, the
   next-level choice. Press J in the game to watch the whole pipeline live.
+- **For the child, Pip is the AI.** The hint card carries Pip's face and is read aloud in Pip's voice, and
+  a **Say it another way** button lets the child ask Pip for a fresh phrasing, which goes through the
+  same gate and judge. The child never types; Pip never sees a number.
 
 Read the evidence base in [docs/RESEARCH-LEARNER.md](docs/RESEARCH-LEARNER.md), the approved concept in
 [docs/CONCEPT-V3.2.md](docs/CONCEPT-V3.2.md), and every decision with its rejected alternatives in
@@ -39,7 +48,9 @@ Node 22 or newer. No dependencies, no build step.
 node src/server.mjs
 ```
 
-Open http://localhost:5177/build. The parent view is at `/public/parent.html`.
+Open http://localhost:5177/ for the Pip home page. Fence is at `/fence`, Seeds at `/seeds/board` (the seeds
+game runs as a second process the server starts for you; set `NO_SEEDS=1` to skip it). Parent views:
+`/public/parent.html` and `/seeds/public/parent.html`.
 
 - Model-phrased hints follow whichever key is present: `ANTHROPIC_API_KEY` (`claude-haiku-4-5-20251001`,
   strict JSON schema) or `DEEPSEEK_API_KEY` (`deepseek-v4-flash`, JSON mode). Same payload, same gate.

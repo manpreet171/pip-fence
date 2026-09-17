@@ -2,7 +2,7 @@
 // imports it. Beside the board, live: the event log as the game writes it, the classifier's verdict,
 // the exact redacted payload with a digit check, the last hint's source and round trip, the mastery
 // map, and "other side: code" beside every opponent move. Pointer events stop at its edge.
-import { GRAPH, IDS } from "/sow.mjs";
+import { GRAPH, IDS } from "../sow.mjs";
 
 const CSS = `
 #judge{position:fixed;right:0;top:0;bottom:0;width:420px;z-index:1000;overflow:auto;padding:10px 12px 16px;

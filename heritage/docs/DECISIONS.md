@@ -317,3 +317,13 @@ Rung's judge (root D-075) applied unchanged. Live: 3 of 20 rephrases shipped; th
 judge overturned 4 that pointed the child at the wrong pit with no number in them
 (`docs/JUDGE-RESULTS.md`). Two decisions confirmed by measurement: tier one stays the template
 (HD-013); the model is optional and the templates carry the product.
+
+
+---
+
+## HD-015 — Kuzhi becomes "Seeds" inside Pip
+17 Sep 2026 · **Decided**
+
+Mounted under `/seeds/` on the Fence server's origin (root D-076); every path in the pages is now
+relative so the game runs mounted and standalone; a How-to-play sheet, the level strip, the star
+moment, Pip on the card and "Say it another way" are the same shared module as Fence's.

@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kuzhi — for grown-ups</title>
+<title>Pip · Seeds — for grown-ups</title>
 <link rel="icon" href="data:,">
 <style>
-  @font-face{font-family:"Fredoka";src:url(/assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
+  @font-face{font-family:"Fredoka";src:url(../assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
   :root{--font-display:"Fredoka","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;--ink:#22303a;--muted:#6f655a;--paper:#efe3cd;--cream:#f8f1e3;--wood:#a9702f;--wood2:#7d5122;--line:#dccfb6}
   *{box-sizing:border-box}
   html,body{margin:0}
@@ -34,11 +34,11 @@
   <section><h2>This week</h2><div class="big" id="n"></div><p id="levels" class="foot"></p></section>
   <section><h2>Her calls, in order</h2><p class="foot">Each bar is one move. Tall means she called the right pit before the seeds moved.</p><div class="curve" id="curve"></div><p class="foot" id="acc"></p></section>
   <section id="open"><h2>This week's note</h2><p id="what"></p><div class="ask" id="ask" hidden><span class="k">Ask out loud</span><div id="q"></div></div><p class="foot" id="src" hidden></p></section>
-  <p class="foot"><a href="/board">Back to the board</a> · <a href="/public/source.html">Where this game comes from</a></p>
+  <p class="foot"><a href="../board">Back to the board</a> · <a href="source.html">Where this game comes from</a></p>
 </main>
 <script type="module">
-  import { classify, shape, IDS } from "/sow.mjs";
-  import { note } from "/buddy.mjs";
+  import { classify, shape, IDS } from "../sow.mjs";
+  import { note } from "../buddy.mjs";
   // The note is written from a summary the model is handed (buddy.mjs: level names, the open misconception
   // in PARENT_WORDS, the tier reached, days played) — never the event log, a pit number or a count.
   const name = node => { const s = shape(node); return `${s.seeds} seeds a pit${s.relay ? ", with a relay" : ""}`; };

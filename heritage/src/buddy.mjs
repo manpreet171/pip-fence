@@ -112,10 +112,13 @@ export function gate(text, wordlist) {
 }
 
 // ---- browser side: POST the redacted payload, fall back to the template on anything at all ----
+// The API lives beside this module, so the game works at the root and under a mount such as /seeds/.
+const API = (name) => typeof document === "undefined" ? `/api/${name}` : new URL(`api/${name}`, import.meta.url).pathname;
+
 export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fetch } = {}) {
   const template = TEMPLATES[result?.id]?.[result?.tier] ?? "";
   try {
-    const res = await fetchImpl("/api/buddy", { method: "POST", headers: { "content-type": "application/json" },
+    const res = await fetchImpl(API("buddy"), { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify(payload(result)), signal: AbortSignal.timeout(timeoutMs) });
     if (!res.ok) return { text: template, source: "template", reason: `http_${res.status}` };
     const out = await res.json();
@@ -258,7 +261,7 @@ export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provi
 // browser side: never throws
 export async function note(b, { timeoutMs = 7000, fetchImpl = globalThis.fetch } = {}) {
   try {
-    const res = await fetchImpl("/api/note", { method: "POST", headers: { "content-type": "application/json" },
+    const res = await fetchImpl(API("note"), { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify(b), signal: AbortSignal.timeout(timeoutMs) });
     if (res.ok) { const out = await res.json(); if (out?.note && out?.question) return out; }
   } catch {}

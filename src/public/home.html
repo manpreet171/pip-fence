@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pip</title>
+<link rel="icon" href="data:,">
+<style>
+  @font-face{font-family:"Fredoka";src:url(/assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
+  :root{--font-display:"Fredoka","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;--ink:#22303a;--muted:#5d5246;--paper:#efe3cd;--cream:#f8f1e3;--wood:#a9702f;--wood2:#7d5122;--line:#dccfb6;
+    --woodbg:linear-gradient(180deg,rgba(255,240,210,.22),rgba(255,255,255,0) 38%,rgba(0,0,0,.10)),repeating-linear-gradient(90deg,rgba(0,0,0,0) 0 46px,rgba(60,30,10,.28) 46px 48px),repeating-linear-gradient(0deg,rgba(255,225,180,.07) 0 2px,rgba(0,0,0,0) 2px 7px),linear-gradient(180deg,#b97b3a,#a9702f)}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{min-height:100dvh;font:17px/1.45 var(--font-display);color:var(--ink);background:radial-gradient(ellipse at 50% 0%,#bfe6f7,#dff0d8 45%,var(--paper) 100%);padding:20px 16px 48px}
+  main{max-width:920px;margin:0 auto;display:grid;gap:20px}
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .mascot{width:64px;height:76px;border-radius:50% 50% 48% 48%/60% 60% 40% 40%;background:radial-gradient(circle at 35% 30%,#c9915a,#7d5122 70%);position:relative;flex:none;
+    box-shadow:inset -5px -5px 10px rgba(0,0,0,.25),0 4px 6px rgba(0,0,0,.3)}
+  .mascot::before,.mascot::after{content:"";position:absolute;top:26px;width:15px;height:17px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 5px var(--ink),inset -3px -3px 0 5px var(--ink)}
+  .mascot::before{left:15px}.mascot::after{right:15px}
+  .mascot i{position:absolute;left:22px;right:22px;bottom:17px;height:9px;border-radius:0 0 10px 10px;border-bottom:3px solid var(--ink)}
+  h1{margin:0;font-size:44px;line-height:1;color:var(--wood2)}
+  .tag{margin:4px 0 0;color:var(--muted);font-size:18px}
+  .games{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+  .game{background:var(--cream);border:3px solid var(--wood2);border-radius:20px;padding:18px 20px 20px;box-shadow:0 6px 0 var(--wood2),0 14px 24px rgba(40,25,10,.18);display:grid;gap:12px;align-content:start}
+  .game h2{margin:0;font-size:28px;color:var(--wood2);display:flex;align-items:center;gap:10px}
+  .game .what{margin:0;font-size:17px}
+  .pic{height:120px;border-radius:14px;display:grid;place-items:center;overflow:hidden;position:relative}
+  .pic.fence{background:linear-gradient(180deg,#8fd0f0 0 40%,#7fb84a 40%)}
+  .pic.seeds{background:linear-gradient(180deg,#e9dcc3,#d7c39a)}
+  .pic img{height:84px;image-rendering:auto;filter:drop-shadow(0 4px 4px rgba(0,0,0,.3))}
+  .pit{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#6b4423,#3d2411 75%);box-shadow:inset 0 6px 10px rgba(0,0,0,.6),0 1px 0 rgba(255,230,190,.35);display:inline-grid;place-items:center;margin:0 5px}
+  .seed{width:14px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c9915a,#6b3f1b 75%);display:inline-block;margin:1px}
+  .steps{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+  .steps li{display:flex;gap:10px;align-items:center;font-size:16px}
+  .n{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:var(--cream);background:var(--woodbg);border:2px solid var(--wood2);box-shadow:0 2px 0 var(--wood2)}
+  .strip{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .strip i{display:block;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.2);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+  .strip i.half{background:#d9c39a}.strip i.full{background:#ffd34d;box-shadow:0 0 6px #ffd34d}
+  .strip .lbl{font-size:14px;color:var(--muted);margin-left:6px}
+  .play{min-height:56px;border-radius:16px;border:3px solid var(--wood2);background:var(--woodbg);color:var(--cream);font:600 20px/1 var(--font-display);text-decoration:none;display:grid;place-items:center;box-shadow:0 6px 0 var(--wood2),0 10px 14px rgba(20,30,20,.3);text-shadow:0 1px 0 rgba(0,0,0,.4)}
+  .play:active{transform:translateY(4px);box-shadow:0 2px 0 var(--wood2)}
+  .badges{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:16px 20px;box-shadow:0 4px 0 var(--line)}
+  .badges h2{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .badge{display:inline-flex;align-items:center;gap:8px;margin:4px 8px 4px 0;padding:8px 12px;border-radius:12px;background:var(--paper);border:2px solid var(--line);font-weight:600;font-size:15px;opacity:.45}
+  .badge.on{opacity:1;border-color:var(--wood);background:#fff4d6}
+  .badge b{font-size:20px;color:#ffb400}
+  .foot{color:var(--muted);font-size:14px}
+  .foot a{color:var(--wood2)}
+</style>
+</head>
+<body>
+<main>
+  <header><span class="mascot" aria-hidden="true"><i></i></span><div><h1>Pip</h1><p class="tag">Two games. Count with your hands. Pip talks you through it.</p></div></header>
+
+  <section class="games">
+    <article class="game">
+      <h2>Fence</h2>
+      <div class="pic fence"><img src="/assets/animals/goat.png" alt=""></div>
+      <p class="what">Build a fence with the right number of planks in every part, or the goat gets into the corn.</p>
+      <ol class="steps"><li><span class="n">1</span>Tap the cart, then tap a part of the fence.</li><li><span class="n">2</span>Every part needs the same planks.</li><li><span class="n">3</span>Tap Done. Fix the short part if the goat gets in.</li></ol>
+      <div class="strip" id="fence-strip"></div>
+      <a class="play" href="/fence">Play Fence</a>
+    </article>
+    <article class="game">
+      <h2>Seeds</h2>
+      <div class="pic seeds"><div><span class="pit"><span class="seed"></span><span class="seed"></span></span><span class="pit"><span class="seed"></span><span class="seed"></span><span class="seed"></span></span><span class="pit"></span><span class="pit"><span class="seed"></span></span></div></div>
+      <p class="what">Sow seeds round the board. Call the pit where your last seed lands before you sow.</p>
+      <ol class="steps"><li><span class="n">1</span>Tap one of your pits.</li><li><span class="n">2</span>Tap where the last seed will land.</li><li><span class="n">3</span>Watch the seeds drop. Right call, you can capture.</li></ol>
+      <div class="strip" id="seeds-strip"></div>
+      <a class="play" href="/seeds/board">Play Seeds</a>
+    </article>
+  </section>
+
+  <section class="badges"><h2>Stars and badges</h2><div id="badges"></div></section>
+  <p class="foot"><a href="/public/parent.html">For grown-ups: Fence</a> · <a href="/seeds/public/parent.html">For grown-ups: Seeds</a> · <a href="/seeds/public/source.html">Where the seeds game comes from</a></p>
+</main>
+<script type="module">
+  // Both games keep their progress on this device. The home page only reads it.
+  const read = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } };
+  const fence = read("rung.v1"), seeds = read("kuzhi.v1");
+  const dots = (el, nodes, m, label) => { el.innerHTML = nodes.map(n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}"></i>`).join("") + `<span class="lbl">${label}</span>`; };
+  let fenceNodes = [], seedNodes = [];
+  try { const f = await import("/fence.mjs"); fenceNodes = f.GRAPH.map(g => g.node); } catch {}
+  try { const s = await import("/seeds/sow.mjs"); seedNodes = s.GRAPH.filter(g => g.kind === "single" || g.kind === "relay").map(g => g.node); } catch {}
+  const fm = fence.mastery || {}, sm = seeds.mastery || {};
+  const gold = m => Object.values(m).filter(v => v >= 1).length, silver = m => Object.values(m).filter(v => v === 0.5).length;
+  dots(document.getElementById("fence-strip"), fenceNodes, fm, `${gold(fm)} gold, ${silver(fm)} silver`);
+  dots(document.getElementById("seeds-strip"), seedNodes, sm, `${gold(sm)} gold, ${silver(sm)} silver`);
+  // badges, from the two logs
+  const fev = fence.events || [], sev = seeds.events || [];
+  let right = 0, call = null; for (const e of sev) { if (e.e === "call") call = e.pit; else if (e.e === "sow" && call !== null) { if (e.landed === call) right++; call = null; } }
+  const badges = [
+    ["First fence", "A fence finished", fev.some(e => e.e === "commit") && Object.keys(fm).length > 0],
+    ["Goat keeper", "Three gold stars on fences", gold(fm) >= 3],
+    ["Seed caller", "Ten right calls", right >= 10],
+    ["Round the corner", "A relay level mastered", Object.keys(sm).some(k => k.endsWith("_relay") && sm[k] >= 1)],
+    ["Pip's friend", "Asked Pip to say it another way", [...fev, ...sev].filter(e => e.e === "hint" && e.tier > 1).length > 0],
+    ["All the plots", "Every fence level mastered", fenceNodes.length > 0 && fenceNodes.every(n => fm[n] >= 1)],
+  ];
+  document.getElementById("badges").innerHTML = badges.map(([t, d, on]) => `<span class="badge ${on ? "on" : ""}" title="${d}"><b>${on ? "★" : "☆"}</b>${t}</span>`).join("");
+</script>
+</body>
+</html>
