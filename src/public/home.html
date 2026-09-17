@@ -21,7 +21,7 @@
   .mascot i{position:absolute;left:22px;right:22px;bottom:17px;height:9px;border-radius:0 0 10px 10px;border-bottom:3px solid var(--ink)}
   h1{margin:0;font-size:44px;line-height:1;color:var(--wood2)}
   .tag{margin:4px 0 0;color:var(--muted);font-size:18px}
-  .games{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+  .games{display:grid;grid-template-columns:minmax(300px,560px);justify-content:center;gap:20px}
   .game{background:var(--cream);border:3px solid var(--wood2);border-radius:20px;padding:18px 20px 20px;box-shadow:0 6px 0 var(--wood2),0 14px 24px rgba(40,25,10,.18);display:grid;gap:12px;align-content:start}
   .game h2{margin:0;font-size:28px;color:var(--wood2);display:flex;align-items:center;gap:10px}
   .game .what{margin:0;font-size:17px}
@@ -51,7 +51,7 @@
 </head>
 <body>
 <main>
-  <header><span class="mascot" aria-hidden="true"><i></i></span><div><h1>Pip</h1><p class="tag">Two games. Count with your hands. Pip talks you through it.</p></div></header>
+  <header><span class="mascot" aria-hidden="true"><i></i></span><div><h1>Pip</h1><p class="tag">Build the fence. Count with your hands. Pip talks you through it.</p></div></header>
 
   <section class="games">
     <article class="game">
@@ -62,41 +62,26 @@
       <div class="strip" id="fence-strip"></div>
       <a class="play" href="/fence">Play Fence</a>
     </article>
-    <article class="game">
-      <h2>Seeds</h2>
-      <div class="pic seeds"><div><span class="pit"><span class="seed"></span><span class="seed"></span></span><span class="pit"><span class="seed"></span><span class="seed"></span><span class="seed"></span></span><span class="pit"></span><span class="pit"><span class="seed"></span></span></div></div>
-      <p class="what">Sow seeds round the board. Call the pit where your last seed lands before you sow.</p>
-      <ol class="steps"><li><span class="n">1</span>Tap one of your pits.</li><li><span class="n">2</span>Tap where the last seed will land.</li><li><span class="n">3</span>Watch the seeds drop. Right call, you can capture.</li></ol>
-      <div class="strip" id="seeds-strip"></div>
-      <a class="play" href="/seeds/board">Play Seeds</a>
-    </article>
   </section>
 
   <section class="badges"><h2>Stars and badges</h2><div id="badges"></div></section>
-  <p class="foot"><a href="/public/parent.html">For grown-ups: Fence</a> · <a href="/seeds/public/parent.html">For grown-ups: Seeds</a> · <a href="/seeds/public/source.html">Where the seeds game comes from</a></p>
+  <p class="foot"><a href="/public/parent.html">For grown-ups</a></p>
 </main>
 <script type="module">
-  // Both games keep their progress on this device. The home page only reads it.
+  // The game keeps its progress on this device. The home page only reads it.
   const read = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } };
-  const fence = read("rung.v1"), seeds = read("kuzhi.v1");
-  const dots = (el, nodes, m, label) => { el.innerHTML = nodes.map(n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}"></i>`).join("") + `<span class="lbl">${label}</span>`; };
-  let fenceNodes = [], seedNodes = [];
-  try { const f = await import("/fence.mjs"); fenceNodes = f.GRAPH.map(g => g.node); } catch {}
-  try { const s = await import("/seeds/sow.mjs"); seedNodes = s.GRAPH.filter(g => g.kind === "single" || g.kind === "relay").map(g => g.node); } catch {}
-  const fm = fence.mastery || {}, sm = seeds.mastery || {};
-  const gold = m => Object.values(m).filter(v => v >= 1).length, silver = m => Object.values(m).filter(v => v === 0.5).length;
-  dots(document.getElementById("fence-strip"), fenceNodes, fm, `${gold(fm)} gold, ${silver(fm)} silver`);
-  dots(document.getElementById("seeds-strip"), seedNodes, sm, `${gold(sm)} gold, ${silver(sm)} silver`);
-  // badges, from the two logs
-  const fev = fence.events || [], sev = seeds.events || [];
-  let right = 0, call = null; for (const e of sev) { if (e.e === "call") call = e.pit; else if (e.e === "sow" && call !== null) { if (e.landed === call) right++; call = null; } }
+  const fence = read("rung.v1");
+  let nodes = []; try { const f = await import("/fence.mjs"); nodes = f.GRAPH.map(g => g.node); } catch {}
+  const m = fence.mastery || {}, ev = fence.events || [];
+  const gold = Object.values(m).filter(v => v >= 1).length, silver = Object.values(m).filter(v => v === 0.5).length;
+  document.getElementById("fence-strip").innerHTML = nodes.map(n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}"></i>`).join("") + `<span class="lbl">${gold} gold, ${silver} silver</span>`;
   const badges = [
-    ["First fence", "A fence finished", fev.some(e => e.e === "commit") && Object.keys(fm).length > 0],
-    ["Goat keeper", "Three gold stars on fences", gold(fm) >= 3],
-    ["Seed caller", "Ten right calls", right >= 10],
-    ["Round the corner", "A relay level mastered", Object.keys(sm).some(k => k.endsWith("_relay") && sm[k] >= 1)],
-    ["Pip's friend", "Asked Pip to say it another way", [...fev, ...sev].filter(e => e.e === "hint" && e.tier > 1).length > 0],
-    ["All the plots", "Every fence level mastered", fenceNodes.length > 0 && fenceNodes.every(n => fm[n] >= 1)],
+    ["First fence", "A fence finished", Object.keys(m).length > 0],
+    ["Goat keeper", "Three gold stars", gold >= 3],
+    ["Pack builder", "A packs level mastered", Object.keys(m).some(k => k.endsWith("_packs") && m[k] >= 1)],
+    ["Pip's friend", "Asked Pip to say it another way", ev.some(e => e.e === "hint" && e.tier > 1)],
+    ["Careful counter", "Five fences without a hint", gold >= 5],
+    ["All the plots", "Every level mastered", nodes.length > 0 && nodes.every(n => m[n] >= 1)],
   ];
   document.getElementById("badges").innerHTML = badges.map(([t, d, on]) => `<span class="badge ${on ? "on" : ""}" title="${d}"><b>${on ? "★" : "☆"}</b>${t}</span>`).join("");
 </script>

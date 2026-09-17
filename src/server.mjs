@@ -1,8 +1,7 @@
 // Zero-dependency server: static files plus the two model endpoints, /api/buddy (a hint from a
 // redacted payload) and /api/note (the parent's weekly note from a validated summary). The key stays
 // here. Node 22 global fetch, no framework. The frozen control arm mounts only with CONTROL_ARM=1.
-import { createServer, request as httpRequest } from "node:http";
-import { spawn } from "node:child_process";
+import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname, resolve, sep } from "node:path";
@@ -73,19 +72,8 @@ function limited(req) {
   return h.n > LIMIT;
 }
 
-// Pip is one app: the seeds game (heritage/) runs as a second process and is mounted under /seeds/.
-const SEEDS_PORT = process.env.SEEDS_PORT || 5180;
-if (!process.env.NO_SEEDS) spawn(process.execPath, [join(HERE, "..", "heritage", "src", "server.mjs")], { env: { ...process.env, PORT: SEEDS_PORT }, stdio: "inherit" });
-function proxySeeds(req, res) {
-  const path = req.url.slice("/seeds".length) || "/";
-  const up = httpRequest({ host: "127.0.0.1", port: SEEDS_PORT, path, method: req.method, headers: req.headers }, r => { res.writeHead(r.statusCode, r.headers); r.pipe(res); });
-  up.on("error", () => send(res, 502, "seeds not running"));
-  req.pipe(up);
-}
-
 const server = createServer(async (req, res) => {
   try {
-    if (req.url === "/seeds" || req.url.startsWith("/seeds/") || req.url.startsWith("/seeds?")) return proxySeeds(req, res);
     if (req.method === "POST" && req.url.startsWith("/api/") && limited(req)) return send(res, 429, "slow down");
     if (req.method === "POST" && /^\/api\/(coach|narrate|story)$/.test(req.url) && !CONTROL_ARM) return send(res, 404, "not found");
     if (req.method === "POST" && req.url === "/api/coach") {

@@ -1704,3 +1704,19 @@ longer only a note to the grown-up.
 
 **Rejected:** a chat box (the evidence the whole project rests on); points, coins or streaks (the
 learner research: extrinsic reward displaces the mechanic); a leaderboard.
+
+
+---
+
+## D-077 — Seeds dropped; Pip is the Fence game
+17 Sep 2026 · **Decided**
+
+The owner, after a plain-words explanation of the sowing game: "I don't find that a child can play
+and understand this, and there is no learning. Let's drop it and work on Fence only." Right on both
+counts by the product's own standard: a three-tap move with a prediction step, captures, and a lost
+seed is more rule than a seven-year-old can hold from a screen, and the skill it exercised, counting
+on, is thinner than the grouping Fence builds. The folder stays as a killed concept with its evidence;
+the app serves Fence only. The home page, the level strip, stars, badges, Pip on the card and "Say it
+another way" stay, because they were built for both. Next: Pip shows the first fence part herself on
+a fresh install, then hands over. **Rejected:** deleting `heritage/` (the trail of what was tried is
+part of the submission); keeping Seeds reachable "for those who want it" (a judge would find it).

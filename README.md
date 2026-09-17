@@ -1,10 +1,8 @@
 # Pip
 
-Two games for children aged 6–11 in which **the arithmetic is the move**, and Pip, a seed with eyes, is
-the voice that talks the child through a mistake. One app, one command, one home page: `Fence` and
-`Seeds`, each with How to play, a level strip with gold and silver stars, and badges across both.
-
-## Fence
+A fence-building game for children aged 7–11 in which **the arithmetic is the build**, and Pip, a seed with
+eyes, is the voice that talks the child through a mistake. One command, one home page with How to play,
+a level strip with gold and silver stars, and badges.
 
 A fence-building game in which **the arithmetic is the build**. The child is
 told "3 parts, 4 planks in each part" and given a cart with exactly twelve planks. If she counts
@@ -48,9 +46,8 @@ Node 22 or newer. No dependencies, no build step.
 node src/server.mjs
 ```
 
-Open http://localhost:5177/ for the Pip home page. Fence is at `/fence`, Seeds at `/seeds/board` (the seeds
-game runs as a second process the server starts for you; set `NO_SEEDS=1` to skip it). Parent views:
-`/public/parent.html` and `/seeds/public/parent.html`.
+Open http://localhost:5177/ for the Pip home page; the game is at `/fence`; the grown-ups view at
+`/public/parent.html`.
 
 - Model-phrased hints follow whichever key is present: `ANTHROPIC_API_KEY` (`claude-haiku-4-5-20251001`,
   strict JSON schema) or `DEEPSEEK_API_KEY` (`deepseek-v4-flash`, JSON mode). Same payload, same gate.
@@ -107,12 +104,9 @@ docs/                 evidence, concept, decisions, reviews   docs/history/   wh
 
 Artwork is Kenney's CC0 isometric packs (see [docs/CREDITS.md](docs/CREDITS.md)).
 
-## A second concept, same pipeline: Kuzhi
+## A second concept that was tried and dropped
 
-[`heritage/`](heritage/README.md) holds a second, self-contained product built on the same
-architecture in three days: a sowing game of the Pallanguzhi / Ali Guli Mane / Oware family where
-the child must call the pit her last seed will land in before the seeds move. Same classifier-as-code,
-same gated phrasing, same parent note, same overlay, its own research, evals, QA and review.
-Run it with `node heritage/src/server.mjs` and open http://localhost:5180/board.
-
-Manpreet Singh
+[`heritage/`](heritage/README.md) holds Kuzhi, a sowing game built on the same pipeline over two days,
+with its own research, evals, QA and review. It was dropped on 17 Sep: a child could not learn the
+rules from the screen, and the counting skill it exercised was thin next to Fence. The folder stays
+as the record of what was tried and why it lost, with its decision log intact.

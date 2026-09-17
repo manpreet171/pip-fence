@@ -372,6 +372,26 @@
             "Tap Done. If a part is short, the goat gets in. Fix it and try again."] });
   $("howtob").onclick = showHow;
 
+  // --- Pip builds the first part herself on a fresh install, counting aloud, then hands over ------------
+  // A child cannot read the rules; she can watch them. Code places and counts; the model is not involved.
+  const GUIDE = "pip.guide.fence";
+  const guided = () => { try { return localStorage.getItem(GUIDE) === "1"; } catch { return false; } };
+  const guideDone = () => { try { localStorage.setItem(GUIDE, "1"); } catch {} };
+  function speakNow(text) { if (!tts || !sound) return; const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; u.lang = "en"; const v = tts.getVoices().find(v => /^en/i.test(v.lang)); if (v) u.voice = v; tts.speak(u); }
+  const COUNT = ["one", "two", "three", "four", "five", "six"];
+  async function demo() {
+    const s = sh(); if (s.mode !== "concrete" || lvl().some(e => e.e === "place")) return guideDone();
+    const sl = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));
+    bubble("Watch me first.", "", 0); await sl(1600);
+    bubble("The sign says how many planks each part needs. I take a plank from the cart and put it on this part.", "", 0); await sl(3600);
+    S.held = "plank"; render();
+    for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); speakNow(COUNT[k] || ""); await sl(900); }
+    S.held = null; render();
+    bubble("That part is full. Now you do the other parts. Tap the cart, then a part.", "", 0);
+    guideDone();
+  }
+  if (!guided()) { const t = setInterval(() => { if (!document.getElementById("howto") && !S.done) { clearInterval(t); demo(); } }, 300); }
+
   // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
   const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];   // history survives every branch below, ?node= included
   const ls = saved.events?.findLast?.(e => e.e === "level_start");

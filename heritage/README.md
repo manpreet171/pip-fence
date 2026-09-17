@@ -1,3 +1,7 @@
+> **DROPPED 17 Sep 2026.** The owner played it and could not learn the rules from the screen; the
+> counting skill was thin next to Fence. Kept as the record of a concept that was researched, built,
+> tested and reviewed, and lost. Nothing here is served by the app. See root `docs/DECISIONS.md` D-077.
+
 # Heritage — a second concept, isolated
 
 Started 15 Sep 2026, three days before the deadline, on the owner's call: *think differently; take a
