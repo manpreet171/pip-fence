@@ -327,3 +327,17 @@ judge overturned 4 that pointed the child at the wrong pit with no number in the
 Mounted under `/seeds/` on the Fence server's origin (root D-076); every path in the pages is now
 relative so the game runs mounted and standalone; a How-to-play sheet, the level strip, the star
 moment, Pip on the card and "Say it another way" are the same shared module as Fence's.
+
+
+---
+
+## HD-016 — Pip shows the first move; the path lights up for the next three
+17 Sep 2026 · **Decided**
+
+The owner, honestly: "I have no idea how to play the seed game; how will a child understand." A
+three-step sheet cannot teach this; watching can. On a fresh install, after the sheet, Pip plays one
+move herself: lifts a pit, counts one pit per seed aloud as each lights up, taps the landing pit, and
+sows. For the child's next three moves the path lights up as she counts after her pick, then clears
+before she taps. After that, no help: the counting is hers. Code does the counting and the speaking;
+the model is never involved. **Rejected:** a video (cannot use the live board), a longer text sheet,
+lighting the path on every move (it would remove the skill the game exists to build).

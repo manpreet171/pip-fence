@@ -166,14 +166,17 @@ function onPit(p) {
   }
   if (S.phase === "call") {
     if (p === S.from) { lift(p, false); D.pits[p] = S.hand; S.hand = 0; S.from = null; S.phase = "pick"; render(); return; }   // put the seeds back
-    log({ e: "call", pit: p }); dropMarker(p); S.phase = "busy"; render();
+    clearRings(); log({ e: "call", pit: p }); dropMarker(p); S.phase = "busy"; render();
     prefetch(S.from, p); setTimeout(() => sowMove(S.from, p), still() ? 0 : 400);
     return;
   }
   if (p < 7 && D.pits[p] > 0) {                            // pick: the marker of the last move fades now
     hideBubble(); $("marker").classList.add("gone");
     S.from = p; S.hand = D.pits[p]; D.pits[p] = 0; S.phase = "call"; lift(p, true); render();
-    log({ e: "pick", pit: p, seeds: S.hand }); return;
+    log({ e: "pick", pit: p, seeds: S.hand });
+    if (guided() > 0 && guided() < 4) { const g = guided(); S.phase = "busy"; bubble("Count one pit for each seed. Then tap where the last seed lands.", "");
+      walkPath(p, S.hand).then(() => { clearRings(); S.phase = "call"; guideDone(g + 1); render(); }); }
+    return;
   }
   log({ e: "tap_count", pit: p });                         // empty hand on any other pit
   if (S.last && p === S.last.from) pips();
@@ -373,9 +376,44 @@ else if (Array.isArray(g?.state?.pits) && shape(g.node) && lvl().at(0)?.node ===
 const showHow = pip.howto({ key: "pip.howto.seeds", title: "How to play: Seeds",
   sub: "Sow the seeds round the board. Call the pit before you sow.",
   steps: ["Tap one of your pits. The seeds jump into your hand.",
-          "Tap the pit where you think the LAST seed will land. A marker drops there.",
-          "Watch the seeds drop one by one. Right call: the marker flips and you can capture. Wrong call: that seed is lost."] });
+          "Count one pit for each seed. Tap the pit where the LAST seed will land.",
+          "Watch the seeds drop. Right call: you can capture. Wrong call: that seed is lost. Pip will show you first."],
+  go: "Show me, Pip" });
 $("howtob").onclick = showHow;
+
+
+// --- Pip shows the first move, then guides the next three: the path lights up as she counts -----------------
+// A child cannot read the rules; she can watch them. On a fresh install Pip plays one move herself, speaking
+// the count, then for her first three moves the path pits light up one by one as she counts, before she taps.
+const GUIDE_KEY = "pip.guide.seeds";
+const guided = () => { try { return +localStorage.getItem(GUIDE_KEY) || 0; } catch { return 0; } };
+const guideDone = n => { try { localStorage.setItem(GUIDE_KEY, String(n)); } catch {} };
+const ring = (p, on) => pitEl(p).classList.toggle("ring", on);
+const clearRings = () => board.querySelectorAll(".pit.ring").forEach(el => el.classList.remove("ring"));
+function speakNow(text) { if (!tts || !sound) return; const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; u.lang = "en"; const v = tts.getVoices().find(v => /^en/i.test(v.lang)); if (v) u.voice = v; tts.speak(u); }
+const COUNT = ["one", "two", "three", "four", "five", "six", "seven", "eight"];
+async function walkPath(from, n) {                       // light the pits one per seed, counting aloud; code counts, never the model
+  const path = []; let p = from;
+  for (let i = 0; i < n; i++) { p = (p + 1) % 14; path.push(p); ring(p, true); speakNow(COUNT[i] || ""); await sleep(still() ? 0 : 700); }
+  return path;
+}
+async function demo() {
+  const from = legalMoves(S.state, 0)[0]; if (from == null) return guideDone(1);
+  S.phase = "busy"; render();
+  bubble("Watch me first.", ""); await sleep(still() ? 0 : 1600);
+  ring(from, true); bubble("I lift this pit. The seeds jump into my hand.", ""); await sleep(still() ? 0 : 2200);
+  S.from = from; S.hand = D.pits[from]; D.pits[from] = 0; lift(from, true); render(); log({ e: "pick", pit: from, seeds: S.hand }); ring(from, false);
+  bubble("Now I count one pit for each seed in my hand.", ""); await sleep(still() ? 0 : 2400);
+  await walkPath(from, S.hand);
+  const landed = landing(S.state, from).landed; clearRings(); ring(landed, true);
+  bubble("The last seed lands here. So I tap this pit.", ""); await sleep(still() ? 0 : 2400);
+  log({ e: "call", pit: landed }); dropMarker(landed); ring(landed, false);
+  bubble("Now watch the seeds go round.", ""); await sleep(still() ? 0 : 1200);
+  guideDone(1);
+  await sowMove(from, landed);
+}
+
+if (guided() === 0) { const t = setInterval(() => { if (!document.getElementById("howto") && S.phase === "pick" && !S.over) { clearInterval(t); demo(); } }, 300); }
 
 // --- the judge's overlay: opt-in by ?judge=1 or the J key, loaded only then. The only place digits appear off the sign.
 const snapJ = () => { const L = lvl(), r = cls(); return { node: S.node, events: L, result: r, payload: IDS.includes(r.id) ? payload(r) : {}, hint: S.hint, mastery: S.mastery, state: S.state, p_best: P_BEST }; };

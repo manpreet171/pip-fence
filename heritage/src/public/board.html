@@ -136,6 +136,9 @@
     #bubble{font-size:16px;padding:10px 12px}
   }
   @media (max-width:360px){#hud{gap:8px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}.tray{min-height:64px}.btn{min-height:48px}.links a{font-size:12px;padding:3px 2px;min-height:24px}}
+  .pit.ring{outline:5px solid #ffd34d;outline-offset:4px;animation:ringpulse .9s ease-in-out infinite;z-index:5}
+  @keyframes ringpulse{50%{outline-offset:9px;outline-color:#fff0b3}}
+  @media (prefers-reduced-motion:reduce){.pit.ring{animation:none}}
 </style>
 </head>
 <body>
