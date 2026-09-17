@@ -184,9 +184,9 @@ function placeMarker() { const m = $("marker"); if (m.hidden || S.markAt == null
 function prefetch(from, called) {
   const res = applyMove(S.state, from, called), n = S.state.pits[from], t = Date.now() - S.at;
   const ev = [...lvl(), { t, e: "sow", from, landed: res.path[n - 1], path: res.path.slice(0, n) }];
-  if (res.path.length > n) ev.push({ t, e: "relay", from: res.hops[0], landed: res.landed, path: res.path.slice(n) });
+  if (res.path.length > n) ev.push({ t, e: "relay", from: (res.hops[0] + 1) % 14, landed: res.landed, path: res.path.slice(n) });
   let p; try { p = classify(ev); } catch { return; }
-  if (HINTED.includes(p.id) && p.id !== "ambiguous" && S.pre?.key !== p.id + p.tier) S.pre = { key: p.id + p.tier, h: timed(p) };
+  if (HINTED.includes(p.id) && p.id !== "ambiguous" && p.tier > 1 && S.pre?.key !== p.id + p.tier) S.pre = { key: p.id + p.tier, h: timed(p) };
 }
 async function sowMove(from, called) {
   const res = applyMove(S.state, from, called), n = S.state.pits[from], ms = SEED_MS();
@@ -195,11 +195,12 @@ async function sowMove(from, called) {
   log({ e: "sow", from, landed: path1.at(-1), path: path1 });
   lift(from, false);
   if (path2.length) {                                   // relay: a pause, then the landing pit is picked up and sown on
-    const h = res.hops[0]; await sleep(ms ? 500 : 0); lift(h, true); S.hand = D.pits[h]; D.pits[h] = 0; renderPit(h); renderHand();
+    const h = (res.hops[0] + 1) % 14; await sleep(ms ? 500 : 0); lift(h, true); S.hand = D.pits[h]; D.pits[h] = 0; renderPit(h); renderHand();   // the attested relay: the NEXT pit is picked up
     await sleep(ms ? 300 : 0); await hop(h, path2, ms, 0); lift(h, false);
     log({ e: "relay", from: h, landed: res.landed, path: path2 });
   }
   const m = $("marker"); if (res.landed === called) m.classList.add("hit");
+  if (res.lost) { await toStore(res.landed, 1, 1, ms ? 300 : 0); $("handl").textContent = "That seed is lost."; }   // a wrong call costs the last seed
   if (res.capture) {
     if (res.capture.earned) await toStore(res.capture.pit, 0, res.capture.seeds, ms ? 300 : 0);
     log({ e: "capture", pit: res.capture.pit, seeds: res.capture.seeds, earned: res.capture.earned });
@@ -252,6 +253,7 @@ function advance() {
   const amb = lvl().some(e => e.e === "hint" && e.id === "ambiguous");
   let n = next(S.mastery, amb ? { id: "ambiguous", node: S.node } : S.result);
   if (n && !shape(n)) n = GRAPH.find(g => (S.mastery[g.node] || 0) < 1)?.node ?? null;
+  if (n && !["single", "relay"].includes(shape(n).kind)) n = null;   // count and even levels: engine ready, board not yet
   n ? start(n, amb) : end();
 }
 function end() {
@@ -275,7 +277,9 @@ async function showHint(r) {
   log({ e: "hint", id: r.id, tier: r.tier });
   if (r.id === "ambiguous") { S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0, payload: payload(r) }; J?.update(); return bubble(TEMPLATES.ambiguous[1], "template"); }
   const tok = ++S.tok, key = r.id + r.tier;
-  const h = await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
+  // Tier one is the template, by decision (HD-013): the model phrases tiers two and three only.
+  const h = r.tier === 1 ? { text: TEMPLATES[r.id]?.[1] || "", source: "template", reason: "tier1", ms: 0 }
+    : await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
   S.hint = { id: r.id, tier: r.tier, payload: payload(r), ...h }; J?.update();
   if (tok === S.tok) bubble(h.text, h.source);
 }
@@ -346,7 +350,8 @@ else if (Array.isArray(g?.state?.pits) && shape(g.node) && lvl().at(0)?.node ===
   if (S.over) { S.phase = "busy"; render(); } else if (S.state.side === 1) codeMove(); else render();
   if (pending && cl) { dropMarker(cl.pit); S.phase = "busy"; render(); prefetch(S.from, cl.pit); setTimeout(() => sowMove(S.from, cl.pit), still() ? 0 : 400); }
 } else {
-  const n = Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : GRAPH[0].node;
+  let n = Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : GRAPH[0].node;
+  if (n && !["single", "relay"].includes(shape(n).kind)) n = null;
   n ? start(n) : end();
 }
 

@@ -251,6 +251,9 @@ All three are fixed by design (HD-012, HD-013):
   digit) and two *even* levels (the Toguz Korgool capture: call the pit and whether it will be even or
   odd). Four new misconception ids, four new template sets, four new parent-words entries. One skill
   became a ladder from counting on to addition and parity, all inside the same board and log.
+- **Shipped on screen, 17 Sep:** the six single and relay levels with the stake, the next-pit relay and
+  the tier-one template rule. The count and even levels are engine-complete with fixtures; their
+  board screens are the next build and the page stops before them.
 - **Difficulty is tuned, not asserted.** `evals/policy_sim.mjs` plays two thousand games a level;
   `p_best` per level is chosen so a random-picking child who always calls right wins about half.
 

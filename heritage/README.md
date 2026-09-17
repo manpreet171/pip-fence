@@ -41,4 +41,10 @@ python heritage/evals/run_all.py
   `src/server.mjs` · `src/public/{board.html, board.mjs, judge.mjs, parent.html, source.html}` ·
   `data/hints.txt` (27 templates) · `data/wordlist.txt` · `evals/`.
 
+**What ships (17 Sep 2026).** Six playable levels (single and relay), the stake on every call, the
+attested next-pit relay, the tier-one template rule, the overlay, the parent page, the source screen,
+independent QA and a hiring-panel review. The engine also carries four *count* and *even* levels
+(addition and parity on the same board, 139 fixtures green) whose board screens are not built yet;
+the page stops at the six levels it can show, and says so here rather than pretending.
+
 Type: Fredoka (OFL). No other third-party assets: the board and seeds are drawn in CSS.

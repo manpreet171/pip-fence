@@ -94,4 +94,12 @@ docs/                 evidence, concept, decisions, reviews   docs/history/   wh
 
 Artwork is Kenney's CC0 isometric packs (see [docs/CREDITS.md](docs/CREDITS.md)).
 
+## A second concept, same pipeline: Kuzhi
+
+[`heritage/`](heritage/README.md) holds a second, self-contained product built on the same
+architecture in three days: a sowing game of the Pallanguzhi / Ali Guli Mane / Oware family where
+the child must call the pit her last seed will land in before the seeds move. Same classifier-as-code,
+same gated phrasing, same parent note, same overlay, its own research, evals, QA and review.
+Run it with `node heritage/src/server.mjs` and open http://localhost:5180/board.
+
 Manpreet Singh

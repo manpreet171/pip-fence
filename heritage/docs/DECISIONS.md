@@ -289,3 +289,20 @@ templates for the four new ids, so `buddy_test.mjs` fails on them until it gains
 - **Fixtures.** 45 added: the seed-loss cases (a wrong call, a code move, then the lighter pit sown), the
   next-pit relay and its one-seed hop, the count and parity ids on all four new nodes, the probe both ways on
   a count node, tiers and guessing on the new ids.
+
+
+---
+
+## HD-013 — Ship day: the board catches up with engine revision 2 as far as it can
+17 Sep 2026 · **Decided**
+
+- **Tier one is the template.** The page shows `TEMPLATES[id][1]` with no model call; the model
+  phrases tiers two and three. The review read the live tier-one rephrases and found them worse than
+  the templates they paraphrase; the template is the better hint at the moment it matters most.
+- **The board follows the revised engine:** the relay lifts the *next* pit; a lost seed visibly goes
+  to the far store and the tray says so; progression stops at the six single and relay levels because
+  the count and even screens are not built. The engine, fixtures and templates for those levels are
+  complete and stay in the tree.
+- **Not done today, said plainly:** the count and even board screens; the probe's second tap;
+  first-move teaching; card keep-off; the parent page's week-wide open id; demo seeding.
+  Each is in PRODUCT-REVIEW.md's fix list with an estimate.
