@@ -18,8 +18,9 @@ emit a number. The leak rate is measured, not asserted.
 
 **Where the AI is, exactly.**
 - The hint the child sees is phrased by a model from a payload with every number stripped out,
-  through a gate that rejects digits, number words and ordinals, with a gate-checked template as
-  the fallback. Spoken aloud by the browser's own speech, offline.
+  through a gate that rejects digits, number words and ordinals, then a second, colder model call
+  that judges the rephrase against the template for meaning and ships the template on anything but
+  a clear yes. Spoken aloud by the browser's own speech, offline.
 - The weekly note on the grown-ups page is written by the model from a validated summary of the
   child's mistakes (never the event log), through its own gate: one question, no blame, no jargon.
   The strongest result in the tutoring literature came from pointing AI at the adult.
@@ -64,6 +65,7 @@ python evals/run_all.py
 | `buddy_test.mjs` | 31 checks: no integer ever crosses the wire; the gate rejects digits, number words, extra sentences, banned words; every failure falls back to a template |
 | `engine_eval2.mjs` | The frozen control arm's adaptive-selector result, kept so it is not lost |
 | `redteam_leak.py` (manual, needs `DEEPSEEK_API_KEY`) | A different-family attacker, forced choice, recovers the target total no better than the majority-class baseline. Results in [docs/REDTEAM-RESULTS.md](docs/REDTEAM-RESULTS.md) |
+| `judge_eval.mjs` (manual, needs a key) | 20 live rephrases through gate and judge. Measured: 12 shipped, 6 stopped by the gate, 2 overturned by the judge that the gate had passed — [docs/JUDGE-RESULTS.md](docs/JUDGE-RESULTS.md) |
 | `latency_cost.mjs` (manual, needs a key) | p50/p95 and cost per hint over 20 live calls. Measured: p50 757 ms, p95 1.4 s, $0.00015/hint, gate pass 80% — [docs/LATENCY-RESULTS.md](docs/LATENCY-RESULTS.md) |
 
 Eval-only Python packages are in `evals/requirements.txt`. The shipped app has none.

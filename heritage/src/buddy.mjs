@@ -265,7 +265,32 @@ export async function note(b, { timeoutMs = 7000, fetchImpl = globalThis.fetch }
   return { ...noteFallback(b), source: "template" };
 }
 
-export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", wordlist, timeoutMs = 2000 } = {}) {
+
+// ---- the semantic judge: a second, colder model call that the lexical gate cannot replace ----
+// The gate stops digits and number words; it cannot see a sentence that points the wrong way. After a
+// rephrase passes the gate, the judge is shown the reference template and the candidate and answers
+// one question. Anything but a clear yes ships the template. Fail-closed by design.
+const JUDGE_SYSTEM = () => "You check a hint written for a child aged 8. The reference hint is correct. " +
+  "Reply ok:true only if the candidate says the same thing as the reference, points the child to the same place, " +
+  "and never tells her to pick up, move, choose or count a different pit, part, seed or plank than the reference does. " +
+  "Reply ok:false otherwise.";
+const JUDGE_SCHEMA = { type: "object", additionalProperties: false, required: ["ok"], properties: { ok: { type: "boolean" } } };
+export const JUDGE_JOB = { system: JUDGE_SYSTEM, schema: JUDGE_SCHEMA, max_tokens: 20, temperature: 0,
+  extra: " Reply with only a JSON object with the key ok." };
+
+// -> true | false | null (null = the judge could not answer; callers treat null as a rejection)
+export async function judgeHint(reference, candidate, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", timeoutMs = 1000 } = {}) {
+  try {
+    const [url, init] = PROVIDERS[provider].request({ reference, candidate }, apiKey, JUDGE_JOB);
+    const res = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+    if (!res.ok) return null;
+    const { text } = PROVIDERS[provider].parse(await res.json());
+    const out = JSON.parse(text);
+    return typeof out?.ok === "boolean" ? out.ok : null;
+  } catch { return null; }
+}
+
+export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", wordlist, timeoutMs = 2000, judge = true, judgeMs = 1000 } = {}) {
   const template = TEMPLATES[payload?.misconception_id]?.[payload?.tier] ?? "";
   const fallback = (reason, extra) => ({ text: template, source: "template", reason, ...extra });
   if (!apiKey) return fallback("no_key");
@@ -281,7 +306,12 @@ export async function phrase(payload, { fetchImpl = globalThis.fetch, apiKey, pr
     if (keys !== "misconception_id,text,tier" || out.tier !== payload.tier || out.misconception_id !== payload.misconception_id
       || typeof out.text !== "string") return fallback("schema", { usage });
     const why = gate(out.text, wordlist);
-    return why ? fallback(why, { usage, rejected: out.text }) : { text: out.text.trim(), source: "model", usage };
+    if (why) return fallback(why, { usage, rejected: out.text });
+    if (judge) {
+      const ok = await judgeHint(template, out.text.trim(), { fetchImpl, apiKey, provider, timeoutMs: judgeMs });
+      if (ok !== true) return fallback(ok === false ? "judge" : "judge_unavailable", { usage, rejected: out.text });
+    }
+    return { text: out.text.trim(), source: "model", usage, judged: judge };
   } catch (e) {
     return fallback(e?.name === "TimeoutError" ? "timeout" : "error");
   }

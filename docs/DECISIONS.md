@@ -1666,3 +1666,17 @@ Speaking on reload (the browser's own autoplay rule declines it without a gestur
    local ignore rules moved out of the tracked ignore file.
 **Not done, deliberately:** a side-view goat (no CC0 art exists; the flat sprite is the honest
 compromise, D-048); a second attacker family (no key).
+
+
+---
+
+## D-075 — A semantic judge above the lexical gate
+17 Sep 2026 · **Decided**
+
+After a rephrase passes the lexical gate, a second model call at temperature 0 answers one question
+against the reference template: same meaning, same place, no instruction to pick a different part.
+Anything but a clear yes ships the template; an unreadable verdict fails closed. Live: 20 rephrases,
+12 shipped, 6 stopped by the gate, 2 overturned by the judge that the gate had passed
+(`docs/JUDGE-RESULTS.md`). Prefetch hides the second call. **Rejected:** a second model family as
+judge (no key); a rule-based semantic check (the failure is meaning, not vocabulary); judging tier one
+(tier one is the template in Kuzhi and cheap to keep as template here when the judge is unavailable).

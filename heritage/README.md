@@ -36,7 +36,7 @@ python heritage/evals/run_all.py
 - `docs/ENGINE-CONTRACT.md`, `docs/BUDDY-CONTRACT.md` — the two interfaces the code is built to.
 - `docs/DECISIONS.md` — this concept's own decision log (HD-001…).
 - `docs/TEST-REPORT.md`, `docs/PRODUCT-REVIEW.md` — independent QA and the hiring-panel review.
-- `docs/LATENCY-RESULTS.md`, `docs/REDTEAM-RESULTS.md`, `docs/TRANSFER-TEST.md`, `docs/DEMO.md`.
+- `docs/LATENCY-RESULTS.md`, `docs/REDTEAM-RESULTS.md`, `docs/JUDGE-RESULTS.md`, `docs/TRANSFER-TEST.md`, `docs/DEMO.md`.
 - `src/sow.mjs` (rules and classifier, pure) · `src/buddy.mjs` (hint and note jobs, gate) ·
   `src/server.mjs` · `src/public/{board.html, board.mjs, judge.mjs, parent.html, source.html}` ·
   `data/hints.txt` (27 templates) · `data/wordlist.txt` · `evals/`.

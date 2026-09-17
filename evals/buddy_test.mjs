@@ -23,7 +23,7 @@ const modelReply = (text, extra = {}) => async () => ({ ok: true, status: 200, j
   content: [{ type: "text", text: JSON.stringify({ tier: 1, misconception_id: P.misconception_id, text, ...extra }) }],
   usage: { input_tokens: 400, output_tokens: 60 } }) });
 const hangs = () => (url, init) => new Promise((_, rej) => init.signal.addEventListener("abort", () => rej(init.signal.reason)));
-const ph = (fetchImpl) => phrase(P, { fetchImpl, apiKey: "k", wordlist, timeoutMs: 50 });
+const ph = (fetchImpl) => phrase(P, { fetchImpl, apiKey: "k", wordlist, timeoutMs: 50, judge: false });
 
 // ---- phrase(): the gate, in order ----
 let r = await ph(modelReply("Look at the top of that part. Put a plank on it."));
@@ -47,7 +47,7 @@ r = await ph(hangs());
 check("fetch hangs past timeoutMs -> template (timeout)", r.source === "template" && r.reason === "timeout", r.reason);
 r = await ph(async () => ({ ok: false, status: 529, json: async () => ({}) }));
 check("non-200 -> template", r.source === "template" && r.reason === "http_529", r.reason);
-r = await phrase(P, { fetchImpl: modelReply("x"), wordlist });
+r = await phrase(P, { fetchImpl: modelReply("x"), wordlist, judge: false });
 check("no apiKey -> template reason no_key (offline path)", r.source === "template" && r.reason === "no_key" && r.text === TPL, r.reason);
 
 // ---- the exact Haiku request (TECH-STACK §1.1) ----
@@ -101,7 +101,7 @@ check("gate: 'one'/'both'/'half' are number words", ["Add one plank.", "Both par
 check("gate: 'wrong' and 'miss you' are affect words", gate("That is wrong.", wordlist) === "affect" && gate("I miss you.", wordlist) === "affect");
 
 // ---- latency_cost parsing with the fake fetch ----
-const row = await runOne(P, { fetchImpl: modelReply("Look at that part again."), apiKey: "k", wordlist });
+const row = await runOne(P, { judge: false,  fetchImpl: modelReply("Look at that part again."), apiKey: "k", wordlist });
 const s = summarise([row, { ...row, ms: 900, source: "template" }]);
 check("latency_cost: runOne records ms/tokens/source", row.source === "model" && row.in === 400 && row.out === 60 && row.ms >= 0);
 check("latency_cost: summarise p50/p95/$ and gate pass rate", s.p95 === 900 && s.pass === 0.5 && Math.abs(s.usd - (400 * 1 + 60 * 5) / 1e6) < 1e-12, JSON.stringify(s));
@@ -142,6 +142,24 @@ console.log(`\n${fails ? fails + " FAILED" : "all checks passed"}`);
   const BZ = { ...B, solo: [], helped: [], days: 1 };
   n = await writeNote(BZ, { fetchImpl: spy({ note: "Your child built a fence this week and is still counting the parts.", question: "Show me one full part." }), apiKey: "k", timeoutMs: 50 });
   check("note: zero fences -> a claimed fence is rejected", n.source === "template" && n.reason === "invented", n.reason);
+}
+
+// ---- the semantic judge ----
+{
+  const good = "Look at the part that is short. Count a full part again.";
+  const twoCalls = (verdict) => { let n = 0; return async (url, init) => { n++;
+    const body = JSON.parse(init.body);
+    if (n === 1) return { ok: true, status: 200, json: async () => ({ content: [{ type: "text", text: JSON.stringify({ tier: P.tier, misconception_id: P.misconception_id, text: good }) }] }) };
+    twoCalls.last = body;
+    return { ok: true, status: 200, json: async () => ({ content: [{ type: "text", text: JSON.stringify(verdict) }] }) }; }; };
+  let jr = await phrase(P, { fetchImpl: twoCalls({ ok: true }), apiKey: "k", wordlist, timeoutMs: 50 });
+  check("judge: a faithful rephrase ships as model", jr.source === "model" && jr.judged === true, jr.reason);
+  const sent = JSON.stringify(twoCalls.last);
+  check("judge: sees the reference and the candidate, and no digit", /reference/.test(sent) && /candidate/.test(sent) && !/\d/.test(JSON.parse(twoCalls.last.messages.at(-1).content).candidate), sent.slice(0, 120));
+  jr = await phrase(P, { fetchImpl: twoCalls({ ok: false }), apiKey: "k", wordlist, timeoutMs: 50 });
+  check("judge: a rephrase the judge rejects -> template, reason judge", jr.source === "template" && jr.reason === "judge", jr.reason);
+  jr = await phrase(P, { fetchImpl: twoCalls({ verdict: "maybe" }), apiKey: "k", wordlist, timeoutMs: 50 });
+  check("judge: an unreadable verdict -> template, fail closed", jr.source === "template" && jr.reason === "judge_unavailable", jr.reason);
 }
 
 process.exit(fails ? 1 : 0);

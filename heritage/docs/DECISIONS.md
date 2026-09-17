@@ -306,3 +306,14 @@ templates for the four new ids, so `buddy_test.mjs` fails on them until it gains
 - **Not done today, said plainly:** the count and even board screens; the probe's second tap;
   first-move teaching; card keep-off; the parent page's week-wide open id; demo seeding.
   Each is in PRODUCT-REVIEW.md's fix list with an estimate.
+
+
+---
+
+## HD-014 — The semantic judge, and what it showed about this game's rephrases
+17 Sep 2026 · **Decided**
+
+Rung's judge (root D-075) applied unchanged. Live: 3 of 20 rephrases shipped; the gate stopped 13; the
+judge overturned 4 that pointed the child at the wrong pit with no number in them
+(`docs/JUDGE-RESULTS.md`). Two decisions confirmed by measurement: tier one stays the template
+(HD-013); the model is optional and the templates carry the product.
