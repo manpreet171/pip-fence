@@ -59,7 +59,7 @@ sequenceDiagram
   S->>S: rebuild the payload from validated fields (client text never forwarded)
   S->>M: phrase job, JSON schema, 2 s timeout
   M-->>S: tier, misconception_id, text
-  S->>S: gate, at most 2 sentences, no digits, no number words, simple words
+  S->>S: gate, at most 2 sentences, no digits, no number words, early-reader words
   S->>M: judge job, template vs candidate, temperature 0, 1 s timeout
   M-->>S: ok true
   S-->>G: text, source model
@@ -158,7 +158,7 @@ reason, the payload as sent, who chose the next fence, who wrote the moves.
                  live measurements (need a key, run by hand, written up in docs/results)
                  judge_eval · latency_cost · redteam_leak · plan_eval · show_eval
               ───────────────────────────────────────────────────────────────────
-         integration: buddy_test.mjs, 57 checks with an injected fake fetch
+         integration: buddy_test.mjs, 80 checks with an injected fake fetch
          (no integer crosses the wire; every gate reason; every fallback; the judge; the simulator)
     ──────────────────────────────────────────────────────────────────────────────────
   unit, pure: classifier_eval.mjs over 162 hand-written sequences → confusion matrix, 0 mismatches

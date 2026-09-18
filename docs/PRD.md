@@ -13,7 +13,7 @@ And an AI that hands over answers makes them worse at working alone once it is g
 
 ## Users
 
-- **The child**, six to ten, reading at an early-reader level or not reading yet. Taps, does not
+- **The child**, six to ten. The evidence base is for seven to eleven; the words and voice are pitched at six so the younger end can play. Reading at an early-reader level or not reading yet. Taps, does not
   type. Attention in short bursts. Quits on frustration without a scaffold.
 - **The parent**, who controls whether the child comes back, and who wants one thing to say at
   the dinner table, not a dashboard.
@@ -49,7 +49,7 @@ And an AI that hands over answers makes them worse at working alone once it is g
   stars in the one before.
 - R5. How to play is three steps per chapter, read aloud, followed by Pip showing the new move on
   the real board once.
-- R6. Every child-facing word passes a 500-word early-reader list. Fixed lines are spoken in a
+- R6. Every child-facing word passes an early-reader word list (Dolch and Fry sight words plus the game's own nouns). Fixed lines are spoken in a
   child's voice.
 
 ### The AI
@@ -94,7 +94,7 @@ What would show it teaches, and has not been run yet:
 | Risk | What we did | What remains |
 |---|---|---|
 | The model leaks the answer | No integers in the payload; gate; judge; red-team measured | The gate is lexical; a sentence that points the wrong way relies on the judge, which is a model |
-| A child cannot read the hint | 500-word list, two sentences, spoken aloud | Some model lines still use the browser's voice |
+| A child cannot read the hint | Early-reader word list, two sentences, spoken aloud | Some model lines still use the browser's voice |
 | The classifier meets a mistake nobody wrote a fixture for | Ambiguity is a first-class verdict with a probe | Real play will find cases; they become fixtures |
 | Extrinsic rewards crowd out the mechanic | Stars only for mastery, no points, no streaks | The farm greening is a reward; we think it is the right kind |
 | A public link spends the key | Daily cap, per-address limit, own-origin only | The free host sleeps between visits |

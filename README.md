@@ -51,7 +51,7 @@ The brief asked for a game that makes early arithmetic feel natural and rewards 
 with AI at the heart of it. The easy version of that is a quiz with a cartoon around it and a chatbot
 that explains. We built that first. Then we threw it away, and this is why.
 
-Before the game there were two weeks of reading. Two findings changed everything
+The first three days went to reading, before any game code. Two findings changed everything
 ([docs/RESEARCH-LEARNER.md](docs/RESEARCH-LEARNER.md)):
 
 - Children of this age learn more, at the same time on task, when the maths *is* the game
@@ -65,13 +65,13 @@ So the rules became: the build is the maths, and the AI must never give the answ
 Getting here was not a straight line. Four ideas were tried and put down before this one, each
 by a small experiment rather than by argument: a misconception engine built from real data, a
 sixty-second spoken defence, a tutor that is deliberately wrong, and a question-quality coach that
-turned out to already exist as Khanmigo. Then the first fence game was stopped mid-build because,
-honestly, it was still a quiz with a farm behind it. Decision D-043 in the log is the moment we
-admitted that and started again from the research.
+turned out to already exist as Khanmigo. Then the first build was stopped on day two because, honestly,
+it was a quiz with a farm behind it. Decision D-043 in the log is the moment we admitted that and
+started again from the research. The fence came out of that restart.
 
-Every one of those turns, eighty-five decisions in all, is in
+Every one of those turns, seventy-three decisions in all, is in
 [docs/DECISIONS.md](docs/DECISIONS.md) with what we rejected and why. Rung was the working name
-until the last day. We kept the dates and the mistakes in because they are the real story.
+until 17 September, the day before the deadline. We kept the dates and the mistakes in because they are the real story.
 
 ## What makes it different
 
@@ -84,7 +84,7 @@ until the last day. We kept the dates and the mistakes in because they are the r
 - **Four chapters on one board.** Build, Packs, Fix and Share. Same fence, and it quietly becomes
   multiplication, units inside units, subtraction and addition, and division. A chapter opens when
   she has three gold stars in the one before.
-- **Every word is one a six-year-old can read**, checked against a 500-word early-reader list.
+- **Every word is one a six-year-old can read**, checked against an early-reader word list (Dolch and Fry sight words plus the game's own nouns).
   Pip's lines are spoken in a child's voice, not a robot's.
 
 ![Pip's hint lands on the gap; the goat is already in the corn](docs/shots/hint.png)
@@ -97,9 +97,9 @@ before the child hears it.
 
 | What Pip does | The model's part | Code's part |
 |---|---|---|
-| Hint | Puts a written hint into fresh words for a child of six | No digits, no number words, only simple words. A second model checks the meaning is the same. If anything fails, the written line is used |
+| Hint | Puts a written hint into fresh words for a child of six | No digits, no number words, only simple words. A second call, at temperature zero, checks the meaning is the same. If anything fails, the written line is used |
 | Cheer | Says what she did right when a fence is done | Gets only yes/no facts. A judge rejects anything not in the facts. If there is nothing specific to praise, no call is made |
-| Plan | Picks her next fence from her last eight, and says why | Code lists the fences that practise her mistake. The pick has to be on that list |
+| Plan | Picks her next fence from her last eight, and says why | Code lists the fences that practise her mistake. The pick has to be on that list, and the reason line is checked like a hint |
 | Show | Writes a worked example as moves: point, count, place, take back, say | Code runs the moves in a simulator first. Illegal or useless scripts are replaced by code's own. Pip fixes one part and hands the rest back |
 | Parent note | Writes a short weekly note and one question to ask out loud | Gets a checked summary. Blame words, made-up claims and internal labels are rejected |
 
@@ -123,9 +123,9 @@ python evals/run_all.py
 
 | Check | What it proves |
 |---|---|
-| `readinglevel.py --assert` | All 48 hint lines: two sentences at most, no digits or number words, simple words only |
+| `readinglevel.py --assert` | All 48 hint lines: two sentences at most, no digits or number words, words from the early-reader list |
 | `classifier_eval.mjs` | 162 hand-written builds. Right whenever it commits, silent when two mistakes look the same |
-| `buddy_test.mjs` | 57 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
+| `buddy_test.mjs` | 80 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
 
 With a live model, measured and written up in `docs/results/`:
 

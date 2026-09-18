@@ -1,5 +1,7 @@
 # LATENCY / COST — 20 live hints, measured (6 Sep 2026)
 
+> Measured on the eight misconception ids of 6 September; there are sixteen now. The hint path, gate and timeouts are unchanged since, and the judge (added 17 September) adds one more call, measured in JUDGE-RESULTS.md.
+
 `node evals/latency_cost.mjs` against the shipped `phrase()` path: real redacted payloads for all 8
 misconception ids × tiers 1–3, the full output gate applied, template fallback on any rejection.
 Provider: **DeepSeek `deepseek-v4-flash`**, thinking disabled, JSON mode (D-067). Raw log kept locally.

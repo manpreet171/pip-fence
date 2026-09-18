@@ -1,3 +1,5 @@
+> Written 4 September 2026 under the working name Rung, before the fence game existed. Sections 4 to 6 judge the earlier build that was thrown away, and section 5 sketches the redesign that became Pip. The findings are the evidence base; the product that came out of them is described in DESIGN.md.
+
 # RESEARCH — The Learner (ages 7–11): psychology, evidence, and what it demands of Rung
 
 4 Sep 2026. Produced by five research passes (attention/cognitive load; motivation;

@@ -15,6 +15,14 @@ Date · Status: Decided | Superseded by D-NNN | Open
 ---
 
 > D-001 to D-003 were housekeeping about the repository itself and are left out here. The log starts with the product.
+>
+> Because the log is never rewritten, older entries name files by the paths they had at the time.
+> Read them with this map: the measured results named as `docs/*-RESULTS.md` are now in
+> `docs/results/`; the concept papers, kill-test reports, reviews, the earlier build
+> (`src/engine/engine.mjs`, `src/public/index.html`, `village.mjs`) and the second game are in
+> git history up to commit `9533298`, not in the tree (D-085). Rung is the working name of what
+> became Pip (D-076). Some numbers were reserved and never used, so the log runs to D-085 with
+> seventy-three entries here.
 
 ---
 
