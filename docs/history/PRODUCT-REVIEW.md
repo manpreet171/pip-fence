@@ -1,3 +1,5 @@
+> History. Round one. Superseded by docs/PRODUCT-REVIEW-2.md.
+
 # PRODUCT REVIEW — Rung, as a Nerdy hiring panel would read it
 
 6 Sep 2026 (12 days to the 18 Sep deadline). Reviewer: senior AI Product Engineer, Nerdy hackathon panel.

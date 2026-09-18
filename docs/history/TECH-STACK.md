@@ -1,3 +1,5 @@
+> History. Pre-build specification. The file plan that shipped is in README.md, Layout.
+
 # TECH STACK — final technical specification (4 Sep 2026, day 1 of 14)
 
 Authority: `CONCEPT-V3.2.md` (incl. Errata) + `AI-ARCHITECTURE.md`, under `CONSTITUTION.md` R5.

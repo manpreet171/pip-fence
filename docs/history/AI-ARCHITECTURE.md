@@ -1,3 +1,5 @@
+> History. Pre-build specification. What was built is in README.md and docs/DECISIONS.md (D-071, D-075, D-079 to D-082).
+
 # AI ARCHITECTURE — what AI earns its place in Rung (Sept 2026)
 
 Written 4 Sep 2026 as the AI-architecture review, grounded in `docs/RESEARCH-LEARNER.md`.

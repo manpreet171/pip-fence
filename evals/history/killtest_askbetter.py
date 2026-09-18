@@ -176,5 +176,5 @@ if __name__ == "__main__":
         if g:
             print(f"        {lab:<12} {sum(x['cls_ok'] for x in g)}/{len(g)}")
 
-    json.dump(R, open("evals/killtest_askbetter_results.json", "w"), indent=2)
+    json.dump(R, open("evals/history/killtest_askbetter_results.json", "w"), indent=2)
     print("\nraw -> evals/killtest_askbetter_results.json")

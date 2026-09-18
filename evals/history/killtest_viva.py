@@ -194,7 +194,7 @@ def main():
     if overlap_cases:
         print(f"overlap in : {', '.join(overlap_cases)}")
 
-    with open("evals/killtest_viva_results.json", "w", encoding="utf-8") as f:
+    with open("evals/history/killtest_viva_results.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
     print("\nfull transcripts -> evals/killtest_viva_results.json")
 

@@ -44,7 +44,7 @@ Working > planned. A rough thing that runs beats a beautiful thing that doesn't.
 No feature is "done" until it survives a cold run on a clean machine.
 
 ### R3 — Evidence over vibes.
-Every pedagogical claim traces to a citation in `docs/RESEARCH-LEARNER.md` (or `docs/history/RESEARCH.md`).
+Every pedagogical claim traces to a citation in `docs/RESEARCH-LEARNER.md` (or the earlier `docs/history/RESEARCH.md`).
 Every product claim traces to a number we can show. We do not say "improves learning" —
 we show the measurement.
 
@@ -82,7 +82,7 @@ place in the shot list, it goes to the backlog or the bin.
 │   ├── RESEARCH-LEARNER.md  # evidence base — citations, findings, the moat
 │   ├── CONCEPT-V3.2.md      # the approved product
 │   ├── DECISIONS.md   # decision log (append-only)
-│   └── history/       # superseded concepts, kill-tests, audits — kept, not deleted
+│   └── results/       # measured runs. Superseded work lives in git history, not the tree (D-085)
 ├── src/               # application code (created when we start building)
 ├── evals/             # measurement harness — our differentiator
 ├── data/              # seeds, fixtures, misconception libraries
@@ -96,7 +96,7 @@ the first file in them does.
 
 ## 4. The thesis we are defending
 
-Peer-reviewed 2025–26 evidence (see `docs/history/RESEARCH.md` and `docs/RESEARCH-LEARNER.md`) says the obvious build is the
+Peer-reviewed 2025–26 evidence (see `docs/RESEARCH-LEARNER.md`, and the earlier research in git history) says the obvious build is the
 wrong build:
 
 - **AI that answers makes learning *worse*.** PNAS 2025: students with unguarded GPT-4

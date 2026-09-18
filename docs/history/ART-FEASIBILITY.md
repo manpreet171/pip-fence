@@ -1,3 +1,5 @@
+> History. Art research before the build. The probe page is in docs/history/probes/.
+
 # ART FEASIBILITY — can the demo beat actually be drawn? (4 Sep 2026)
 
 The review (REVIEW-R1 #3) said: prove the plank / gap / sheep art on day 1, or change the beat.

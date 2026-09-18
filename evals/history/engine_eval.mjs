@@ -16,7 +16,7 @@
 import {
   sigmoid, generateProblem, updateAbility,
   selectDifficultyAdaptive, selectDifficultyRandom, selectDifficultyFixedRamp,
-} from "../src/engine/engine.mjs";
+} from "../../src/control/engine.mjs";
 
 // deterministic RNG for reproducible numbers
 function mulberry32(seed) {

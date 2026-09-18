@@ -19,7 +19,7 @@
 //
 // Run: node evals/engine_eval2.mjs
 
-import { updateAbility, selectDifficultyAdaptive, sigmoid } from "../src/engine/engine.mjs";
+import { updateAbility, selectDifficultyAdaptive, sigmoid } from "../src/control/engine.mjs";
 
 function mulberry32(s){ return function(){ s|=0; s=(s+0x6D2B79F5)|0;
   let t=Math.imul(s^(s>>>15),1|s); t=(t+Math.imul(t^(t>>>7),61|t))^t;

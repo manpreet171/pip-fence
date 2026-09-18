@@ -1,3 +1,5 @@
+> History. The final pre-build design review. Kept for the record.
+
 # REVIEW — Round 3 (final) verification of CONCEPT-V3.2
 
 4 Sep 2026. Same review series as R1 and R2. Verified against REVIEW-R2, CONCEPT-V3.2,

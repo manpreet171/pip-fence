@@ -166,6 +166,6 @@ if __name__ == "__main__":
               "PASS: no lift over the majority-class baseline — payload does not leak" if ht/n <= base_t + 0.05 else \
               "FAIL: attacker beats the majority-class baseline — something in the payload/template leaks"
     print(f"\n  VERDICT: {verdict}")
-    raw = "evals/redteam_leak_results_output.json" if OUTPUT else "evals/redteam_leak_results_tiers.json"
+    raw = "evals/results/redteam_leak_results_output.json" if OUTPUT else "evals/results/redteam_leak_results_tiers.json"
     json.dump(R, open(raw, "w"), indent=2)
     print(f"  raw -> {raw}")

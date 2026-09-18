@@ -1877,3 +1877,19 @@ it yet. Rejected: a paid text-to-speech call at run time for every line (a key, 
 round trip for words that never change); recording a human (no child's voice may be recorded for
 this product under the same rule that keeps the microphone off).
 
+
+---
+
+## D-085 — The repo holds only what ships and what proves it
+18 Sep 2026 · **Decided**
+
+The owner: keep the repo simple and relevant, no files that are not needed. The tree is now the
+product (`src/public`, `src/engine`), the frozen comparison build in its own folder (`src/control`,
+served only with `CONTROL_ARM=1`), the checks that run today (`evals/`) with their measured runs
+(`evals/results/`), the data, the two scripts, and the docs a reader needs. Removed from the tree:
+the second concept that was built and dropped (`heritage/`, D-077), the concept-phase kill-tests and
+superseded specs (`docs/history/`, `evals/history/`), the art probe, and an empty notes file. All of
+it is in git history up to commit `9533298`, and D-077 and the kill-test decisions still describe
+what was tried and why it lost. Rejected: rewriting the decision log to fix old paths (append-only);
+keeping the trail in the tree "for the judges" (a reader who wants it has the history).
+

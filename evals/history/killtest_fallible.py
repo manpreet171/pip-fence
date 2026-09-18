@@ -218,5 +218,5 @@ if __name__ == "__main__":
     fa = [r["false_alarm"] for r in R if r["false_alarm"] is not None]
     print(f"\n      FALSE ALARM on clean solutions: {sum(fa)}/{len(fa)} = {sum(fa)/len(fa):.0%}")
 
-    json.dump(R, open("evals/killtest_fallible_results.json", "w"), indent=2)
+    json.dump(R, open("evals/history/killtest_fallible_results.json", "w"), indent=2)
     print("\nraw -> evals/killtest_fallible_results.json")

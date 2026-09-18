@@ -5,8 +5,8 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname, resolve, sep } from "node:path";
-import { coach } from "./engine/coach.mjs";
-import { makeStory, narrateBuild } from "./engine/story.mjs";
+import { coach } from "./control/coach.mjs";
+import { makeStory, narrateBuild } from "./control/story.mjs";
 import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist, validNote, writeNote, noteFallback, PROVIDERS, validCheer, writeCheer, cheerFallback, validPlan, writePlan, validShowBody, writeShow } from "./engine/buddy.mjs";
 import { candidates, validShow, codeShow } from "./public/fence.mjs";
 
@@ -87,8 +87,8 @@ const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/ja
   ".svg": "image/svg+xml", ".png": "image/png", ".ttf": "font/ttf", ".ico": "image/x-icon", ".json": "application/json", ".txt": "text/plain" };
 // Static routing: short URLs map to real files (no duplication). Only these files plus src/public/** are servable.
 const CONTROL_ARM = process.env.CONTROL_ARM === "1";
-const ROUTES = { "/": CONTROL_ARM ? "/public/index.html" : "/public/home.html", "/fence": "/public/build.html", ...(CONTROL_ARM && { "/measure": "/public/measure.html" }), "/build": "/public/build.html",
-  "/engine.mjs": "/engine/engine.mjs", "/buddy.mjs": "/engine/buddy.mjs", "/village.mjs": "/public/village.mjs", "/fence.mjs": "/public/fence.mjs" };
+const ROUTES = { "/": CONTROL_ARM ? "/control/index.html" : "/public/home.html", "/fence": "/public/build.html", ...(CONTROL_ARM && { "/measure": "/control/measure.html", "/engine.mjs": "/control/engine.mjs" }), "/build": "/public/build.html",
+  "/buddy.mjs": "/engine/buddy.mjs", "/fence.mjs": "/public/fence.mjs", "/village.mjs": "/public/village.mjs" };
 const PUBLIC = join(HERE, "public");
 
 const send = (res, code, body, type = "text/plain") =>

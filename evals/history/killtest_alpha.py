@@ -187,5 +187,5 @@ if __name__ == "__main__":
         print("\n  example wrong fact:")
         print("   Q:", wrongfact[0]["q"], "\n   A:", wrongfact[0]["reply"][:200])
 
-    json.dump({"c1": r1, "c2": r2}, open("evals/killtest_alpha_results.json", "w"), indent=2)
+    json.dump({"c1": r1, "c2": r2}, open("evals/history/killtest_alpha_results.json", "w"), indent=2)
     print("\nraw -> evals/killtest_alpha_results.json")

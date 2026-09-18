@@ -1,3 +1,5 @@
+> History. Round one. Superseded by docs/TEST-REPORT-2.md.
+
 # TEST REPORT — Rung build day 1 (6 Sep 2026, 12 days to 18 Sep)
 
 Independent QA pass over the committed tree at `0aeaa8e` (working tree identical except an untracked

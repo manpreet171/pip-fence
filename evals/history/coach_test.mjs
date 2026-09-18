@@ -1,6 +1,6 @@
 // Live test of the buddy: warmth + method help, and a PROVABLE zero answer-leak rate
 // (the code guard must catch anything the prompt misses). Run: node evals/coach_test.mjs
-import { coach, answerLeaked } from "../src/engine/coach.mjs";
+import { coach, answerLeaked } from "../../src/control/coach.mjs";
 
 if (!process.env.DEEPSEEK_API_KEY) { console.error("set DEEPSEEK_API_KEY"); process.exit(1); }
 
