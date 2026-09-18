@@ -51,7 +51,7 @@ judgment about words and about practice, and code checks every one before the ch
 
 | Job | The model | The check |
 |---|---|---|
-| Hint | Rephrases a template for a child of six | No digits, no number words, an early-reader word list (Dolch and Fry sight words plus the game's own nouns). A second call at temperature zero judges that the meaning is the same. Template on any failure |
+| Hint | Puts a written template into its own words for a child of six, never a copy | No digits, no number words, an early-reader word list (Dolch and Fry sight words plus the game's own nouns). A second call at temperature zero judges that the meaning is the same. Template on any failure |
 | Cheer | Says what she did right | Booleans in. A judge rejects any claim not in the facts. No call when there is nothing specific to praise |
 | Plan | Picks the next fence from her last eight, says why | Code lists the fences in her chapter that exercise her mistake. The pick must be on that list; the reason line passes the same gate and a facts judge |
 | Show | Writes a worked example as moves: point, count, place, remove, say | Code simulates the moves first. Illegal, over-filling or unhelpful scripts are replaced by code's own. Pip fixes one part and hands the rest back |

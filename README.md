@@ -70,7 +70,7 @@ turned out to already exist as Khanmigo. Then the first build was stopped on day
 it was a quiz with a farm behind it. Decision D-043 in the log is the moment we admitted that and
 started again from the research. The fence came out of that restart.
 
-Every one of those turns, eighty-five decisions in all, is in
+Every one of those turns, eighty-six decisions in all, is in
 [docs/DECISIONS.md](docs/DECISIONS.md) with what we rejected and why. Rung was the working name
 until 17 September, the day before the deadline. We kept the dates and the mistakes in because they are the real story.
 
@@ -103,7 +103,7 @@ before the child hears it.
 
 | What Pip does | The model's part | Code's part |
 |---|---|---|
-| Hint | Puts a written hint into fresh words for a child of six | No digits, no number words, only simple words. A second call, at temperature zero, checks the meaning is the same. If anything fails, the written line is used |
+| Hint | Puts a written hint into its own words for a child of six, never a copy | No digits, no number words, only simple words. A second call, at temperature zero, checks the meaning is the same. If anything fails, the written line is used |
 | Cheer | Says what she did right when a fence is done | Gets only yes/no facts. A judge rejects anything not in the facts. If there is nothing specific to praise, no call is made |
 | Plan | Picks her next fence from her last eight, and says why | Code lists the fences in her chapter that practise her mistake. The pick has to be on that list, and the reason line is checked like a hint |
 | Show | Writes a worked example as moves: point, count, place, take back, say | Code runs the moves in a simulator first. Illegal or useless scripts are replaced by code's own. Pip fixes one part and hands the rest back |
@@ -139,7 +139,7 @@ With a live model, measured and written up in `docs/results/`:
 | Run | Result |
 |---|---|
 | [Latency and cost](docs/results/LATENCY-RESULTS.md) | 20 live hints: under a second, about a hundredth of a cent each |
-| [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases: 12 shipped, 6 stopped by the gate, 2 caught by the judge |
+| [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases in Pip's own words: 12 shipped, 2 stopped by the gate, 6 caught by the judge |
 | [Red team](docs/results/REDTEAM-RESULTS.md) | An attacker shown everything the model sees guesses the answer no better than always saying the commonest one |
 | [The planner](docs/results/PLAN-RESULTS.md) | 8 learner records: every pick inside code's list, six of eight different from the fixed order, for sensible reasons |
 | [Worked examples](docs/results/SHOW-RESULTS.md) | 6 fence states: 5 scripts passed the simulator and ran, 1 replaced by code's own |

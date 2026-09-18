@@ -147,14 +147,17 @@ export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fe
 // DeepSeek (v4-flash, JSON mode, thinking disabled) with DEEPSEEK_API_KEY. Same payload, same gate,
 // same template fallback either way; the gate is what makes the output safe, not the vendor (D-067).
 const SYSTEM = () => "You phrase one hint for a child aged 8 reading at a 500-word level. Max 2 sentences. " +
-  "Use no numbers of any kind — no digits, no number words. Never state or imply how many. Point with words. " +
-  "Never say sad, disappointed, or miss you.";
+  "The input's template says what the hint must mean; say that same thing in your own words, as if talking to her, " +
+  "and do not repeat the template word for word. Keep its meaning exactly: point her to the same part and the same fix. " +
+  "Use only short plain words a child of six reads: look, part, plank, post, top, short, tall, cart, count, again, empty, full, sign. " +
+  "No pet names. Use no numbers of any kind: no digits, and never the words one, once, single, both, pair, half or any number word. " +
+  "Never state or imply how many. Point with words. Never say sad, disappointed, or miss you.";
 const SCHEMA = { type: "object", additionalProperties: false, required: ["tier", "misconception_id", "text"],
   properties: { tier: { type: "integer", enum: [1, 2, 3] }, misconception_id: { type: "string", enum: IDS }, text: { type: "string" } } };
 
 // A job = system prompt + strict schema + token budget. Two jobs share the providers: the child's
 // hint (60 tokens, no numbers) and the parent's weekly note (CONCEPT §7: AI pointed at the adult).
-export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120,
+export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120, temperature: 0.6,
   extra: " Reply with only a JSON object with the keys tier, misconception_id and text. Copy tier and misconception_id from the input exactly." };
 const NOTE_SYSTEM = (open = true) => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
   "count groups by building fences in a game. Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +

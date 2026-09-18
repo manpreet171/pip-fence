@@ -2064,3 +2064,20 @@ answers with a named fallback reason and never "error", so a route that throws c
 The check fails on the old code and passes on the new. Rejected: trusting the unit tests alone (the
 hint layer was correct; the route around it was not).
 
+
+---
+
+## D-098 — The hint is the model's own words, never a copy
+18 Sep 2026 · **Decided**
+
+The owner: "Are you sure it is the AI working? I don't want hardcoded messages." Measured: seven of
+nine model hints were word-for-word copies of the written template, because the prompt said
+"phrase this" and a short line at low temperature comes back unchanged. That is the model doing
+nothing. The prompt now says: say the same thing in your own words, do not repeat the template,
+keep the meaning exactly, use only short plain words, and names the number words the gate bans;
+temperature 0.6. Measured after: none of twelve were copies, ten shipped, one ran to three
+sentences and one pointed at the wrong part, and the judge caught that one. The twenty-hint judge
+run: 12 shipped, 2 gate, 6 judge, all six right to overturn. Written lines remain the fallback and
+the meaning the model must keep. Rejected: raising the temperature further (more overturns, no
+gain); removing the templates (they are the reference the judge needs).
+
