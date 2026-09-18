@@ -7,7 +7,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, extname, resolve, sep } from "node:path";
 import { coach } from "./engine/coach.mjs";
 import { makeStory, narrateBuild } from "./engine/story.mjs";
-import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist, validNote, writeNote, noteFallback, PROVIDERS } from "./engine/buddy.mjs";
+import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist, validNote, writeNote, noteFallback, PROVIDERS, validCheer, writeCheer, cheerFallback, validPlan, writePlan, validShowBody, writeShow } from "./engine/buddy.mjs";
+import { candidates, validShow, codeShow } from "./public/fence.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5177;
@@ -46,6 +47,41 @@ async function noteRoute(req, res) {
   let out;
   try { out = await writeNote(body, PHRASER); } catch { out = { ...noteFallback(body), source: "template", reason: "error" }; }
   return send(res, 200, JSON.stringify(out), "application/json");
+}
+// Pip cheers: validated booleans in, one gated and judged sentence out; the same fallback discipline.
+async function cheerRoute(req, res) {
+  let body;
+  try { let raw = ""; for await (const c of req) { raw += c; if (raw.length > 4096) throw 0; } body = JSON.parse(raw); }
+  catch { return send(res, 400, "bad json"); }
+  if (!validCheer(body)) return send(res, 400, "bad payload");
+  let out;
+  try { out = await writeCheer(body, { ...PHRASER, wordlist: WORDLIST }); } catch { out = { text: cheerFallback(body), source: "template", reason: "error" }; }
+  const { text, source, reason } = out;
+  return send(res, 200, JSON.stringify({ text, source, ...(reason && { reason }) }), "application/json");
+}
+// Pip plans the next fence: validated record in, a pick from code's own candidate list plus one gated line out.
+async function planRoute(req, res) {
+  let body;
+  try { let raw = ""; for await (const c of req) { raw += c; if (raw.length > 8192) throw 0; } body = JSON.parse(raw); }
+  catch { return send(res, 400, "bad json"); }
+  if (!validPlan(body)) return send(res, 400, "bad payload");
+  let out;
+  try { out = await writePlan(body, candidates(body.mastery, body.last), { ...PHRASER, wordlist: WORDLIST }); }
+  catch { out = { node: null, why: "", source: "template", reason: "error" }; }
+  const { node, why, source, reason } = out;
+  return send(res, 200, JSON.stringify({ node, why, source, ...(reason && { reason }) }), "application/json");
+}
+// Pip shows her: real counts in, a script of moves out, simulated before it is sent; code's script otherwise.
+async function showRoute(req, res) {
+  let body;
+  try { let raw = ""; for await (const c of req) { raw += c; if (raw.length > 4096) throw 0; } body = JSON.parse(raw); }
+  catch { return send(res, 400, "bad json"); }
+  if (!validShowBody(body)) return send(res, 400, "bad payload");
+  let out;
+  try { out = await writeShow(body, { ...PHRASER, wordlist: WORDLIST, valid: validShow, fallback: codeShow }); }
+  catch { out = { steps: codeShow(body), source: "template", reason: "error" }; }
+  const { steps, source, reason } = out;
+  return send(res, 200, JSON.stringify({ steps, source, ...(reason && { reason }) }), "application/json");
 }
 const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript", ".css": "text/css",
   ".svg": "image/svg+xml", ".png": "image/png", ".ttf": "font/ttf", ".ico": "image/x-icon", ".json": "application/json", ".txt": "text/plain" };
@@ -89,6 +125,9 @@ const server = createServer(async (req, res) => {
     }
     if (req.method === "POST" && req.url === "/api/buddy") return buddy(req, res);
     if (req.method === "POST" && req.url === "/api/note") return noteRoute(req, res);
+    if (req.method === "POST" && req.url === "/api/cheer") return cheerRoute(req, res);
+    if (req.method === "POST" && req.url === "/api/plan") return planRoute(req, res);
+    if (req.method === "POST" && req.url === "/api/show") return showRoute(req, res);
     if (req.method === "POST" && req.url === "/api/story") {
       const raw = await readBody(req);
       const { problem, theme } = JSON.parse(raw || "{}");

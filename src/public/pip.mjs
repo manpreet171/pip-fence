@@ -64,6 +64,16 @@ export function star(full, text) {
   setTimeout(() => document.querySelector(".starmoment")?.remove(), 2400);
 }
 
+// "Show me, Pip": after the second hint the child can ask for a worked example on her own fence.
+// The caller fetches the script, checks it, and performs it; the button is disabled meanwhile.
+export function showme(cardTextEl, handler) {
+  css();
+  const b = document.createElement("button"); b.className = "pipagain"; b.type = "button"; b.textContent = "Show me, Pip";
+  b.onclick = async () => { b.disabled = true; b.textContent = "Pip is thinking…"; try { await handler(); } finally { b.disabled = false; b.textContent = "Show me, Pip"; } };
+  cardTextEl.after(b);
+  return b;
+}
+
 // "Say it another way": the child asks Pip for a fresh phrasing; the caller fetches the next tier
 // through the same gate and judge and returns the text (or the template when the model is out).
 export function again(cardTextEl, handler) {

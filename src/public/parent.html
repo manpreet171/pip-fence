@@ -40,7 +40,7 @@
   // The note is written from a summary the model is handed (buddy.mjs: fence names, the open misconception
   // in PARENT_WORDS, the tier reached, days played) — never the event log or a count. Any miss → the fixed
   // sentences, which are the same PARENT_WORDS. One source of truth for both.
-  const name = node => { const s = shape(node); return `${s.groups} parts of ${s.per}${s.mode === "packs" ? " (packs)" : ""}`; };
+  const name = node => { const s = shape(node); return `${s.groups} parts of ${s.per}${s.mode === "concrete" ? "" : ` (${s.mode})`}`; };
   let d = {}; try { d = JSON.parse(localStorage.getItem("rung.v1")) || {}; } catch {}
   const levels = [];
   for (const e of d.events || []) { if (e.e === "level_start") levels.push([]); if (levels.length) levels.at(-1).push(e); }

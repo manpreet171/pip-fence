@@ -119,6 +119,9 @@
     <div id="cart" class="tray"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
     <div id="slip" class="tray" hidden><span class="lbl">Order</span><div id="note"><button id="addpack" title="add a pack"></button><div id="slipn"></div></div></div>
     <button class="btn" id="deliver" hidden>Deliver</button>
+    <button class="btn" id="addpart" hidden>+ part</button>
+    <button class="btn" id="delpart" hidden>&minus; part</button>
+    <button class="btn" id="build" hidden>Build</button>
     <button class="btn quiet" id="again" hidden>Order again</button>
     <button class="btn" id="done">Done</button>
     <button class="btn" id="restart" hidden>Start again</button>
@@ -129,25 +132,28 @@
   </div>
 </div>
 <script type="module">
-  import { GRAPH, IDS, shape, next, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
-  import { TEMPLATES, hint, payload } from "/buddy.mjs";
+  import { GRAPH, IDS, shape, next, unlocked, candidates, validShow, codeShow, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
+  import * as buddy from "/buddy.mjs";
   import * as pip from "/public/pip.mjs";
+  const { TEMPLATES, hint, payload } = buddy;
   document.head.insertAdjacentHTML("beforeend", `<style>${FENCE_CSS}</style>`);
 
   const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
   const Q = new URLSearchParams(location.search), DEBUG = Q.has("debug");
   const IDLE_MS = 45000, KEY = "rung.v1", BOARD = "/assets/fence/board.png";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart }, events: S.events, ended: S.ended })); } catch {} };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart, n: S.n }, events: S.events, ended: S.ended })); } catch {} };
 
   // One plain object. The event log is the state history; `events` is a ring across levels and
-  // lvl() is the slice classify() reads.
-  const S = { mastery: {}, node: null, parts: [], cart: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, ended: false, retry: false, idle: 0, tok: 0, last: null };
+  // lvl() is the slice classify() reads. `n` is the parts she has framed in share, before Build.
+  const S = { mastery: {}, node: null, parts: [], cart: 0, n: 0, held: null, events: [], at: 0, slip: 0, pre: null, probe: false, done: false, ended: false, retry: false, idle: 0, tok: 0, last: null };
   const scene = $("scene");
   let J = null;                                        // the judge's overlay, mounted only when asked for
   const sh = () => shape(S.node);
   const lvl = () => level(S.events);
-  const delivered = () => sh().mode !== "packs" || lvl().some(e => e.e === "order");
+  // The wood is on the plot: always in concrete; after the one delivery in packs and fix; after Build in share.
+  const delivered = () => { const m = sh().mode; return m === "concrete" || lvl().some(e => e.e === (m === "share" ? "parts" : "order")); };
+  const stripNow = () => pip.strip($("strip"), GRAPH.filter(g => g.chapter === sh().chapter).map(g => g.node), S.mastery, S.node);
 
   function log(e) {
     S.events.push({ t: Date.now() - S.at, ...e }); save(); J?.update();
@@ -160,17 +166,21 @@
   function start(node) {
     if (node !== S.node) S.retry = false;
     const s = shape(node);
-    Object.assign(S, { node, parts: Array(s.groups).fill(0), cart: s.mode === "packs" ? 0 : s.groups * s.per, held: null, slip: 0, pre: null, probe: false, done: false, ended: false, at: Date.now() });
+    // Fix starts from the pre-built planks with an empty cart; share from a bare plot with the whole load.
+    Object.assign(S, { node, parts: s.pre ? [...s.pre] : Array(s.mode === "share" ? 0 : s.groups).fill(0), cart: s.mode === "packs" || s.mode === "fix" ? 0 : s.groups * s.per,
+      n: 0, held: null, slip: 0, pre: null, probe: false, done: false, ended: false, at: Date.now() });
     S.events = S.events.slice(-500);
     log({ e: "level_start", node, at: S.at });
     mount();
+    howFor(s.mode); maybeDemo();
   }
   function mount() {
     const s = sh();
-    mountScene(scene, s);
+    mountScene(scene, s.mode === "share" ? { ...s, groups: S.n } : s);
     S.parts.forEach((n, p) => { for (let i = 0; i < n; i++) appendPlank(scene, p, i); });
-    $("task").textContent = `${s.groups} parts · ${s.per} planks in each part` + (s.mode === "packs" ? ` · packs\u00a0of\u00a0${s.pack}` : "");
-    pip.strip($("strip"), GRAPH.map(g => g.node), S.mastery, S.node);
+    $("task").textContent = s.mode === "share" ? `${s.groups * s.per} planks · parts of ${s.per} · how many parts?`
+      : `${s.groups} parts · ${s.per} planks in each part` + ({ packs: ` · packs of ${s.pack}`, fix: " · fix the fence" }[s.mode] || "");
+    stripNow();
     hideBubble(); render();
   }
 
@@ -184,16 +194,18 @@
     return Array.from({ length: n }, (_, k) => { const row = Math.floor(k / per), col = k % per;
       return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
   function render() {
-    const s = sh(), d = delivered(), packs = s.mode === "packs";
-    $("cart").hidden = !d; $("slip").hidden = d; $("deliver").hidden = d; $("done").hidden = !d;
-    $("again").hidden = !(packs && d && lvl().some(e => e.e === "hint") && !S.done);
+    const s = sh(), d = delivered(), packs = s.mode === "packs", share = s.mode === "share";
+    $("cart").hidden = !d; $("slip").hidden = d || share; $("deliver").hidden = d || share; $("done").hidden = !d;
+    $("addpart").hidden = d || !share; $("delpart").hidden = d || !share || !S.n; $("build").hidden = d || !share || !S.n;
+    $("again").hidden = !(s.mode !== "concrete" && d && lvl().some(e => e.e === "hint") && !S.done);
+    $("again").textContent = share ? "Build again" : "Order again";
     if (d) {
       $("pile").innerHTML = heap(S.cart, packs ? pack(s.pack) : plank(), packs ? 34 : 34);
       $("cart").classList.toggle("held", !!S.held);
       $("cartl").textContent = !S.cart ? "Cart is empty" : S.held ? "In hand. Tap a part." : "Cart";
-    } else {
-      $("addpack").innerHTML = pack(s.pack);
-      $("slipn").innerHTML = Array.from({ length: S.slip }, () => pack(s.pack)).join("");
+    } else if (!share) {                               // the order slip: pack silhouettes in packs, single planks in fix
+      $("addpack").innerHTML = pack(packs ? s.pack : 1);
+      $("slipn").innerHTML = Array.from({ length: S.slip }, () => pack(packs ? s.pack : 1)).join("");
     }
     $("done").textContent = S.done ? "Next plot" : "Done";
   }
@@ -207,9 +219,15 @@
   };
   $("addpack").onclick = () => { const s = sh(); if (S.slip < s.groups * s.per) { S.slip++; render(); } };
   $("slipn").onclick = e => { if (e.target.closest(".pack")) { S.slip--; render(); } };
-  $("deliver").onclick = () => { if (!S.slip) return; S.cart = S.slip; log({ e: "order", packs: S.slip }); render(); };
+  $("deliver").onclick = () => { if (!S.slip) return; S.cart = S.slip; log({ e: "order", ...(sh().mode === "fix" ? { planks: S.slip } : { packs: S.slip }) }); render(); };
+  // Share: frame the parts one at a time (the scene re-mounts around them), then Build locks the frame.
+  $("addpart").onclick = () => { const s = sh(); if (S.n < Math.min(8, s.groups * s.per)) { S.n++; mount(); } };
+  $("delpart").onclick = () => { if (S.n) { S.n--; mount(); } };
+  $("build").onclick = () => { if (!S.n) return; S.parts = Array(S.n).fill(0); log({ e: "parts", n: S.n }); render(); };
   // Same level, so earlier hints still count and the tier escalates; level() drops the old order and rails.
-  $("again").onclick = () => { S.retry = true; Object.assign(S, { parts: S.parts.fill(0), cart: 0, held: null, slip: 0, pre: null, probe: false }); log({ e: "order_reset" }); mount(); };
+  $("again").onclick = () => { const s = sh(); S.retry = true;
+    Object.assign(S, { parts: s.pre ? [...s.pre] : s.mode === "share" ? [] : S.parts.fill(0), cart: s.mode === "share" ? s.groups * s.per : 0, held: null, slip: 0, pre: null, probe: false });
+    log({ e: "order_reset" }); mount(); };
   $("restart").onclick = () => { S.mastery = {}; save(); $("restart").hidden = true; start("3x4_concrete"); };
   $("done").onclick = () => {
     if (S.done) return advance();
@@ -237,7 +255,7 @@
     const s = sh(), unit = S.held, n = unit === "pack" ? s.pack : 1, from = S.parts[part];
     for (let k = 0; k < n; k++) appendPlank(scene, part, from + k);
     S.parts[part] += n; S.cart--; if (!S.cart) S.held = null;
-    hideBubble(); S.probe = false;
+    if (!S.showing) hideBubble(); S.probe = false;
     log({ e: "place", unit, ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
     const r = classify(lvl());
     if (r.id === "correct") { log({ e: "commit", reason: "left_plot" }); return finish(r); }
@@ -253,7 +271,7 @@
     if (S.parts[part] < n) return;
     for (let k = 1; k <= n; k++) removePlank(scene, part, S.parts[part] - k);   // the top rail(s) go back
     S.parts[part] -= n; S.cart++;
-    S.pre = null; hideBubble(); S.probe = false; S.counting = null;
+    S.pre = null; if (!S.showing) hideBubble(); S.probe = false; S.counting = null;
     log({ e: "remove", unit: n > 1 ? "pack" : "plank", ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
     render();
   }
@@ -296,18 +314,47 @@
   }
   function finish(r) {
     S.done = true; S.last = r; clearTimeout(S.idle);
-    const hinted = S.retry || lvl().some(e => e.e === "hint");
-    S.mastery[S.node] = hinted ? 0.5 : 1; save();
-    pip.strip($("strip"), GRAPH.map(g => g.node), S.mastery, S.node);
+    const L = lvl(), s = sh(), node = S.node, hinted = S.retry || L.some(e => e.e === "hint");
+    S.mastery[node] = hinted ? 0.5 : 1; save();
+    stripNow();
     pip.star(!hinted, hinted ? "Fence done. A silver star." : "Fence done. A gold star!");
     goatWalk(scene, scene.geom.goat.part, false);
-    bubble("The fence is done.", "", Math.floor(sh().groups / 2));
+    // Pip cheers (docs/MODES.md): booleans only, nothing from the build. Not called when a hint with no
+    // count-then-fix is the only fact; the card then says what it always said.
+    const h = L.findLast(e => e.e === "hint"), mid = Math.floor(s.groups / 2);
+    const sum = { first_try: !hinted && L.filter(e => e.e === "commit").length === 1, used_hint: !!h, fixed_after_count: !!h && L.some(e => e.e === "tap_count" && e.t > h.t) && !L.some(e => e.e === "show" && e.t > h.t),   // Pip's own count is not hers
+      mode: s.mode === "concrete" ? "build" : s.mode, chapter_done: GRAPH.every(g => g.chapter !== s.chapter || S.mastery[g.node] > 0) };
+    if (typeof buddy.cheer === "function" && (sum.first_try || sum.fixed_after_count || sum.chapter_done))
+      buddy.cheer(sum).then(c => { if (S.done && S.node === node) bubble(c?.text || "The fence is done.", c?.source || "", mid); }, () => bubble("The fence is done.", "", mid));
+    else bubble("The fence is done.", "", mid);
     render();
   }
-  function advance() {
-    const amb = lvl().some(e => e.e === "hint" && e.id === "ambiguous");
-    const n = next(S.mastery, amb ? { id: "ambiguous", node: S.node } : S.last);
-    n ? start(n) : end();
+  // Pip plans the next fence (D-081). Code lists the fences that are open and exercise the last
+  // mistake; the model picks one and says why; the pick is checked here against the same list, and
+  // anything else falls back to next(). The ambiguous probe keeps its diagnostic route.
+  const recent = () => {                               // the last eight levels as booleans and counts, oldest first
+    const out = []; let cur = null;
+    for (const e of S.events) {
+      if (e.e === "level_start") { cur = { node: e.node, ids: [], hints: 0, first_try: false, fixed_after_count: false, commits: 0, lastHint: -1 }; out.push(cur); continue; }
+      if (!cur) continue;
+      if (e.e === "hint") { cur.hints++; if (!cur.ids.includes(e.id) && cur.ids.length < 4) cur.ids.push(e.id); cur.lastHint = e.t; }
+      if (e.e === "commit") cur.commits++;
+      if (e.e === "tap_count" && cur.lastHint >= 0 && e.t > cur.lastHint) cur.fixed_after_count = true;
+    }
+    return out.slice(-9, -1).map(({ commits, lastHint, ...h }) => ({ ...h, first_try: !h.hints && commits === 1 }));
+  };
+  async function advance() {
+    const L = lvl();
+    if (L.some(e => e.e === "hint" && e.id === "ambiguous")) { const n = next(S.mastery, { id: "ambiguous", node: S.node }); return n ? start(n) : end(); }
+    const last = { id: L.findLast(e => e.e === "hint")?.id || "correct", node: S.node }, cands = candidates(S.mastery, last);
+    if (!cands.length) return end();
+    $("done").disabled = true; $("done").textContent = "Pip is choosing";
+    const p = typeof buddy.plan === "function" ? await buddy.plan({ mastery: S.mastery, history: recent(), last }) : null;
+    $("done").disabled = false;
+    const valid = cands.includes(p?.node), node = valid ? p.node : (next(S.mastery, last) ?? cands[0]);
+    S.plan = { node, valid, source: valid ? p.source : "code", why: valid ? p.why : "", reason: p?.reason, choices: cands }; J?.update();
+    start(node);
+    if (valid && p.why && guided()) bubble(p.why, p.source, 0);   // never over Pip's own demo on a chapter's first level
   }
   // Every plot fenced. Mastery stays (the parent screen reads it) until she taps Start again.
   function end() {
@@ -327,8 +374,33 @@
     const h = await timed(nr); S.hint = { id: nr.id, tier: nr.tier, payload: payload(nr), ...h }; J?.update();
     bubble(h.text, h.source, gapAt(nr.counts));
   });
+  // "Show me, Pip" (D-082): after the second hint, on levels built plank by plank. The model writes
+  // the moves from the real counts; validShow() simulates them here again before Pip performs them
+  // on one part and hands the rest back. Every plank she places is logged as hers, so the record is honest.
+  const showBtn = pip.showme($("bsrc"), async () => {
+    const r = S.hintR; if (!r || S.showing) return;
+    const s = sh(), b = { per: s.per, parts: [...S.parts], cart: S.cart, misconception_id: r.id, tier: r.tier };
+    const out = typeof buddy.show === "function" ? await buddy.show(b) : { steps: [], source: "template" };
+    const steps = validShow(out.steps, b) ? out.steps : codeShow(b), source = validShow(out.steps, b) ? out.source : "code";
+    S.show = { steps, source, reason: out.reason }; J?.update();
+    if (!steps.length) return;
+    log({ e: "show", source, moves: steps.length });
+    S.showing = true; showBtn.hidden = againBtn.hidden = true;
+    const sl = ms => new Promise(res => setTimeout(res, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));
+    try {
+      for (const st of steps) {
+        if (S.done) break;
+        if (st.op === "say") { bubble(st.text, source, S.bpart ?? 0); await sl(2600); }
+        else if (st.op === "point") { bubble("Look at this part.", source, st.part); await sl(1600); }
+        else if (st.op === "count") { count(st.part); await sl(S.parts[st.part] * 450 + 900); }
+        else if (st.op === "place" && S.cart && S.parts[st.part] < s.per) { S.held = "plank"; place(st.part); speakNow(COUNT[S.parts[st.part] - 1] || ""); S.held = null; render(); await sl(900); }
+        else if (st.op === "remove" && S.parts[st.part] > 0) { remove(st.part); await sl(900); }
+      }
+    } finally { S.showing = false; S.counting = null; }
+  });
   function bubble(text, source, part) {
-    againBtn.hidden = !S.hintR || S.done || S.probe;
+    againBtn.hidden = !S.hintR || S.done || S.probe || !!S.showing;
+    showBtn.hidden = againBtn.hidden || (S.hintR?.tier || 1) < 2 || sh().mode === "packs" || (sh().mode === "share" && !S.parts.length);
     const b = $("bubble"); S.bpart = part;
     $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
     b.hidden = false; placeBubble(); speak(text);
@@ -365,47 +437,87 @@
   // The scene ends where the HUD really starts when the buttons wrap (phones, packs); never above --hud, so desktop framing stays pinned.
   new ResizeObserver(() => requestAnimationFrame(() => { scene.style.bottom = ""; scene.style.bottom = px(Math.max(parseFloat(getComputedStyle(scene).bottom), $("hud").offsetHeight)); })).observe($("hud"));
 
-  const showHow = pip.howto({ key: "pip.howto.fence", title: "How to play: Fence",
-    sub: "Build the fence so the goat stays out of the corn.",
-    steps: ["Tap the cart to pick up a plank. Tap a part of the fence to put it there.",
-            "Every part needs the same number of planks. The sign tells you how many.",
-            "Tap Done. If a part is short, the goat gets in. Fix it and try again."] });
-  $("howtob").onclick = showHow;
+  // How to play: one sheet per chapter, because the cart does something new in each. Shown the first
+  // time that chapter starts (start() calls howFor) and behind the button any time. Pip then shows the
+  // new move on the real board (demo()).
+  const HOW = {
+    concrete: { key: "pip.howto.fence", title: "How to play: Build", sub: "Build the fence so the goat stays out of the corn.",
+      steps: ["Tap the cart to pick up a plank. Tap a part of the fence to put it there.",
+              "Every part needs the same number of planks. The sign tells you how many.",
+              "Tap Done. If a part is short, the goat gets in. Fix it and try again."] },
+    packs: { key: "pip.howto.packs", title: "How to play: Packs", sub: "The planks come in packs now. Order the packs first.",
+      steps: ["A pack holds more than one plank. Look inside a pack on the order slip.",
+              "Tap the pack on the slip once for every pack you need. Then tap Deliver.",
+              "Tap the cart, then a part. A whole pack goes on at once. Tap Done when every part is full."] },
+    fix: { key: "pip.howto.fix", title: "How to play: Fix", sub: "The wind knocked planks out. Fill the gaps.",
+      steps: ["Look at each part. Count the empty spaces, not the planks that are there.",
+              "Tap the plank on the slip once for every empty space in the whole fence. Then tap Deliver.",
+              "Put the planks in the gaps. Tap Done when every part is full again."] },
+    share: { key: "pip.howto.share", title: "How to play: Share", sub: "Share the planks out. You choose how many parts.",
+      steps: ["The sign says how many planks you have and how many go in each part.",
+              "Tap + part until there is a part for every full set of planks. Then tap Build.",
+              "Fill every part from the cart. Tap Done when the cart is empty and every part is full."] } };
+  const howFor = mode => pip.howto({ ...HOW[mode], go: "Show me, Pip" });
+  $("howtob").onclick = () => howFor(sh().mode)();
 
   // --- Pip builds the first part herself on a fresh install, counting aloud, then hands over ------------
   // A child cannot read the rules; she can watch them. Code places and counts; the model is not involved.
-  const GUIDE = "pip.guide.fence";
-  const guided = () => { try { return localStorage.getItem(GUIDE) === "1"; } catch { return false; } };
-  const guideDone = () => { try { localStorage.setItem(GUIDE, "1"); } catch {} };
+  const GUIDE = { concrete: "pip.guide.fence", packs: "pip.guide.packs", fix: "pip.guide.fix", share: "pip.guide.share" };
+  const guided = () => { try { return localStorage.getItem(GUIDE[sh().mode]) === "1"; } catch { return false; } };
+  const guideDone = () => { try { localStorage.setItem(GUIDE[sh().mode], "1"); } catch {} };
   function speakNow(text) { if (!tts || !sound) return; const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; u.lang = "en"; const v = tts.getVoices().find(v => /^en/i.test(v.lang)); if (v) u.voice = v; tts.speak(u); }
   const COUNT = ["one", "two", "three", "four", "five", "six"];
   async function demo() {
-    const s = sh(); if (s.mode !== "concrete" || lvl().some(e => e.e === "place")) return guideDone();
+    const s = sh(); if (lvl().some(e => ["place", "order", "parts"].includes(e.e))) return guideDone();
     const sl = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));
-    bubble("Watch me first.", "", 0); await sl(1600);
-    bubble("The sign says how many planks each part needs. I take a plank from the cart and put it on this part.", "", 0); await sl(3600);
-    S.held = "plank"; render();
-    for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); speakNow(COUNT[k] || ""); await sl(900); }
-    S.held = null; render();
-    bubble("That part is full. Now you do the other parts. Tap the cart, then a part.", "", 0);
+    const say = async (text, part, ms) => { bubble(text, "", part); await sl(ms); };
+    await say("Watch me first.", 0, 1600);
+    if (s.mode === "concrete") {
+      await say("The sign says how many planks each part needs. I take a plank from the cart and put it on this part.", 0, 3600);
+      S.held = "plank"; render();
+      for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); speakNow(COUNT[k] || ""); await sl(900); }
+      S.held = null; render();
+      bubble("That part is full. Now you do the other parts. Tap the cart, then a part.", "", 0);
+    } else if (s.mode === "packs") {
+      await say("The planks come in packs now. Look at the pack on the slip. I count the planks inside it.", 0, 3200);
+      for (let k = 0; k < s.pack; k++) { speakNow(COUNT[k] || ""); await sl(800); }
+      await say("So a pack is more than a plank. I tap the pack on the slip once, and that orders a whole pack.", 0, 3400);
+      S.slip = 1; render(); await sl(1200);
+      bubble("Now you order the rest. Think how many planks a part needs, then tap the slip for the packs. Then tap Deliver.", "", 0);
+    } else if (s.mode === "fix") {
+      const p = Math.max(0, S.parts.findIndex(n => n < s.per)), gaps = s.per - S.parts[p];
+      await say("The wind knocked planks out. This part has empty spaces at the top. I count the spaces, not the planks.", p, 3800);
+      for (let k = 0; k < gaps; k++) { speakNow(COUNT[k] || ""); S.slip++; render(); await sl(900); }
+      await say("I tapped the slip once for each empty space in this part.", p, 2600);
+      bubble("Now you count the empty spaces in the other parts and tap the slip for them. Then tap Deliver.", "", p);
+    } else if (s.mode === "share") {
+      await say("The sign says how many planks we have, and how many go in each part. Nobody said how many parts. We choose.", 0, 4000);
+      S.n = 1; mount(); await sl(600);
+      await say("I added a part. It will take a full set of planks from the cart.", 0, 2800);
+      bubble("Keep adding parts until every plank has a part to go on. Then tap Build.", "", 0);
+    }
     guideDone();
   }
-  if (!guided()) { const t = setInterval(() => { if (!document.getElementById("howto") && !S.done) { clearInterval(t); demo(); } }, 300); }
+  // On a chapter's first level: the sheet, then Pip's demo once the sheet is closed.
+  function maybeDemo() {
+    if (guided() || S.done) return;
+    const t = setInterval(() => { if (!document.getElementById("howto") && !S.done) { clearInterval(t); demo(); } }, 300);
+  }
 
   // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
   const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];   // history survives every branch below, ?node= included
   const ls = saved.events?.findLast?.(e => e.e === "level_start");
   const finale = () => { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(); };
-  if (Q.get("node") && shape(Q.get("node"))) start(Q.get("node"));
+  if (Q.get("node") && shape(Q.get("node"))?.chapter <= unlocked(S.mastery)) start(Q.get("node"));   // a locked chapter is not reachable by URL either
   else if (saved.ended) finale();
   else if (saved.build?.node && ls?.node === saved.build.node && shape(saved.build.node)) {
-    Object.assign(S, { node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, at: ls.at || Date.now() });
+    Object.assign(S, { node: saved.build.node, parts: saved.build.parts, cart: saved.build.cart, n: saved.build.n || 0, at: ls.at || Date.now() });
     mount(); const L = lvl(), r = classify(L); S.done = r.id === "correct";
     // Put the goat back in the gap after a commit; re-say the hint that was still up (a place/remove hides it).
     if (!S.done && L.some(e => e.e === "commit")) goatToGap(r.counts);
     const h = L.findLast(e => e.e === "hint" || e.e === "place" || e.e === "remove");
-    if (!S.done && h?.e === "hint") { S.probe = h.id === "ambiguous"; bubble(TEMPLATES[h.id][S.probe ? 1 : h.tier], "template", gapAt(r.counts)); }
-    render(); arm();
+    if (!S.done && h?.e === "hint" && TEMPLATES[h.id]) { S.probe = h.id === "ambiguous"; bubble(TEMPLATES[h.id][S.probe ? 1 : h.tier], "template", gapAt(r.counts)); }
+    render(); arm(); howFor(sh().mode); maybeDemo();     // a reload before her first move still gets the sheet and the demo
   } else {
     const n = Object.values(S.mastery).some(v => v >= 1) ? next(S.mastery) : "3x4_concrete";
     n ? start(n) : finale();
@@ -413,7 +525,7 @@
 
   // --- the judge's overlay (D-071): opt-in by ?judge=1 or the J key, loaded only then. The only place
   // digits appear off the sign. snap() is everything it shows, read live from the same state the game uses.
-  const snap = () => { const L = lvl(), r = classify(L); return { node: S.node, events: L, result: r, payload: payload(r), hint: S.hint, mastery: S.mastery }; };
+  const snap = () => { const L = lvl(), r = classify(L); return { node: S.node, events: L, result: r, payload: payload(r), hint: S.hint, mastery: S.mastery, plan: S.plan, show: S.show }; };
   async function judge() { J ??= (await import("/public/judge.mjs")).mount(snap); J.toggle(); }
   addEventListener("keydown", e => { if (e.key === "j" || e.key === "J") judge(); });
   if (Q.has("judge")) judge();

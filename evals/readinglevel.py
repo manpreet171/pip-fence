@@ -75,8 +75,8 @@ if __name__ == "__main__":
             print(f"{'FAIL' if why else 'ok  '} {mid:30} t{tier}  out-of-list: {r['out'] or '-'}" + (f"  <- {', '.join(why)}" if why else ""))
             bad += bool(why)
         ids = {mid for mid, *_ in hints}
-        if len(hints) != 24 or len(ids) != 8 or any((m, t) not in {(a, b) for a, b, *_ in hints} for m in ids for t in (1, 2, 3)):
-            print(f"FAIL: expected 8 ids x 3 tiers, got {len(hints)} lines over {len(ids)} ids"); bad += 1
+        if len(hints) != 48 or len(ids) != 16 or any((m, t) not in {(a, b) for a, b, *_ in hints} for m in ids for t in (1, 2, 3)):
+            print(f"FAIL: expected 16 ids x 3 tiers, got {len(hints)} lines over {len(ids)} ids"); bad += 1
         if bad: print(f"gate assert FAILED: {bad} violation(s)"); sys.exit(1)
         print(f"gate assert OK: {len(hints)} templates, 0 number words, <=2 sentences, <=2 out-of-list words each"); sys.exit(0)
     print(f"wordlist: BASE (Dolch U Fry) {len(base)} words | domain {len(dom)} words\n")

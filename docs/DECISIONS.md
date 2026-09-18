@@ -1720,3 +1720,124 @@ the app serves Fence only. The home page, the level strip, stars, badges, Pip on
 another way" stay, because they were built for both. Next: Pip shows the first fence part herself on
 a fresh install, then hands over. **Rejected:** deleting `heritage/` (the trail of what was tried is
 part of the submission); keeping Seeds reachable "for those who want it" (a judge would find it).
+
+
+---
+
+## D-078 — Fix the fence and Share it out: chapters, locks, the classifier's new ids, the greening plot
+18 Sep 2026 · **Decided** (docs/MODES.md is the spec; this records what the spec left open)
+
+**Graph.** 24 nodes in chapter order (Build, Packs, Fix, Share), `shape()` gains `mode` and `chapter`,
+`unlocked(mastery)` is the highest open chapter (three gold in the previous one), `next()` never
+returns a locked node and `?node=` cannot reach one either.
+
+**Fix pre-fill is a table, not a roll:** `2x3 [2,0] · 3x3 [2,3,1] · 3x4 [2,4,1] · 4x3 [3,1,3,0] ·
+4x5 [3,5,1,5] · 2x5 [2,4]`. Every shape has two parts short by different amounts, the total missing
+between 3 and total-2, and the planks standing never equal the planks missing, so
+`counted_present_not_missing` and a correct order can never be the same number.
+
+**Precedence, the packs discipline carried over (D-047).** In fix the order is the subtraction the
+mode exists to observe: ordering the planks that stand, or more than the gaps, is the finding even when
+every gap then gets filled and the surplus sits in the cart, exactly as a pack per plank is in packs.
+`fixed_one_part_only` outranks `ordered_short` (the specific reading first, as
+`off_by_one_in_one_group` does). A right order (exactly the gaps) and a right part count (share,
+`n === groups`) fall through to the concrete rules, so a plank over a post after a right order says
+`over_count`, and short filling says `off_by_one_in_one_group`: the placing is concrete mode. Ordered
+short with planks still in the cart is `ambiguous`, not her answer yet. An idle commit outranks all of
+it, as D-064 says.
+
+**Share collides on four of six shapes.** `parts_equal_per` names the same count as
+`parts_one_over` when `per = groups+1` (2x3, 3x4, 4x5) and as `parts_one_short` when
+`per = groups-1` (4x3); the fence cannot tell them apart, so those are `ambiguous`, and an ambiguous
+share routes to `2x5_share`, the one clean shape, the way concrete routes to 4x3. Parts cap at eight
+on the page (the scene must stay legible on a phone), so `parts_equal_total` is reachable only on 2x3;
+the pure layer and the fixtures cover it everywhere.
+
+**Chapter done** means every one of its six levels finished, gold or silver; that is the hay bale and
+the `chapter_done` fact Pip cheers with. Requiring six gold would leave most children without one.
+**First try** means one commit and no hint. **Fixed after a count** means a tap-count after the last
+hint. The page skips the cheer call when a hint with no count is the only fact.
+
+**Rejected.** Random pre-fills (the fixtures and the demo need the same fence every time); a
+paddock that stays `groups` wide while share parts run off its edge (the frame is the plot, so it
+grows a tile per part, and with no parts the two end posts stand together as a closed gate); a
+"Templates as built" local fallback in the page (the backend shipped the templates in the same day,
+so there is nothing to fall back to; see MODES.md).
+
+Evidence: `evals/classifier_eval.mjs`, 162 fixtures (68 build and packs, 47 fix, 47 share), 137
+committed, 137 right, 25 silent, 0 mismatches; real-pointer run of a fix level, a share level, the
+chapter lock, the home map and the cheer line, zero console errors.
+
+---
+
+## D-079 — Pip cheers: the model notices what she did right
+18 Sep 2026 · **Decided**
+
+Until now the child met the model only when something was wrong. On a finished fence the page now
+sends five booleans (`first_try`, `used_hint`, `fixed_after_count`, `mode`, `chapter_done`) to
+`/api/cheer`; the model rephrases a template line from a list of plain facts, through the same lexical
+gate, then a judge whose question is not the hint's ("same place") but "does it claim anything the
+facts do not". Template fallback everywhere; when there is nothing specific to praise (a hint was used
+and nothing was fixed after a count) there is no model call at all and the line is "The fence is
+done." First live sample on `deepseek-v4-flash`, fourteen calls: nine shipped from the model, two
+stopped by the judge (it had added a claim), three stopped by the gate on vocabulary. Rejected: praise
+with no facts behind it ("great job!"), which the learner research says teaches nothing; points or
+confetti; letting the model see counts.
+
+
+---
+
+## D-080 — How to play is per chapter, and Pip shows the new move each time
+18 Sep 2026 · **Decided**
+
+The owner, after playing: the packs level confused him at the slip, and one How-to sheet written for
+Build says nothing about it. Each chapter changes what the cart does, so each chapter gets its own
+three-step sheet, shown the first time that chapter starts and behind the button, and Pip then shows
+the new move on the real board once per chapter: counts the planks inside a pack and orders one;
+counts the empty spaces of one short part and taps the slip for them; adds one part and says why.
+Code performs and counts; the model is not involved. Rejected: one sheet listing all four chapters
+(unread), and a sheet with no demonstration (the first-plank demo was what made Build land).
+
+
+---
+
+## D-081 — Pip plans the next fence
+18 Sep 2026 · **Decided**
+
+The owner: "the theme is AI-powered learning and we are missing it; use the child's mistakes to
+decide her practice." Until now the model only talked. Now, when she taps Next plot, code lists the
+open fences that exercise her last mistake (`candidates()` in fence.mjs, a table from misconception
+to fence shape), the model is shown her last eight fences as booleans, hint counts and plain-words
+meanings, and it picks one of those fences and writes one line telling her why. Code checks the pick
+against its own list, the line goes through the lexical gate (digits banned, number words allowed
+here because the fence's numbers stand on its own sign) and a facts judge that rejects anything not
+in the record; a bad pick falls back to `next()`, a bad line is dropped and the pick stands. The judge
+overlay shows who chose and why. First live sample, eight records on `deepseek-v4-flash`: every pick
+was in code's list, four of eight differed from code's fixed order (smaller fence after repeated
+trouble, same kind after a hint), five of eight lines shipped, the judge stopped two invented claims.
+See docs/PLAN-RESULTS.md. Rejected: letting the model invent level shapes (nothing to check them
+against); a chat about what to do next; skipping the judge because "it is only praise".
+
+
+---
+
+## D-082 — Pip shows her, on her own fence
+18 Sep 2026 · **Decided**
+
+The third and strongest use of the model as a teacher, not a talker. After the second hint a button
+"Show me, Pip" appears on the card. The model is given the real counts (planks on each part, planks
+in the cart, planks each part needs) and the plain-words meaning of her mistake, and it writes a
+worked example as a script of moves in a fixed vocabulary: point, count, place, remove, say. It does
+not write to the child in prose; it writes what Pip does. Code simulates the script before it runs
+(`validShow` in fence.mjs): every move must be legal on her fence, no part may be over-filled, at
+least one wrong part must end right and no right part may end wrong, twelve moves at most, three say
+lines at most, each say line through the lexical gate with numbers banned. A script that fails the
+simulation is replaced by code's own script for the first wrong part. Pip fixes one part and hands
+the rest back, so the build stays hers; the planks she places are logged, so a fence she helped with
+earns silver, not gold. No judge call: the simulation is a stronger check than a second model
+opinion. First live sample, six fence states on `deepseek-v4-flash`: five scripts passed the
+simulation and the gate and were performed; one was stopped by the gate ("one more plank") and code's
+script ran. See docs/SHOW-RESULTS.md. Not offered in Packs (the unit there is a pack, and the point
+of that chapter is the order, which a worked example on the board cannot show). Rejected: letting the
+model narrate a video-style explanation (words, not moves); fixing the whole fence for her.
+

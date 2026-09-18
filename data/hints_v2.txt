@@ -22,3 +22,27 @@ pack_unit_confusion	3	Count the planks in a pack. Then count the planks a part n
 ambiguous	1	Show me a part that looks finished.
 ambiguous	2	Point to a part you think is done. Look at the top of its post.
 ambiguous	3	Point to the part you think is done. Does its top plank come up to the top of the post?
+ordered_short	1	Not every gap is filled. Count the empty spaces in each part again.
+ordered_short	2	Look at each part. Count the empty spaces, not the planks that are there.
+ordered_short	3	Count the empty spaces in every part. Add them all up, then order that many planks.
+ordered_over	1	There are planks left over in the cart. Count the empty spaces again.
+ordered_over	2	You ordered more than the gaps. Look at each part and count only the empty spaces.
+ordered_over	3	Count the empty spaces in each part. Order only those and nothing more.
+counted_present_not_missing	1	You counted the planks that are there. Count the empty spaces instead.
+counted_present_not_missing	2	The planks that stand are done. The gaps are what the fence needs.
+counted_present_not_missing	3	Point to each empty space in a part. Count those, not the planks that are up.
+fixed_one_part_only	1	Only that part is fixed. Look at the other parts.
+fixed_one_part_only	2	The other parts still have gaps. Count the empty spaces in every part.
+fixed_one_part_only	3	Count the empty spaces in each part. Add all the parts together before you order.
+parts_equal_total	1	Every part is too thin. Each part needs its full set of planks.
+parts_equal_total	2	Look at the sign. It says how many planks go in each part, not how many parts.
+parts_equal_total	3	Take the extra parts away. Fill a part up to the top of its post, then make the others like it.
+parts_equal_per	1	You made as many parts as planks in a part. Look at the sign again.
+parts_equal_per	2	The sign says how many planks go in each part. How many parts is a different question.
+parts_equal_per	3	Fill a part up to the top of its post. Keep adding parts until the cart is empty.
+parts_one_short	1	There are planks left in the cart. Another part is needed.
+parts_one_short	2	Every part is full but the cart is not empty. Add a part for the planks that are left.
+parts_one_short	3	Tap add part. Then put the planks that are left on the new part.
+parts_one_over	1	A part is bare. There are too many parts for the planks.
+parts_one_over	2	The cart is empty but a part has nothing on it. Take that part away.
+parts_one_over	3	Tap take a part away. Then check that every part is full up to its post.

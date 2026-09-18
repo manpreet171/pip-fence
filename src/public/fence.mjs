@@ -5,44 +5,109 @@
 // exported functions only.
 
 export const IDS = ["off_by_one_in_one_group", "off_by_one_per_group", "counted_groups_as_group_size",
-  "one_group_only", "over_count", "right_total_wrong_grouping", "pack_unit_confusion", "ambiguous"];
+  "one_group_only", "over_count", "right_total_wrong_grouping", "pack_unit_confusion", "ambiguous",
+  "ordered_short", "ordered_over", "counted_present_not_missing", "fixed_one_part_only",            // fix (docs/MODES.md)
+  "parts_equal_total", "parts_equal_per", "parts_one_short", "parts_one_over"];                     // share
 
-// Six shapes × two modes = the 12-node graph. groups × per (4x3 = four parts of three).
+// Six shapes × four modes = the 24-node graph, in chapter order. groups × per (4x3 = four parts of three).
 // Pack size must divide `per` or the level is unsolvable (a pack is indivisible at the point of
 // use). Only 3x4 admits a proper divisor; elsewhere a pack is one full part. See D-047.
 const SHAPES = [[2, 3], [3, 3], [3, 4], [4, 3], [4, 5], [2, 5]];
+export const CHAPTERS = ["Build", "Packs", "Fix", "Share"];
+const MODES = ["concrete", "packs", "fix", "share"];
+// Fix: the planks already standing per part. At least two parts short by different amounts, the
+// total missing between 3 and total-2, and never equal to the planks standing (D-078).
+const FIX = { "2x3": [2, 0], "3x3": [2, 3, 1], "3x4": [2, 4, 1], "4x3": [3, 1, 3, 0], "4x5": [3, 5, 1, 5], "2x5": [2, 4] };
 const packFor = (per) => { for (let d = per - 1; d > 1; d--) if (per % d === 0) return d; return per; };
-export const GRAPH = ["concrete", "packs"].flatMap(mode =>
-  SHAPES.map(([groups, per]) => ({ node: `${groups}x${per}_${mode}`, groups, per, mode, pack: packFor(per) })));
+export const GRAPH = MODES.flatMap((mode, chapter) =>
+  SHAPES.map(([groups, per]) => ({ node: `${groups}x${per}_${mode}`, groups, per, mode, chapter, pack: packFor(per), ...(mode === "fix" && { pre: FIX[groups + "x" + per] }) })));
 
 export const shape = (node) => GRAPH.find(g => g.node === node);
 
-// First node not yet mastered; an ambiguous result routes to the diagnostic shape (4x3) in the
-// same mode, where off_by_one_per_group and counted_groups_as_group_size predict different fences.
+// The highest open chapter: each one opens when the previous holds three gold stars.
+export function unlocked(mastery) {
+  let ch = 0;
+  while (ch < CHAPTERS.length - 1 && GRAPH.filter(g => g.chapter === ch && mastery[g.node] >= 1).length >= 3) ch++;
+  return ch;
+}
+// First open node not yet mastered; an ambiguous result routes to the diagnostic shape in the same
+// mode: 4x3, where off_by_one_per_group and counted_groups_as_group_size predict different fences,
+// or 2x5 for share, the one shape where `per` is neither groups-1 nor groups+1 (D-078).
 export function next(mastery, last) {
-  if (last?.id === "ambiguous") return `4x3_${shape(last.node).mode}`;
-  return GRAPH.find(g => (mastery[g.node] || 0) < 1)?.node ?? null;
+  if (last?.id === "ambiguous") { const m = shape(last.node).mode; return m === "share" ? "2x5_share" : `4x3_${m}`; }
+  const u = unlocked(mastery);
+  return GRAPH.find(g => g.chapter <= u && (mastery[g.node] || 0) < 1)?.node ?? null;
 }
 
-// Final planks per part plus the bookkeeping classify() needs. Pure arithmetic on the log.
+// Pip plans the next fence (D-081). Code lists the open fences that exercise what she got wrong
+// last; the model picks one of them and says why; code checks the pick against this same list.
+// "correct" or an unknown id opens every unmastered fence; an empty fit falls back to all open.
+const EXERCISES = {
+  counted_groups_as_group_size: g => g.groups !== g.per && g.mode !== "share",
+  right_total_wrong_grouping: g => g.groups >= 3 && g.mode !== "share",
+  one_group_only: g => g.groups >= 3 && g.mode !== "share",
+  pack_unit_confusion: g => g.mode === "packs",
+  ordered_short: g => g.mode === "fix", ordered_over: g => g.mode === "fix",
+  counted_present_not_missing: g => g.mode === "fix", fixed_one_part_only: g => g.mode === "fix",
+  parts_equal_total: g => g.mode === "share", parts_equal_per: g => g.mode === "share",
+  parts_one_short: g => g.mode === "share", parts_one_over: g => g.mode === "share",
+};
+export function candidates(mastery, last) {
+  const u = unlocked(mastery), fit = EXERCISES[last?.id] || (() => true);
+  const open = GRAPH.filter(g => g.chapter <= u && (mastery[g.node] || 0) < 1);
+  const c = open.filter(fit);
+  return (c.length ? c : open).map(g => g.node);
+}
+
+// Pip shows her, on her own fence (D-082). A worked example is a script of moves in a fixed
+// vocabulary: point at a part, count it, place a plank on it, take one off, say a line. The model
+// writes the script from the real counts; validShow() simulates it and accepts only a script that
+// fixes at least one part, breaks none, never over-fills, and stops within twelve moves. The
+// child's agency stays: one part is fixed, the rest is hers. codeShow() is the fallback.
+export const SHOW_OPS = ["point", "count", "place", "remove", "say"];
+export function validShow(steps, { per, parts, cart }) {
+  if (!Array.isArray(steps) || !steps.length || steps.length > 12) return false;
+  const c = [...parts]; let k = cart, says = 0;
+  for (const st of steps) {
+    if (!st || !SHOW_OPS.includes(st.op)) return false;
+    if (st.op === "say") { if (typeof st.text !== "string" || !st.text.trim() || ++says > 3) return false; continue; }
+    if (!Number.isInteger(st.part) || st.part < 0 || st.part >= c.length) return false;
+    if (st.op === "place") { if (k < 1 || c[st.part] >= per) return false; c[st.part]++; k--; }
+    if (st.op === "remove") { if (c[st.part] < 1) return false; c[st.part]--; k++; }
+  }
+  const fixed = parts.some((n, i) => n !== per && c[i] === per), broke = parts.some((n, i) => n === per && c[i] !== per);
+  return fixed && !broke;
+}
+export function codeShow({ per, parts, cart }) {
+  const p = parts.findIndex(n => n !== per); if (p < 0) return [];
+  const short = parts[p] < per, n = Math.abs(per - parts[p]);
+  if (short && cart < n) return [];
+  return [{ op: "point", part: p }, { op: "say", text: short ? "This part is short. I count it first." : "This part has a plank over the post. I count it first." }, { op: "count", part: p },
+    ...Array.from({ length: n }, () => ({ op: short ? "place" : "remove", part: p })),
+    { op: "say", text: short ? "Now it comes up to the top of its post. You do the other parts like this." : "Now it stops at the top of its post. Look at the other parts like this." }];
+}
+
+// Final planks per part plus the bookkeeping classify() needs. Pure arithmetic on the log. Fix starts
+// from the pre-built planks; share has no parts until the `parts` event.
 export function tally(events) {
   const s = shape(events.find(e => e.e === "level_start").node);
-  const c = Array(s.groups).fill(0), removes = Array(s.groups).fill(0);
-  let ordered = 0, lastAct = 0;
+  let c = s.pre ? [...s.pre] : Array(s.mode === "share" ? 0 : s.groups).fill(0), removes = Array(s.groups).fill(0);
+  let ordered = 0, lastAct = 0, parts = null;
   for (const e of events) {
     const n = e.unit === "pack" ? (e.n ?? s.pack) : 1;
     if (e.e === "place") { c[e.group] = e.n_in_group ?? c[e.group] + n; lastAct = e.t; }
     else if (e.e === "remove") { c[e.group] = e.n_in_group ?? Math.max(0, c[e.group] - n); removes[e.group]++; lastAct = e.t; }
-    else if (e.e === "order") { ordered += e.packs; lastAct = e.t; }
+    else if (e.e === "order") { ordered += e.planks ?? e.packs; lastAct = e.t; }
+    else if (e.e === "parts") { parts = e.n; c = Array(e.n).fill(0); lastAct = e.t; }
     else if (e.e === "place_failed" || e.e === "tap_count") lastAct = e.t;
   }
-  return { s, c, ordered, lastAct, removes };
+  return { s, c, ordered, lastAct, removes, parts };
 }
 
 // classify(events) -> { id, tier, confirmed, counts, flags }
 // Code owns truth. No I/O, no Date.now(), no model. Timing is arithmetic on `t` in the log.
 export function classify(events) {
-  const { s, c, ordered, lastAct, removes } = tally(events);
+  const { s, c, ordered, lastAct, removes, parts } = tally(events);
   const T = s.groups * s.per, sum = c.reduce((a, b) => a + b, 0);
   const flags = removes.some(n => n >= 4) ? ["wheel_spinning"] : [];  // ponytail: ≥4 removes on one part; "no net progress" not tracked
   const hints = events.filter(e => e.e === "hint");
@@ -52,15 +117,20 @@ export function classify(events) {
   // Packs: ordering a pack per plank is the misconception even when the fence comes out right --
   // the order is the multiplicative act this mode exists to observe, and the surplus sits in the cart.
   if (s.mode === "packs" && ordered === T) return out("pack_unit_confusion");
-  if (c.every(n => n === s.per)) return out("correct");
+  // Fix, the same discipline: the order is the subtraction this mode observes. Ordering the planks
+  // that stand, or more than the gaps, is the finding even if every gap then gets filled (D-078).
+  const missing = s.pre?.map(n => s.per - n) ?? [], M = missing.reduce((a, b) => a + b, 0);
+  if (s.pre && ordered && ordered === T - M) return out("counted_present_not_missing");
+  if (s.pre && ordered > M) return out("ordered_over");
+  if (s.mode === "share" && parts === null) return out("in_progress", false);
+  if (c.every(n => n === s.per) && (parts === null || parts === s.groups)) return out("correct");   // share: the right count of full parts
   const ci = events.findLastIndex(e => e.e === "commit");
   if (ci < 0) return out("in_progress", false);
   const commit = events[ci], prev = events[ci - 1];
-
   const filled = c.filter(n => n > 0);
   // Each filled part holds exactly `groups` planks. With a finite cart this is [4,4,4,0] on 4x3,
   // not [4,4,4,4]: when groups > per the cart runs dry before the last part.
-  const asGroups = s.groups !== s.per && filled.every(n => n === s.groups) && (filled.length === s.groups || sum === T);
+  const asGroups = c.length === s.groups && s.groups !== s.per && filled.every(n => n === s.groups) && (filled.length === s.groups || sum === T);
   const perGroup = c.every(n => n === s.per - 1);
   // The probe was shown for the collision: its outcome (tap, or silence past 20 s) outranks the idle rule,
   // otherwise the 45 s idle commit would always land on idle_off_task and the escalation could never fire.
@@ -72,6 +142,22 @@ export function classify(events) {
   // always read as her answer, however long she looked at it first (QA D-3: a 30 s gap rule made a
   // presenter's pause silence the hint on camera).
   if (commit.reason === "idle") return out("idle_off_task");
+  // Share: the division is the number of parts she built. Off by the other number on the sign, or by a
+  // part either way; when two of those name the same count (per = groups±1) the fence cannot tell them
+  // apart and we stay silent. The right count falls through to the concrete rules for the filling.
+  if (s.mode === "share" && parts !== s.groups) {
+    const ids = [parts === T && "parts_equal_total", parts === s.per && "parts_equal_per", parts === s.groups - 1 && "parts_one_short", parts === s.groups + 1 && "parts_one_over"].filter(Boolean);
+    return ids.length === 1 ? out(ids[0]) : out("ambiguous", false);
+  }
+
+  // Fix: exactly one part's shortfall ordered and only that part filled; fewer than the gaps and all of it
+  // placed. The right order falls through to the concrete rules for the placing.
+  if (s.pre && ordered && ordered < M) {
+    const k = missing.findIndex((m, i) => m && ordered === m && c[i] === s.per);
+    if (k >= 0 && c.every((n, i) => i === k || n === s.pre[i])) return out("fixed_one_part_only");
+    return sum === T - M + ordered ? out("ordered_short") : out("ambiguous", false);
+  }
+
   // Packs: one pack per part, when a pack is not a part.
   if (s.mode === "packs" && ordered === s.groups && s.pack !== s.per) return out("pack_unit_confusion");
 
@@ -174,7 +260,9 @@ const tree = (x, y, z, g, mirror) => `<div class="tree" data-l="${px(x - 90 * KT
 // hit region per part, and pins bbox from the FINISHED fence (every rail present, goat at every rest
 // spot) so the camera never moves as planks land. Only the scale follows the viewport. Returns geometry.
 export function mountScene(el, plan) {
-  const R = plan.groups, g = { rows: R, cols: DEEP, per: plan.per, originX: 400, originY: 400, goat: { part: Math.floor(R / 2), inside: false } };
+  // Share starts with no parts (plan.groups 0): the plot is still one tile deep and the two end posts stand
+  // together at its corner, a closed gate that opens a part at a time as she adds them.
+  const N = plan.groups, R = Math.max(N, 1), g = { rows: R, cols: DEEP, per: plan.per, originX: 400, originY: 400, goat: { part: Math.floor(R / 2), inside: false } };
   g.goat.dest = { ...g.goat };
   const vis = [], box = (l, t, w, h) => vis.push({ l, t, r: l + w, b: t + h });
   // bbox first: everything below positions itself relative to it
@@ -211,10 +299,10 @@ export function mountScene(el, plan) {
   for (let c = 0; c < DEEP; c++) { const { x, y } = iso(0, c, g.originX, g.originY); html += staticFence(x + TW / 2, y + TH / 2, true, 22 + c, g); }
   for (let c = 0; c < DEEP; c++) { const { x, y } = iso(R - 1, c, g.originX, g.originY); html += staticFence(x, y + TH, true, 60, g); }
   // The buildable side: posts with shadows, one hit region per part.
-  for (let p = 0; p <= R; p++) {
-    const f = p < R ? feet(p, g) : (() => { const q = feet(R - 1, g); return { lx: q.rx, ly: q.ry }; })();
+  for (let p = 0; p <= Math.max(N, 1); p++) {
+    const f = p < N ? feet(p, g) : N ? (() => { const q = feet(N - 1, g); return { lx: q.rx, ly: q.ry }; })() : (() => { const q = feet(0, g); return { lx: q.lx + 24 * p, ly: q.ly - 12 * p }; })();
     html += shadow(f.lx, f.ly - 1, 30, 11, 20, g) + `<img class="post" src="${SPRITE.post}" alt="" style="z-index:${200 + p};${at(postBox(f.lx, f.ly, g.per), g)}">`;
-    if (p < R) {
+    if (p < N) {
       const H2 = postH(g.per) * K + 4;
       html += `<div class="hit" data-part="${p}" style="left:${px(f.lx - 6 - g.bx.l)};top:${px(f.ly - TH / 2 - H2 - g.bx.t)};width:78px;height:${px(H2 + TH / 2)};` +
         `clip-path:polygon(6px ${px(TH / 2)},72px 0,72px ${px(H2)},6px ${px(H2 + TH / 2)})"></div>`;

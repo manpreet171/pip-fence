@@ -38,6 +38,19 @@
   .strip i{display:block;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.2);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
   .strip i.half{background:#d9c39a}.strip i.full{background:#ffd34d;box-shadow:0 0 6px #ffd34d}
   .strip .lbl{font-size:14px;color:var(--muted);margin-left:6px}
+  .strip i.now{outline:3px solid var(--wood);outline-offset:1px}
+  /* the chapter map: four rows, six dots each; a locked chapter is dim, the next level is ringed and named */
+  .map{display:grid;gap:6px}
+  .ch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px}
+  .ch b{width:52px;color:var(--wood2)}
+  .ch.locked{opacity:.5}
+  .ch .lbl{font-size:13px;color:var(--muted)}
+  .ch .next{font-size:13px;font-weight:600;color:var(--wood2);background:#fff4d6;border:1px solid var(--wood);border-radius:8px;padding:1px 8px}
+  /* the plot greens up: a corn row per gold star, a hay bale per chapter finished */
+  .pic .corn,.pic .hay{position:absolute;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+  .pic .corn{width:30px}
+  .pic .hay{width:46px;right:8px;bottom:10px}
+  .pic .goat{position:absolute;right:70px;bottom:6px;height:72px}
   .play{min-height:56px;border-radius:16px;border:3px solid var(--wood2);background:var(--woodbg);color:var(--cream);font:600 20px/1 var(--font-display);text-decoration:none;display:grid;place-items:center;box-shadow:0 6px 0 var(--wood2),0 10px 14px rgba(20,30,20,.3);text-shadow:0 1px 0 rgba(0,0,0,.4)}
   .play:active{transform:translateY(4px);box-shadow:0 2px 0 var(--wood2)}
   .badges{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:16px 20px;box-shadow:0 4px 0 var(--line)}
@@ -56,10 +69,10 @@
   <section class="games">
     <article class="game">
       <h2>Fence</h2>
-      <div class="pic fence"><img src="/assets/animals/goat.png" alt=""></div>
+      <div class="pic fence" id="plot"><img class="goat" src="/assets/animals/goat.png" alt=""></div>
       <p class="what">Build a fence with the right number of planks in every part, or the goat gets into the corn.</p>
       <ol class="steps"><li><span class="n">1</span>Tap the cart, then tap a part of the fence.</li><li><span class="n">2</span>Every part needs the same planks.</li><li><span class="n">3</span>Tap Done. Fix the short part if the goat gets in.</li></ol>
-      <div class="strip" id="fence-strip"></div>
+      <div class="map" id="map"></div>
       <a class="play" href="/fence">Play Fence</a>
     </article>
   </section>
@@ -71,16 +84,30 @@
   // The game keeps its progress on this device. The home page only reads it.
   const read = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } };
   const fence = read("rung.v1");
-  let nodes = []; try { const f = await import("/fence.mjs"); nodes = f.GRAPH.map(g => g.node); } catch {}
-  const m = fence.mastery || {}, ev = fence.events || [];
+  let f = { GRAPH: [], CHAPTERS: [], unlocked: () => 0, next: () => null }; try { f = await import("/fence.mjs"); } catch {}
+  const m = fence.mastery || {}, ev = fence.events || [], nodes = f.GRAPH.map(g => g.node);
   const gold = Object.values(m).filter(v => v >= 1).length, silver = Object.values(m).filter(v => v === 0.5).length;
-  document.getElementById("fence-strip").innerHTML = nodes.map(n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}"></i>`).join("") + `<span class="lbl">${gold} gold, ${silver} silver</span>`;
+  const open = f.unlocked(m), nextNode = f.next(m), chapterDone = ch => f.GRAPH.filter(g => g.chapter === ch).every(g => m[g.node] > 0);
+  const dot = n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}${n === nextNode ? " now" : ""}"></i>`;
+  document.getElementById("map").innerHTML = f.CHAPTERS.map((name, ch) => {
+    const ns = f.GRAPH.filter(g => g.chapter === ch), g = ns.filter(x => m[x.node] >= 1).length, locked = ch > open;
+    return `<div class="ch${locked ? " locked" : ""}"><b>${name}</b><span class="strip">${ns.map(x => dot(x.node)).join("")}</span>` +
+      (locked ? `<span class="lbl">Locked. Three gold stars in ${f.CHAPTERS[ch - 1]} open it.</span>` : ns.some(x => x.node === nextNode) ? `<span class="next">Next</span>` : `<span class="lbl">${g} gold</span>`) + `</div>`; }).join("")
+    + `<span class="lbl" style="font-size:14px;color:var(--muted)">${gold} gold, ${silver} silver</span>`;
+  // Corn in two ranks of twelve, a bale per chapter finished. Sprites are the game's own farm art.
+  const corn = Array.from({ length: gold }, (_, k) => `<img class="corn" src="/assets/farm/cornDouble_E.png" alt="" style="left:${8 + (k % 12) * 38 + (k >= 12 ? 0 : 19)}px;bottom:${k >= 12 ? 14 : 34}px;z-index:${k >= 12 ? 2 : 1}">`);
+  const hay = f.CHAPTERS.map((_, ch) => chapterDone(ch) ? `<img class="hay" src="/assets/farm/hayBales_E.png" alt="" style="bottom:${10 + ch * 14}px;z-index:${3 + ch}">` : "");
+  document.getElementById("plot").insertAdjacentHTML("afterbegin", corn.join("") + hay.join(""));
   const badges = [
     ["First fence", "A fence finished", Object.keys(m).length > 0],
     ["Goat keeper", "Three gold stars", gold >= 3],
     ["Pack builder", "A packs level mastered", Object.keys(m).some(k => k.endsWith("_packs") && m[k] >= 1)],
     ["Pip's friend", "Asked Pip to say it another way", ev.some(e => e.e === "hint" && e.tier > 1)],
     ["Careful counter", "Five fences without a hint", gold >= 5],
+    ["Chapter two", "Packs unlocked", open >= 1],
+    ["Fixer", "A fix level mastered", Object.keys(m).some(k => k.endsWith("_fix") && m[k] >= 1)],
+    ["Fair shares", "A share level mastered", Object.keys(m).some(k => k.endsWith("_share") && m[k] >= 1)],
+    ["Farmhand", "All four chapters unlocked", open >= 3],
     ["All the plots", "Every level mastered", nodes.length > 0 && nodes.every(n => m[n] >= 1)],
   ];
   document.getElementById("badges").innerHTML = badges.map(([t, d, on]) => `<span class="badge ${on ? "on" : ""}" title="${d}"><b>${on ? "★" : "☆"}</b>${t}</span>`).join("");

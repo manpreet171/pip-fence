@@ -69,10 +69,12 @@ python evals/run_all.py
 | Check | What it proves |
 |---|---|
 | `readinglevel.py --assert` | All 24 hint templates: ≤2 sentences, zero digits or number words, scored against a named list (Dolch ∪ Fry) |
-| `classifier_eval.mjs` | 68 hand-written placement sequences → confusion matrix. Right whenever it commits; silent (`ambiguous`) when the fence cannot tell two misconceptions apart. This is spec-consistency, not accuracy on children |
-| `buddy_test.mjs` | 31 checks: no integer ever crosses the wire; the gate rejects digits, number words, extra sentences, banned words; every failure falls back to a template |
+| `classifier_eval.mjs` | 162 hand-written placement sequences across build, packs, fix and share → confusion matrix. Right whenever it commits; silent (`ambiguous`) when the fence cannot tell two misconceptions apart. This is spec-consistency, not accuracy on children |
+| `buddy_test.mjs` | 57 checks: Pip cheers (facts in, gated and judged praise out); no integer ever crosses the wire; the gate rejects digits, number words, extra sentences, banned words; every failure falls back to a template |
 | `engine_eval2.mjs` | The frozen control arm's adaptive-selector result, kept so it is not lost |
 | `redteam_leak.py` (manual, needs `DEEPSEEK_API_KEY`) | A different-family attacker, forced choice, recovers the target total no better than the majority-class baseline. Results in [docs/REDTEAM-RESULTS.md](docs/REDTEAM-RESULTS.md) |
+| `plan_eval.mjs` (manual, needs a key) | Pip plans the next fence: eight learner records, every pick checked against code's own list. Measured: 8/8 picks valid, 4/8 differ from the fixed order, 5/8 lines shipped — [docs/PLAN-RESULTS.md](docs/PLAN-RESULTS.md) |
+| `show_eval.mjs` (manual, needs a key) | Pip shows her: six fence states, the model's moves simulated by code before they run. Measured: 5/6 performed, 1/6 replaced by code's script — [docs/SHOW-RESULTS.md](docs/SHOW-RESULTS.md) |
 | `judge_eval.mjs` (manual, needs a key) | 20 live rephrases through gate and judge. Measured: 12 shipped, 6 stopped by the gate, 2 overturned by the judge that the gate had passed — [docs/JUDGE-RESULTS.md](docs/JUDGE-RESULTS.md) |
 | `latency_cost.mjs` (manual, needs a key) | p50/p95 and cost per hint over 20 live calls. Measured: p50 757 ms, p95 1.4 s, $0.00015/hint, gate pass 80% — [docs/LATENCY-RESULTS.md](docs/LATENCY-RESULTS.md) |
 
@@ -93,7 +95,7 @@ Eval-only Python packages are in `evals/requirements.txt`. The shipped app has n
 ## Layout
 
 ```
-src/server.mjs        zero-dependency server: static files + POST /api/buddy (the trust boundary)
+src/server.mjs        zero-dependency server: static files + POST /api/buddy, /api/note, /api/cheer, /api/plan, /api/show (the trust boundary)
 src/public/fence.mjs  Part 1: the 12-node graph and classify(), pure; Part 2: the isometric scene
 src/public/build.html the game            src/public/parent.html   the grown-ups view
 src/engine/buddy.mjs  redacted payload, output gate, template fallback (runs in browser and server)

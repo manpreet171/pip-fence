@@ -8,7 +8,7 @@ const { fixtures } = JSON.parse(readFileSync(new URL("./classifier_fixtures.json
 
 // Expand the DSL (see fixtures "_dsl") into the event log the game itself writes.
 export function expand(node, seq) {
-  const s = shape(node), c = Array(s.groups).fill(0);
+  const s = shape(node); let c = s.pre ? [...s.pre] : Array(s.groups).fill(0);   // fix starts pre-built; share's parts come from nK
   const ev = [{ t: 0, e: "level_start", node }];
   let t = 0, wait = 0;
   for (const tok of seq.split(/\s+/)) {
@@ -22,7 +22,8 @@ export function expand(node, seq) {
       if (op === "p") { c[g]++; ev.push({ t, e: "place", unit: "plank", group: g, n_in_group: c[g] }); }
       else if (op === "r") { c[g] = Math.max(0, c[g] - 1); ev.push({ t, e: "remove", unit: "plank", group: g, n_in_group: c[g] }); }
       else if (op === "k") { c[g] += s.pack; ev.push({ t, e: "place", unit: "pack", n: s.pack, group: g, n_in_group: c[g] }); }
-      else if (op === "o") ev.push({ t, e: "order", packs: g });
+      else if (op === "o") ev.push({ t, e: "order", ...(s.mode === "fix" ? { planks: g } : { packs: g }) });
+      else if (op === "n") { c = Array(g).fill(0); ev.push({ t, e: "parts", n: g }); }
       else if (op === "f") ev.push({ t, e: "place_failed", nearest_group: g, held: "plank" });
       else if (op === "t") ev.push({ t, e: "tap_count", group: g });
       else if (op === "h") ev.push({ t, e: "hint", id: arg });

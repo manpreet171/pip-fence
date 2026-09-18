@@ -33,7 +33,7 @@ banner on line 1 pointing to what replaced them. Decisions are append-only in `D
 | **V3.2-ARITHMETIC-CHECK.md** | Verified the shape rebalance; caught 4×5 mis-listed as non-colliding (design unaffected). |
 
 Harnesses: `evals/redteam_leak.py`, `evals/readinglevel.py` (`--assert` = build-time gate check),
-`evals/classifier_eval.mjs` over `evals/classifier_fixtures.json` (68 sequences → confusion matrix),
+`evals/classifier_eval.mjs` over `evals/classifier_fixtures.json` (162 sequences → confusion matrix),
 `data/wordlist.txt` (Dolch 315 ∪ Fry 300 ∪ domain), `data/hints_v2.txt`.
 
 ## History — `docs/history/` (superseded, kept for the record of what was killed and why)
