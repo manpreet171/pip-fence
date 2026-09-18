@@ -250,9 +250,6 @@ const farm = (key, x, y, z, g, w = TW) => { const bb = BB[key], k = w / 256;
 // and roofs land on the tile edges they were drawn on. dy is in source px, up is negative. For buildings.
 const seat = (key, x, y, z, k, g, dy = 0, clipTop = 0) =>
   `<img class="bld" src="${A}farm/${key}.png" alt="" style="z-index:${z};left:${px(x - 128 * k - g.bx.l)};top:${px(y - (512 - dy) * k - g.bx.t)};width:${px(256 * k)}${clipTop ? `;clip-path:inset(${clipTop}% 0 0 0)` : ""}">`;
-// The paddock walls are the barn's panels cut down: only the lower part shows, about the height of the
-// tallest fence she can build, so a wall never dwarfs the side that is hers.
-const WALL_CLIP = 61;
 // A finished Kenney fence along one tile edge, seated by its LOW post's foot. Measured in the source:
 // low post foot (6,449), high post foot (127,388), i.e. one tile edge at K. The sprite rises to the
 // right; the perpendicular edges use the same sprite mirrored with scaleX(-1), so the low post is then
@@ -308,14 +305,9 @@ export function mountScene(el, plan) {
   }
   // Three finished sides. Back-left rises to the right (sprite as-is); back-right and front-left fall
   // to the right (mirrored). The front-left side stands in front of the corn and the goat.
-  // Three finished sides are solid plank walls from the same pack as the barn, so the eye never compares
-  // their rails with the side she builds (D-094). In its canvas a W wall stands on the tile's bottom-left
-  // edge and an N wall on its top-right edge, so each side is seated on the tile whose edge that is:
-  // back-left = bottom-left edges of the diagonal tiles (r-1, -1); back-right = top-right edges of row 0;
-  // front-left = top-right edges of the row just outside the paddock.
-  for (let r = 0; r < R; r++) { const { x, y } = iso(r - 1, -1, g.originX, g.originY); html += seat("woodWall_W", x, y + TH, 22 + r, KT, g, 0, WALL_CLIP); }
-  for (let c = 0; c < DEEP; c++) { const { x, y } = iso(0, c, g.originX, g.originY); html += seat("woodWall_N", x, y + TH, 22 + c, KT, g, 0, WALL_CLIP); }
-  for (let c = 0; c < DEEP; c++) { const { x, y } = iso(R, c, g.originX, g.originY); html += seat("woodWall_N", x, y + TH, 60, KT, g, 0, WALL_CLIP); }
+  for (let r = 0; r < R; r++) { const { x, y } = iso(r, 0, g.originX, g.originY); html += staticFence(x - TW / 2, y + TH / 2, false, 22 + r, g); }
+  for (let c = 0; c < DEEP; c++) { const { x, y } = iso(0, c, g.originX, g.originY); html += staticFence(x + TW / 2, y + TH / 2, true, 22 + c, g); }
+  for (let c = 0; c < DEEP; c++) { const { x, y } = iso(R - 1, c, g.originX, g.originY); html += staticFence(x, y + TH, true, 60, g); }
   // The buildable side: posts with shadows, one hit region per part.
   for (let p = 0; p <= Math.max(N, 1); p++) {
     const f = p < N ? feet(p, g) : N ? (() => { const q = feet(N - 1, g); return { lx: q.rx, ly: q.ry }; })() : (() => { const q = feet(0, g); return { lx: q.lx + 24 * p, ly: q.ly - 12 * p }; })();

@@ -2020,3 +2020,15 @@ note and every game button take no taps and are dimmed; Sound and Home stay live
 rapid taps during the demo left no plank and no event, and the first tap after it worked. Rejected:
 letting a tap skip the demo (a child who taps fast is the one who needs to see it).
 
+
+---
+
+## D-095 — The three finished sides stay rail fences
+18 Sep 2026 · **Decided**
+
+The last defect pass replaced the three finished sides of the paddock with solid plank walls from the
+barn's pack, unasked and unrecorded. The owner: "restore the old walls, it got messed up." Reverted
+to the low rail fences: the finished sides show what a finished fence looks like, which is the
+reference the child counts against, and the barn stays the only solid wood on the farm. Rejected:
+keeping the walls (a wall says nothing about how many planks a part holds).
+
