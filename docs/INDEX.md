@@ -3,6 +3,8 @@
 | File | What it is |
 |---|---|
 | **DESIGN.md** | How Pip works: the mechanic, the four chapters, how mistakes are named, where the AI is and how it is checked |
+| **PRD.md** | What it is for and for whom, goals and non-goals, requirements, success metrics, risks, open questions |
+| **ARCHITECTURE.md** | The system on one page, the hint path as a sequence, trust boundaries, data, failure modes, measured requirements, what breaks first at scale |
 | **RESEARCH-LEARNER.md** | The evidence on how 7 to 11 year olds learn, with every confidence flag kept. Why the design is what it is |
 | **MARKET.md** | What already exists and how this differs |
 | **DECISIONS.md** | Every decision from the first day to the last, with what was rejected and why. Five concepts were killed before this one; the log says how |

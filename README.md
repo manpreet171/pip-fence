@@ -28,7 +28,9 @@ game plays the same. Turn the sound on. Press **J** during play to see what the 
 Your own copy online, one click:
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/manpreet171/pip-fence)
 
-How it all works, in one page: [docs/DESIGN.md](docs/DESIGN.md).
+How it all works, in one page: [docs/DESIGN.md](docs/DESIGN.md). For engineers:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (diagrams, trust boundaries, failure modes) and
+[docs/PRD.md](docs/PRD.md) (goals, non-goals, metrics, risks).
 
 ## Why "Pip"
 
