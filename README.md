@@ -13,6 +13,10 @@ Built for the Nerdy AI Hackathon Challenge, September 2026.
 
 ## Try it
 
+**Live: https://pip-4div.onrender.com** (free plan, so the first visit can take half a minute to wake up).
+
+Or run it yourself:
+
 ```bash
 git clone https://github.com/manpreet171/pip-fence.git && cd pip-fence && node src/server.mjs
 ```
@@ -21,9 +25,8 @@ Open http://localhost:5177. Nothing to install, just Node 22. Add `DEEPSEEK_API_
 `ANTHROPIC_API_KEY` if you want the live model; without a key Pip uses her written lines and the
 game plays the same. Turn the sound on. Press **J** during play to see what the AI is doing.
 
-Want it online? One click, about two minutes:
+Your own copy online, one click:
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/manpreet171/pip-fence)
-The free plan naps when nobody is around, so the first visit can take half a minute to wake up.
 
 How it all works, in one page: [docs/DESIGN.md](docs/DESIGN.md).
 
