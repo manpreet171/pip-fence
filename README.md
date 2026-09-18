@@ -1,9 +1,11 @@
 # Pip
 
-A fence-building maths game for children aged 6 to 10. The child is told "3 parts, 4 planks in
-each part" and given a cart of planks. If she counts wrong, the fence stands wrong, the goat walks
-through the gap, and Pip, a seed with eyes and a child's voice, talks her through fixing it.
-The arithmetic is the build. Nothing is marked wrong.
+A maths game for children aged 6 to 10, built around one idea: **the fence is the sum.**
+
+A child is told "3 parts, 4 planks in each part" and given a cart of planks. She builds. If she
+counts wrong, the fence stands wrong. A part is short, or a plank sticks out over the post. Nothing
+turns red. The goat walks through the gap and into the corn, and Pip, a little seed with eyes and a
+child's voice, helps her find the gap and fix it with her own hands.
 
 Built for the Nerdy AI Hackathon Challenge, September 2026.
 
@@ -15,82 +17,100 @@ Built for the Nerdy AI Hackathon Challenge, September 2026.
 git clone https://github.com/manpreet171/pip-fence.git && cd pip-fence && node src/server.mjs
 ```
 
-Open http://localhost:5177. No dependencies, Node 22. Set `DEEPSEEK_API_KEY` or
-`ANTHROPIC_API_KEY` for the model; without a key every line falls back to a template and the game
-still works. Sound on, and use Edge on Windows if you can: Pip's voice then matches throughout.
-Press **J** in the game to watch the AI pipeline live. How it all works:
-[docs/DESIGN.md](docs/DESIGN.md).
+Open http://localhost:5177. Nothing to install, just Node 22. Add `DEEPSEEK_API_KEY` or
+`ANTHROPIC_API_KEY` if you want the live model; without a key Pip uses her written lines and the
+game plays the same. Turn the sound on. Press **J** during play to see what the AI is doing.
 
-To put it online in two minutes:
+Want it online? One click, about two minutes:
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/manpreet171/pip-fence)
-The free plan sleeps when idle, so the first load can take half a minute.
+The free plan naps when nobody is around, so the first visit can take half a minute to wake up.
+
+How it all works, in one page: [docs/DESIGN.md](docs/DESIGN.md).
+
+## Why "Pip"
+
+Two reasons, and one accident.
+
+A pip is a seed. It is also the little counting marks that pop up on the rails when the child taps
+a part to count it: one, two, three, four. So the helper who counts with her is called Pip. It is
+one syllable, and a six-year-old can say it.
+
+The accident: for two days there was a second game in this project, an old Indian sowing game
+played with seeds in pits. It did not survive. A child could not learn its rules from the screen,
+so it was dropped the day before the deadline. The only thing that made it out of that game alive
+was the seed. It is now the mascot of a game about fences. We think it is happy there.
 
 ## Where it came from
 
-The brief asked for a K-5 maths game that makes arithmetic intuitive and rewards mastery, with AI
-at the centre. Before writing any game code, two weeks went into research and into killing ideas.
+The brief asked for a game that makes early arithmetic feel natural and rewards getting good at it,
+with AI at the heart of it. The easy version of that is a quiz with a cartoon around it and a chatbot
+that explains. We built that first. Then we threw it away, and this is why.
 
-- **The research** ([docs/RESEARCH-LEARNER.md](docs/RESEARCH-LEARNER.md)) found one result that
-  shows a learning gain, not just engagement, for this age: children learn more at equal time on
-  task when the maths *is* the mechanic rather than a quiz wrapped in a game (Habgood and
-  Ainsworth, *Zombie Division*, ages 7 to 11). It also found a large randomised trial in which ten
-  minutes of AI help reduced children's persistence and independent performance once the AI was
-  taken away. Those two findings set the whole design: the build is the maths, and the AI must
-  never answer.
-- **Four concepts were tried and set aside first**, each by a cheap experiment before any
-  build: a misconception engine mined from real data, a spoken sixty-second defence, a tutor that
-  is deliberately wrong, and a question-quality coach that turned out to overlap Khanmigo. The
-  reasons are in [docs/DECISIONS.md](docs/DECISIONS.md), D-018 to D-035.
-- **The first build was thrown away.** It was a quiz with a farm around it. Decision D-043 stops
-  the build, names the problem, and restarts from the research. The fence came out of that.
-- **A second game was built and dropped** on the last day: a traditional sowing game on the same
-  AI pipeline. A child could not learn its rules from the screen. Fence stayed.
+Before the game there were two weeks of reading. Two findings changed everything
+([docs/RESEARCH-LEARNER.md](docs/RESEARCH-LEARNER.md)):
 
-Eighty-five decisions, each with what was rejected and why, are in the log. Names and dates are
-real; Rung was the working name until the last day.
+- Children of this age learn more, at the same time on task, when the maths *is* the game
+  rather than a quiz wrapped in a game. That is the one result in the whole pile that shows a
+  learning gain and not just "kids liked it" (Habgood and Ainsworth, *Zombie Division*).
+- In a large randomised trial, ten minutes of AI help made children *worse* at working on
+  their own once the AI was taken away.
+
+So the rules became: the build is the maths, and the AI must never give the answer.
+
+Getting here was not a straight line. Four ideas were tried and put down before this one, each
+by a small experiment rather than by argument: a misconception engine built from real data, a
+sixty-second spoken defence, a tutor that is deliberately wrong, and a question-quality coach that
+turned out to already exist as Khanmigo. Then the first fence game was stopped mid-build because,
+honestly, it was still a quiz with a farm behind it. Decision D-043 in the log is the moment we
+admitted that and started again from the research.
+
+Every one of those turns, eighty-five decisions in all, is in
+[docs/DECISIONS.md](docs/DECISIONS.md) with what we rejected and why. Rung was the working name
+until the last day. We kept the dates and the mistakes in because they are the real story.
 
 ## What makes it different
 
-- **The wrong answer stays on screen as a wrong fence.** The child reads her own mistake off the
-  world and repairs it with her hands. No red X, no score, no confetti.
-- **Mistakes are named, not scored.** A pure function reads the placement log and says which
-  misconception the fence shows: a part short, parts and planks swapped, a plank over the post,
-  a pack treated as a plank, the gaps miscounted, the shares uneven. Fifteen of them. When two
-  mistakes make the same fence, it asks her to point instead of guessing.
-- **Four chapters on one board.** Build, Packs, Fix and Share turn one mechanic into
-  multiplication, units within units, subtraction with addition, and division. A chapter opens on
-  three gold stars.
-- **Every word a six-year-old can read**, checked against a 500-word early-reader list, and every
-  fixed line spoken in a child's voice.
+- **The wrong answer stays on the screen as a wrong fence.** No red cross, no score, no confetti.
+  She looks at what she built, sees the gap, and fixes it.
+- **Mistakes are named, not scored.** Code reads every tap and works out *which* mistake the fence
+  shows: a part short, parts and planks swapped, a plank over the post, a pack treated as a plank,
+  the gaps miscounted, the shares uneven. Fifteen of them. When two mistakes make the same fence,
+  Pip asks her to point to a finished part instead of guessing.
+- **Four chapters on one board.** Build, Packs, Fix and Share. Same fence, and it quietly becomes
+  multiplication, units inside units, subtraction and addition, and division. A chapter opens when
+  she has three gold stars in the one before.
+- **Every word is one a six-year-old can read**, checked against a 500-word early-reader list.
+  Pip's lines are spoken in a child's voice, not a robot's.
 
 ![Pip's hint lands on the gap; the goat is already in the corn](docs/shots/hint.png)
 
-## Why the AI is used this way
+## How we used the AI, and why this way
 
-The model never sees a number from the fence and never grades. It does the parts that need
-judgment about words and about practice, and code checks every one before the child sees it.
+The model never sees a number from the fence and never grades. Code owns the truth. The model does
+the parts that need a feel for words and for practice, and code checks every single thing it says
+before the child hears it.
 
-| Job | The model | The check |
+| What Pip does | The model's part | Code's part |
 |---|---|---|
-| Hint | Rephrases a template for a child of six | No digits, no number words, a 500-word list. A second model judges the meaning is the same. Template on any failure |
-| Cheer | Says what she did right when a fence is done | Booleans in. A judge rejects any claim not in the facts. No call when there is nothing specific to praise |
-| Plan | Picks the next fence from her last eight, says why | Code lists the fences that exercise her mistake. The pick must be on that list |
-| Show | Writes a worked example as moves: point, count, place, remove, say | Code simulates the moves first. Illegal or unhelpful scripts are replaced by code's own. Pip fixes one part and hands the rest back |
-| Parent note | Writes a weekly note and one question to ask out loud | Validated summary in. Blame, invented claims and internal labels rejected |
+| Hint | Puts a written hint into fresh words for a child of six | No digits, no number words, only simple words. A second model checks the meaning is the same. If anything fails, the written line is used |
+| Cheer | Says what she did right when a fence is done | Gets only yes/no facts. A judge rejects anything not in the facts. If there is nothing specific to praise, no call is made |
+| Plan | Picks her next fence from her last eight, and says why | Code lists the fences that practise her mistake. The pick has to be on that list |
+| Show | Writes a worked example as moves: point, count, place, take back, say | Code runs the moves in a simulator first. Illegal or useless scripts are replaced by code's own. Pip fixes one part and hands the rest back |
+| Parent note | Writes a short weekly note and one question to ask out loud | Gets a checked summary. Blame words, made-up claims and internal labels are rejected |
 
 ![Show me, Pip: the model wrote the moves, code checked them, Pip performs them on her fence](docs/shots/show.png)
 
-**Why no chat box.** An AI that answers makes learning worse once it is taken away. Pip cannot
-answer because Pip is never given the number. The child never types or speaks, so nothing
-personal leaves the device. Progress lives in one key in the browser's local storage.
+**Why there is no chat box.** Because of that trial. An AI that answers makes learning worse the
+moment it leaves the room. Pip cannot give the answer because Pip is never told the number. The
+child never types or speaks, so nothing personal ever leaves the device.
 
-**Why code names the mistake, not the model.** A model grading the fence would be right more
-often on strange builds and wrong in ways nobody could audit. The classifier is tested on 162
-hand-written sequences and is right whenever it commits.
+**Why code names the mistake, not the model.** A model reading the fence would be right more often
+on strange builds and wrong in ways nobody could check. The classifier is a small pure function,
+tested on 162 hand-written sequences, and it is right whenever it commits.
 
 ![Press J: the event log, the classifier's verdict, the payload with no digits, who chose the next fence](docs/shots/judge.png)
 
-## What is measured
+## What we measured
 
 ```bash
 python evals/run_all.py
@@ -98,46 +118,50 @@ python evals/run_all.py
 
 | Check | What it proves |
 |---|---|
-| `readinglevel.py --assert` | All 48 hint templates: two sentences at most, no digits or number words, a named word list |
-| `classifier_eval.mjs` | 162 hand-written placement sequences. Right whenever it commits, silent when two mistakes make the same fence |
-| `buddy_test.mjs` | 57 checks: no integer crosses the wire, the gate rejects what it must, every failure falls back to a template |
+| `readinglevel.py --assert` | All 48 hint lines: two sentences at most, no digits or number words, simple words only |
+| `classifier_eval.mjs` | 162 hand-written builds. Right whenever it commits, silent when two mistakes look the same |
+| `buddy_test.mjs` | 57 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
 
-With a live key, measured and written up in `docs/results/`:
+With a live model, measured and written up in `docs/results/`:
 
 | Run | Result |
 |---|---|
-| [Latency and cost](docs/results/LATENCY-RESULTS.md) | 20 live hints: p50 under a second, about a hundredth of a cent each |
-| [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases: 12 shipped, 6 stopped by the gate, 2 overturned by the judge |
-| [Red team](docs/results/REDTEAM-RESULTS.md) | An attacker given the whole payload recovers the answer no better than guessing the commonest one |
-| [The planner](docs/results/PLAN-RESULTS.md) | 8 learner records: every pick inside code's list, half different from the fixed order, sensibly |
-| [Worked examples](docs/results/SHOW-RESULTS.md) | 6 fence states: 5 scripts passed the simulation and ran, 1 replaced by code's own |
+| [Latency and cost](docs/results/LATENCY-RESULTS.md) | 20 live hints: under a second, about a hundredth of a cent each |
+| [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases: 12 shipped, 6 stopped by the gate, 2 caught by the judge |
+| [Red team](docs/results/REDTEAM-RESULTS.md) | An attacker shown everything the model sees guesses the answer no better than always saying the commonest one |
+| [The planner](docs/results/PLAN-RESULTS.md) | 8 learner records: every pick inside code's list, half different from the fixed order, for sensible reasons |
+| [Worked examples](docs/results/SHOW-RESULTS.md) | 6 fence states: 5 scripts passed the simulator and ran, 1 replaced by code's own |
 
 ![The grown-ups page: the week, the note, one question to ask](docs/shots/parent.png)
 
-## Our concerns, honestly
+## What worries us
 
-- **No child has played it yet.** Everything about "it teaches" is architecture and measurement,
-  not evidence. That is the biggest gap and we say so.
-- **The classifier is consistent with its own spec**, not proven accurate on children. It will
-  meet mistakes nobody wrote a fixture for.
-- **The model's own lines use the browser's voice.** Pip's hundred fixed lines are a child's voice;
-  a rephrase or a plan reason is not. In Edge on Windows they match. Elsewhere they do not.
-- **Depth is narrow.** Twenty-four levels of one mechanic. Enough to show the idea, thin as a
+We would rather say this here than have you find it.
+
+- **No child has played it yet.** Everything above about "it teaches" is architecture and
+  measurement, not a child. That is the biggest gap, and we know it.
+- **The classifier agrees with its own spec**, not with real children. It will meet mistakes
+  nobody wrote a test for.
+- **Pip has two voices.** Her hundred written lines are a child's voice. When the model writes a
+  fresh line, the browser reads it. In Edge on Windows they match. Elsewhere they do not, and it
+  shows.
+- **It is not deep.** Twenty-four levels of one mechanic. Enough to show the idea. Thin as a
   product.
-- **The lexical gate is lexical.** It stops digits and number words. It does not stop a sentence
-  that points the wrong way; that is what the judge is for, and the judge is another model.
+- **The word gate is only a word gate.** It stops digits and number words. It cannot stop a
+  sentence that points the wrong way. That is what the judge is for, and the judge is another
+  model.
 
 ## Layout
 
 ```
-src/server.mjs        zero-dependency server; the model endpoints are the trust boundary
-src/public/           the game (build.html, fence.mjs), home, parent page, judge overlay, Pip's pieces, assets
-src/engine/buddy.mjs  every model job: payloads, gate, judge, simulator hooks, template fallbacks
-data/                 hint templates and the word list
-evals/                the checks above; results/ holds measured runs
-scripts/              sprite cut-outs and Pip's voice clips
-docs/                 how it works, the research, every decision, measured results, screenshots
+src/server.mjs        the server, no dependencies; the model endpoints are the trust boundary
+src/public/           the game (build.html, fence.mjs), home, parent page, judge overlay, Pip's pieces, art
+src/engine/buddy.mjs  every model job: what it is given, the gate, the judge, the fallbacks
+data/                 the hint lines and the word list
+evals/                the checks above
+scripts/              sprite cut-outs and Pip's voice
+docs/                 how it works, the research, every decision, the measurements, screenshots
 ```
 
-Art is Kenney's CC0 isometric packs. Font is Fredoka, OFL. Pip's voice clips were made once with
+Art is Kenney's CC0 isometric packs. Font is Fredoka, OFL. Pip's voice was made once with
 `scripts/make_voice.py`. Credits in [docs/CREDITS.md](docs/CREDITS.md).
