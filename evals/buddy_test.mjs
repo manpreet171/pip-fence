@@ -142,6 +142,16 @@ console.log(`\n${fails ? fails + " FAILED" : "all checks passed"}`);
   const BZ = { ...B, solo: [], helped: [], days: 1 };
   n = await writeNote(BZ, { fetchImpl: spy({ note: "Your child built a fence this week and is still counting the parts.", question: "Show me one full part." }), apiKey: "k", timeoutMs: 50 });
   check("note: zero fences -> a claimed fence is rejected", n.source === "template" && n.reason === "invented", n.reason);
+  // the parent's audit (18 Sep): no progress or readiness claims, no developer words, every number a real count, a full week accepted
+  n = await wn(noteReply({ note: "Two fences went up. They are noticing more each time and keeping at it.", question: "Show me one full part." }));
+  check("note: a trend or readiness claim -> template, reason invented", n.source === "template" && n.reason === "invented", n.reason);
+  n = await wn(noteReply({ note: "Twelve fences went up on their own this week.", question: "Show me one full part." }));
+  check("note: a number that is not one of the real counts -> template, reason count", n.source === "template" && n.reason === "count", n.reason);
+  n = await wn(noteReply({ note: "Three fences went up. Nothing is open now.", question: "Show me one full part." }));
+  check("note: developer words (open, groups, plots) -> template, reason vocab", n.source === "template" && n.reason === "vocab", n.reason);
+  const BIG = { ...B, solo: Array.from({ length: 24 }, (_, i) => `${2 + i % 4} parts of ${3 + i % 3}${i % 2 ? " (packs)" : ""}`), helped: [] };
+  check("note: a full week of 24 fences is a valid summary and the model sees counts plus a few names", validNote(BIG) && notePayload(BIG).fences_finished_without_a_hint.how_many_fences === 24 && notePayload(BIG).fences_finished_without_a_hint.some_of_them.length === 6);
+  check("note: the fallback never says open or plot", !/(open|plot)/i.test(noteFallback(B0).note + noteFallback(BZ).note));
 }
 
 // ---- Pip cheers: booleans in, one gated and judged sentence out ----

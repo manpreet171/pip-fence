@@ -70,7 +70,7 @@ turned out to already exist as Khanmigo. Then the first build was stopped on day
 it was a quiz with a farm behind it. Decision D-043 in the log is the moment we admitted that and
 started again from the research. The fence came out of that restart.
 
-Every one of those turns, seventy-three decisions in all, is in
+Every one of those turns, eighty decisions in all, is in
 [docs/DECISIONS.md](docs/DECISIONS.md) with what we rejected and why. Rung was the working name
 until 17 September, the day before the deadline. We kept the dates and the mistakes in because they are the real story.
 
@@ -107,7 +107,7 @@ before the child hears it.
 | Cheer | Says what she did right when a fence is done | Gets only yes/no facts. A judge rejects anything not in the facts. If there is nothing specific to praise, no call is made |
 | Plan | Picks her next fence from her last eight, and says why | Code lists the fences in her chapter that practise her mistake. The pick has to be on that list, and the reason line is checked like a hint |
 | Show | Writes a worked example as moves: point, count, place, take back, say | Code runs the moves in a simulator first. Illegal or useless scripts are replaced by code's own. Pip fixes one part and hands the rest back |
-| Parent note | Writes a short weekly note and one question to ask out loud | Gets a checked summary. Blame words, made-up claims and internal labels are rejected |
+| Parent note | Writes a short weekly note and one question to ask out loud | Gets a checked summary. Blame words, claims about progress or readiness, internal labels, and any fence count that is not the real one are rejected |
 
 ![Show me, Pip: the model wrote the moves, code checked them, Pip performs them on her fence](docs/shots/show.png)
 
@@ -131,7 +131,7 @@ python evals/run_all.py
 |---|---|
 | `readinglevel.py --assert` | All 48 hint lines: two sentences at most, no digits or number words, words from the early-reader list |
 | `classifier_eval.mjs` | 169 hand-written builds. Right whenever it commits, silent when two mistakes look the same |
-| `buddy_test.mjs` | 81 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
+| `buddy_test.mjs` | 86 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
 
 With a live model, measured and written up in `docs/results/`:
 

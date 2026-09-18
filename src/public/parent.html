@@ -29,10 +29,10 @@
 </head>
 <body>
 <main>
-  <div><h1>For grown-ups</h1><p class="sub">What happened on the plots, and one thing to ask out loud. Everything here stays on this device.</p></div>
+  <div><h1>For grown-ups</h1><p class="sub">What happened on the fences this week, and one thing to ask out loud. Everything here stays on this device.</p></div>
   <section><h2>This week</h2><div class="big" id="n"></div><p id="mastered" class="foot"></p></section>
   <section id="open"><h2>This week's note</h2><p id="what"></p><div class="ask" id="ask" hidden><span class="k">Ask out loud</span><div id="q"></div></div><p class="foot" id="src" hidden></p></section>
-  <p class="foot"><a href="/build">Back to the plots</a></p>
+  <p class="foot"><a href="/">Back to the farm</a></p>
 </main>
 <script type="module">
   import { classify, shape, IDS, level } from "/fence.mjs";
@@ -41,26 +41,33 @@
   // in PARENT_WORDS, the tier reached, days played) — never the event log or a count. Any miss → the fixed
   // sentences, which are the same PARENT_WORDS. One source of truth for both.
   const name = node => { const s = shape(node); return `${s.groups} parts of ${s.per}${s.mode === "concrete" ? "" : ` (${s.mode})`}`; };
+  const plain = n => n.replace(" (packs)", ", in packs").replace(" (fix)", ", fixing gaps").replace(" (share)", ", sharing out");
+  const few = xs => xs.length <= 4 ? xs.map(plain).join(", ") : xs.slice(0, 3).map(plain).join(", ") + ` and ${xs.length - 3} more`;
   let d = {}; try { d = JSON.parse(localStorage.getItem("rung.v1")) || {}; } catch {}
   const levels = [];
   for (const e of d.events || []) { if (e.e === "level_start") levels.push([]); if (levels.length) levels.at(-1).push(e); }
   const res = levels.map(level).flatMap(L => { try { return [{ node: L[0].node, at: L[0].at || 0, r: classify(L), hints: L.filter(e => e.e === "hint") }]; } catch { return []; } });
   const week = Date.now() - 7 * 864e5;
   const done = res.filter(x => x.r.id === "correct" && x.at >= week);
-  document.getElementById("n").innerHTML = `${done.length}<small>${done.length === 1 ? "fence finished" : "fences finished"}</small>`;
+  const distinct = new Set(done.map(x => x.node)).size;
+  document.getElementById("n").innerHTML = `${distinct}<small>${distinct === 1 ? "fence finished" : "fences finished"}${done.length > distinct ? `, ${done.length - distinct} built again` : ""}</small>`;
   // The lists are the week's too, so the count, the lines and the note agree (mastery is all-time; the game keeps it).
   const names = xs => [...new Set(xs.map(x => name(x.node)))];
-  const solo = names(done.filter(x => !x.hints.length)), helped = names(done.filter(x => x.hints.length));
+  // A fence built with a hint and later without counts once, as done without: the later build is the one that stands.
+  const solo = names(done.filter(x => !x.hints.length)), helped = names(done.filter(x => x.hints.length)).filter(n => !solo.includes(n));
   document.getElementById("mastered").textContent =
-    (solo.length ? `Finished without a hint: ${solo.join(", ")}. ` : "") + (helped.length ? `Finished with a hint: ${helped.join(", ")}.` : "");
+    (solo.length ? `Without a hint: ${few(solo)}. ` : "") + (helped.length ? `With a hint: ${few(helped)}.` : "");
   // The most recent level that needed a hint or ended on a named misconception is the one to talk about.
-  const recent = [...res].reverse().find(x => x.hints.length || IDS.includes(x.r.id));
-  const id = recent && (IDS.includes(recent.r.id) ? recent.r.id : recent.hints.at(-1).id);
-  const open_id = id && !(recent !== res.at(-1) && res.at(-1).r.id === "correct") ? id : null;
-  const tier = Math.min(3, Math.max(1, ...(recent?.hints || []).filter(h => h.id === open_id).map(h => h.tier)));
+  // The thing to talk about: the mistake the week saw most often, by its first hint on each level (the
+  // pattern, not the last correction). A fence still standing wrong right now outranks the count.
+  const weekRes = res.filter(x => x.at >= week);
+  const standing = res.at(-1) && IDS.includes(res.at(-1).r.id) && res.at(-1).r.id !== "ambiguous" ? res.at(-1).r.id : null;
+  const seen = {}; for (const x of weekRes) { const first = x.hints.find(h => h.id !== "ambiguous"); if (first) seen[first.id] = (seen[first.id] || 0) + 1; }
+  const open_id = standing || Object.entries(seen).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+  const tier = Math.min(3, Math.max(1, ...weekRes.flatMap(x => x.hints).filter(h => h.id === open_id).map(h => h.tier)));
   const days = Math.min(7, new Set(res.filter(x => x.at >= week).map(x => new Date(x.at).toDateString())).size);
   const what = document.getElementById("what"), $ = id => document.getElementById(id);
-  if (!res.length) what.textContent = "No fences yet. The first plot is waiting.";   // nothing to write about: no call
+  if (!res.length) { what.textContent = "No fences yet. The first one is waiting."; $("ask").hidden = false; $("q").textContent = "Which fence do you want to build first?"; }   // nothing to write about: no call
   else {
     what.textContent = "Writing your note…";
     const out = await note({ open_id, tier, solo, helped, days });

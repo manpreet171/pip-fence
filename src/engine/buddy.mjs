@@ -159,7 +159,8 @@ export const HINT_JOB = { system: SYSTEM, schema: SCHEMA, max_tokens: 120,
 const NOTE_SYSTEM = (open = true) => "You write a short weekly note to a parent about their child, aged about 8, who is learning to " +
   "count groups by building fences in a game. Plain words a parent can read in ten seconds. Warm, specific, never blaming. " +
   "Do not use the words wrong, bad, lazy, slow, behind, struggling, failed. Do not name the game's internal labels. " +
-  "Mention only what the input lists; invent nothing. Call the pieces of the fence parts and planks, never sections or segments. " +
+  "Mention only what the input lists; invent nothing. Say nothing about progress, improvement, readiness, confidence or effort over time: you are told what happened, not how it is going. " +
+  "Call the pieces of the fence parts and planks, never sections, segments or groups. " +
   (open
     ? "note: at most three sentences saying what the child did and what they are still working on. "
     : "note: at most two sentences saying what the child did. Nothing is open: do not mention anything they are still working on, practising, or should do next. ") +
@@ -221,7 +222,7 @@ export const NOTE_KEYS = ["open_id", "tier", "solo", "helped", "days"];
 const FENCE_NAME = /^[2-5] parts of [2-5]( \((packs|fix|share)\))?$/;
 export const validNote = (b) => b && typeof b === "object" && Object.keys(b).every(k => NOTE_KEYS.includes(k))
   && (b.open_id === null || IDS.includes(b.open_id)) && [1, 2, 3].includes(b.tier)
-  && [b.solo, b.helped].every(a => Array.isArray(a) && a.length <= 12 && a.every(x => FENCE_NAME.test(x)))
+  && [b.solo, b.helped].every(a => Array.isArray(a) && a.length <= 30 && a.every(x => FENCE_NAME.test(x)))
   && Number.isInteger(b.days) && b.days >= 0 && b.days <= 7;
 // What the model is told: fence names (the parent may know the sizes), the meaning of the open
 // misconception in parent words, the template question. No event log, no counts, no ids alone.
@@ -231,30 +232,41 @@ const fenceObj = (name) => { const m = /^(\d) parts of (\d)(?: \((packs|fix|shar
     job: { fix: "fixing a broken fence by counting the gaps", share: "sharing the planks out into equal parts" }[m[3]] || "building the fence" }; };
 export function notePayload(b) {
   return { audience: "parent", child_age: 8, days_played_this_week: b.days,
-    fences_finished_without_a_hint: { how_many_fences: b.solo.length, fences: b.solo.map(fenceObj) },
-    fences_finished_with_a_hint: { how_many_fences: b.helped.length, fences: b.helped.map(fenceObj) },
+    fences_finished_without_a_hint: { how_many_fences: b.solo.length, some_of_them: b.solo.slice(0, 6).map(fenceObj) },
+    fences_finished_with_a_hint: { how_many_fences: b.helped.length, some_of_them: b.helped.slice(0, 6).map(fenceObj) },
     still_working_on: b.open_id ? { what_happens: PARENT_WORDS[b.open_id][0], hints_reached: b.tier } : null,
     suggested_question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
 }
 const BLAME = /\b(wrong|bad|lazy|slow|behind|struggling|failed|fail|stupid)\b/i;
-export function noteGate(out, open = true, fences = 1) {
+const TREND = /\b(noticing|noticed|each time|every time|keeping at|keep at|getting better|improv|progress|ready to|readiness|confiden|more and more|every week|this time|last time|than before|used to)\b/i;
+const NUMBER_WORD = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20 };
+export function noteGate(out, open = true, fences = 1, counts = null) {
   if (!out || typeof out.note !== "string" || typeof out.question !== "string") return "schema";
   if (fences === 0 && /\b(built|finished|completed|made|put up)\b/i.test(out.note)) return "invented";   // a thin week is not a built fence
   if (!open && /\b(still|working on|practi[cs]|keep|next|needs? to|improve|struggl)/i.test(out.note)) return "invented";
+  if (TREND.test(out.note) || TREND.test(out.question)) return "invented";      // the model is told what happened, never how it is going
   if (out.note.trim().split(/[.!?]+/).filter(s => s.trim()).length > 3) return "sentences";
   // "one thing to ask out loud" may be an instruction ("Show me one full part.") or a question; never a speech.
   const q = out.question.trim();
   if (!q || q.split(/[.!?]+/).filter(x => x.trim()).length > 2 || (q.match(/\?/g) || []).length > 1) return "question";
   if (BLAME.test(out.note) || BLAME.test(out.question)) return "blame";
   if (/_/.test(out.note + out.question)) return "labels";
-  if (/\b(sections?|segments?)\b/i.test(out.note + out.question)) return "vocab";   // the child hears "part"; the parent must too
+  if (/\b(sections?|segments?|groups?|open|plots?)\b/i.test(out.note + out.question)) return "vocab";   // the child hears "part" and "fence"; so must the parent
   if (out.note.length > 400 || out.question.length > 160) return "length";
+  // Every count of fences in the note must be one the input gave: alone, with a hint, or in all.
+  // ("the two numbers", "one part" are the misconception's own words, not counts of fences.)
+  if (counts) {
+    const ok = new Set([counts.solo, counts.helped, counts.solo + counts.helped]);
+    for (const m of out.note.toLowerCase().matchAll(/\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\b(?:\s+\w+){0,2}?\s+fences?\b/g)) {
+      const n = NUMBER_WORD[m[1]] ?? +m[1]; if (!ok.has(n)) return "count";
+    }
+  }
   return null;
 }
 export function noteFallback(b) {
   const done = b.solo.length + b.helped.length;
   const note = (done ? `This week ${done === 1 ? "one fence went up" : done + " fences went up"}${b.helped.length ? (b.solo.length ? ", some with a hint" : ", with a hint") : ""}. ` : "No fences went up this week yet. ")
-    + (b.open_id ? PARENT_WORDS[b.open_id][0] : "Nothing is open right now.");
+    + (b.open_id ? PARENT_WORDS[b.open_id][0] : "Nothing to work on right now.");
   return { note, question: b.open_id ? PARENT_WORDS[b.open_id][1] : "Which fence did you like building best?" };
 }
 export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provider = "anthropic", timeoutMs = 4000 } = {}) {
@@ -268,7 +280,7 @@ export async function writeNote(b, { fetchImpl = globalThis.fetch, apiKey, provi
     if (!res.ok) return fallback(`http_${res.status}`);
     const { text } = PROVIDERS[provider].parse(await res.json());
     let out; try { out = JSON.parse(text); } catch { return fallback("parse"); }
-    const why = noteGate(out, !!b.open_id, b.solo.length + b.helped.length);
+    const why = noteGate(out, !!b.open_id, b.solo.length + b.helped.length, { solo: b.solo.length, helped: b.helped.length });
     return why ? fallback(why) : { note: out.note.trim(), question: out.question.trim(), source: "model" };
   } catch (e) { return fallback(e?.name === "TimeoutError" ? "timeout" : "error"); }
 }

@@ -1972,3 +1972,26 @@ reachable promise; the move happens when she is ready); a new classifier id for 
 case with packs left in the cart (the tiers now hold whether the surplus is in the cart or the fence
 is short, and no id or fixture had to move); saying "fixed the short part" whenever a count followed a
 hint (it followed an over-count once, and was wrong; now only a hint about a short part counts).
+
+
+---
+
+## D-092 — The parent note after a parent read it
+18 Sep 2026 · **Decided**
+
+A parent-simulation agent read the week's note against the child's full play log and found the
+model adding what it was never told: "noticing more each time", "ready to check all the parts";
+a count of fences that did not match the header; a full week of twenty-four fences refused as too
+long; the week's mistake vanishing once the last level was clean; a replayed fence listed under
+both "with a hint" and "without"; and the developer words "open" and "plots". Fixes: the prompt
+forbids any claim about progress, readiness, confidence or effort over time, and the gate rejects
+them; every count of fences in the note must be one of the real counts (fences alone, with a hint,
+or in all), while the misconception's own words such as "the two numbers" are left alone; a week
+may hold thirty names each way and the model is shown counts plus six examples; the mistake to
+talk about is the one seen most in the week, or the fence standing wrong right now; a fence built
+with a hint and later without counts once, as done; lists show four names and "and N more"; the
+page says fence and farm, never plot or open, and an empty week still offers a question. Verified
+live: three notes in a row from the model, all true to the log. Rejected: dropping the model's
+note for the template only (the parent audit found the template plain but the model's note more
+useful when it stays inside the facts); a longer page (the parent has ten seconds).
+

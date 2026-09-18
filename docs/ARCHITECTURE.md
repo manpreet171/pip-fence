@@ -163,7 +163,7 @@ reason, the payload as sent, who chose the next fence, who wrote the moves.
                  live measurements (need a key, run by hand, written up in docs/results)
                  judge_eval · latency_cost · redteam_leak · plan_eval · show_eval
               ───────────────────────────────────────────────────────────────────
-         integration: buddy_test.mjs, 81 checks with an injected fake fetch
+         integration: buddy_test.mjs, 86 checks with an injected fake fetch
          (no integer crosses the wire; every gate reason; every fallback; the judge; the simulator)
     ──────────────────────────────────────────────────────────────────────────────────
   unit, pure: classifier_eval.mjs over 169 hand-written sequences → confusion matrix, 0 mismatches
