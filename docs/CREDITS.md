@@ -13,9 +13,10 @@ credited here as good practice. Licence text ships beside the assets.
 (`src/public/assets/fonts/`).
 
 ## Voice
-Pip's fixed lines are audio clips generated once from Microsoft's Ana neural text-to-speech
-voice and included as files in `src/public/assets/voice/`. Lines the model phrases at run time use
-the browser's own voice.
+Pip's fixed lines are audio clips generated once with a neural text-to-speech voice (the one
+named in `src/public/assets/voice/VOICE`) by `scripts/voice_clips.mjs`, and included as files. With
+a voice key on the server, lines the model writes at run time are spoken by that same voice; without
+one, the browser's own voice reads them.
 
 ## Everything else
 Game, classifier, hint layer, evaluation harness and application code: Manpreet Singh.

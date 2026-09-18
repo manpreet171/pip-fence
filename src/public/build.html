@@ -396,10 +396,10 @@
     try {
       for (const st of steps) {
         if (S.done) break;
-        if (st.op === "say") { bubble(st.text, source, S.bpart ?? 0); await sl(2600); }
-        else if (st.op === "point") { bubble("Look at this part.", source, st.part); await sl(1600); }
+        if (st.op === "say") { await bubble(st.text, source, S.bpart ?? 0); await sl(700); }
+        else if (st.op === "point") { await bubble("Look at this part.", source, st.part); await sl(600); }
         else if (st.op === "count") { count(st.part); await sl(S.parts[st.part] * 450 + 900); }
-        else if (st.op === "place" && S.cart && S.parts[st.part] < s.per) { S.held = "plank"; place(st.part); speakNow(COUNT[S.parts[st.part] - 1] || ""); S.held = null; render(); await sl(900); }
+        else if (st.op === "place" && S.cart && S.parts[st.part] < s.per) { S.held = "plank"; place(st.part); S.held = null; render(); await speakNow(COUNT[S.parts[st.part] - 1] || ""); await sl(350); }
         else if (st.op === "remove" && S.parts[st.part] > 0) { remove(st.part); await sl(900); }
       }
     } finally { S.showing = false; S.counting = null; }
@@ -409,7 +409,7 @@
     showBtn.hidden = againBtn.hidden || (S.hintR?.tier || 1) < 2 || sh().mode === "packs" || (sh().mode === "share" && !S.parts.length);
     const b = $("bubble"); S.bpart = part;
     $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
-    b.hidden = false; placeBubble(); speak(text);
+    b.hidden = false; placeBubble(); return speak(text);
   }
   // Spoken hints (D-071): the browser's own voice, nothing leaves the device. Says exactly the card's
   // text, once per card, never over the counting pips. One control, remembered on this device.
@@ -424,7 +424,7 @@
   // model-phrased one, is spoken by the browser's own voice, the friendliest one it has.
   let VOICE = await Promise.race([fetch("/assets/voice/manifest.json").then(r => r.ok ? r.json() : {}), new Promise(r => setTimeout(() => r({}), 1500))]).catch(() => ({}));
   let clip = null;
-  const hush = () => { tts?.cancel(); if (clip) { clip.pause(); clip = null; } };
+  const hush = () => { spoken++; tts?.cancel(); if (clip) { clip.pause(); clip = null; } };
   // The server's voice (D-086): if it has one, every line comes through it, so the model's lines and
   // the fixed lines sound the same. The bundled clips are the same voice (Ana) when the server uses
   // Ana; otherwise the server voices even the fixed lines, so there is still only one voice.
@@ -439,12 +439,15 @@
   // voices load late in some browsers; keep the list fresh and pick the friendliest natural one
   let VOICES = []; const loadVoices = () => { VOICES = (tts?.getVoices() || []).filter(v => /^en/i.test(v.lang)); }; loadVoices(); tts?.addEventListener?.("voiceschanged", loadVoices);
   const PREFER = /Ana|Maisie|Libby|Sonia|Aria|Jenny|Ava|Emma|Google UK English Female|Samantha|Zira/;
-  async function voiceNow(text, rate = 0.92) {           // -> resolves when the line has been said
-    const play = src => new Promise(done => { clip = new Audio(src); clip.onended = clip.onerror = done; clip.play().catch(done); });
-    const anaClips = !SERVER_VOICE || /Ana/i.test(SERVER_VOICE);
-    if (VOICE[text] && anaClips) return play("/assets/voice/" + VOICE[text]);
-    const url = await fromServer(text); if (url) return play(url);
+  // One speaker. Every call gets a token; hush() bumps it, so a line that was still being fetched
+  // when a newer line started is dropped instead of playing late over it. Bundled clips are the same
+  // voice as the server's (D-086), so fixed lines are instant and only fresh model lines wait.
+  let spoken = 0;
+  async function voiceNow(text, rate = 0.92) {           // -> resolves when the line has ended, or was dropped
+    const mine = ++spoken;
+    const play = src => new Promise(done => { if (mine !== spoken) return done(); clip = new Audio(src); clip.onended = clip.onerror = done; clip.play().catch(done); });
     if (VOICE[text]) return play("/assets/voice/" + VOICE[text]);
+    const url = await fromServer(text); if (mine !== spoken) return; if (url) return play(url);
     return new Promise(done => {
       if (!tts) return done();
       if (!VOICES.length) loadVoices();
@@ -454,12 +457,12 @@
     });
   }
   // The sheet is read aloud line by line, because the child it is for cannot read it yet.
-  async function sayAll(lines) { for (const l of lines) { if (!sound || !document.getElementById("howto")) return; hush(); await voiceNow(l); await new Promise(r => setTimeout(r, 350)); } }
-  function speak(text) {
-    if (!sound) return;
+  async function sayAll(lines) { for (const l of lines) { if (!sound || !document.getElementById("howto")) return; hush(); await voiceNow(l); await new Promise(r => setTimeout(r, 400)); } }
+  function speak(text) {                                 // -> resolves when the line has been said
+    if (!sound) return Promise.resolve();
     const wait = (S.pips || 0) - Date.now();
-    if (wait > 0) return setTimeout(() => { if (!$("bubble").hidden && $("btext").textContent === text) speak(text); }, wait);
-    hush(); voiceNow(text);
+    if (wait > 0) return new Promise(r => setTimeout(() => { if (!$("bubble").hidden && $("btext").textContent === text) speak(text).then(r); else r(); }, wait));
+    hush(); return voiceNow(text);
   }
   // Beside the gap, never on it (D-070): bubbleSpot keeps the card off every post, rail and the goat, and
   // off the sign; on a phone with no room beside, it goes in the band under the sign.
@@ -504,29 +507,29 @@
   const GUIDE = { concrete: "pip.guide.fence", packs: "pip.guide.packs", fix: "pip.guide.fix", share: "pip.guide.share" };
   const guided = () => { try { return localStorage.getItem(GUIDE[sh().mode]) === "1"; } catch { return false; } };
   const guideDone = () => { try { localStorage.setItem(GUIDE[sh().mode], "1"); } catch {} };
-  function speakNow(text) { if (sound) voiceNow(text, 0.95); }
+  function speakNow(text) { return sound ? voiceNow(text, 0.95) : Promise.resolve(); }
   const COUNT = ["one", "two", "three", "four", "five", "six"];
   async function demo() {
     const s = sh(); if (lvl().some(e => ["place", "order", "parts"].includes(e.e))) return guideDone();
     const sl = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));
-    const say = async (text, part, ms) => { bubble(text, "", part); await sl(ms); };
+    const say = async (text, part, ms) => { const t0 = Date.now(); await bubble(text, "", part); await sl(Math.max(600, ms - (Date.now() - t0))); };
     await say("Watch me first.", 0, 1600);
     if (s.mode === "concrete") {
       await say("The sign says how many planks go in each part. I take a plank. I put it on this part.", 0, 3400);
       S.held = "plank"; render();
-      for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); speakNow(COUNT[k] || ""); await sl(900); }
+      for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); await speakNow(COUNT[k] || ""); await sl(350); }
       S.held = null; render();
       bubble("This part is full. Now you do the other parts. Tap the cart. Then tap a part.", "", 0);
     } else if (s.mode === "packs") {
       await say("Now the planks come in packs. Look at the pack. I count the planks in it.", 0, 3000);
-      for (let k = 0; k < s.pack; k++) { speakNow(COUNT[k] || ""); await sl(800); }
+      for (let k = 0; k < s.pack; k++) { await speakNow(COUNT[k] || ""); await sl(300); }
       await say("A pack is more than one plank. I tap the pack once. That gets me a whole pack.", 0, 3200);
       S.slip = 1; render(); await sl(1200);
       bubble("Now you get the rest. How many planks does a part need? Tap the pack for each pack you need. Then tap Bring it.", "", 0);
     } else if (s.mode === "fix") {
       const p = Math.max(0, S.parts.findIndex(n => n < s.per)), gaps = s.per - S.parts[p];
       await say("The wind blew some planks out. This part has empty spaces at the top. I count the spaces, not the planks.", p, 3800);
-      for (let k = 0; k < gaps; k++) { speakNow(COUNT[k] || ""); S.slip++; render(); await sl(900); }
+      for (let k = 0; k < gaps; k++) { S.slip++; render(); await speakNow(COUNT[k] || ""); await sl(350); }
       await say("I tapped once for each empty space in this part.", p, 2400);
       bubble("Now you count the empty spaces in the other parts. Tap once for each space. Then tap Bring it.", "", p);
     } else if (s.mode === "share") {

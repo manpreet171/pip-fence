@@ -164,9 +164,10 @@ src/public/           the game (build.html, fence.mjs), home, parent page, judge
 src/engine/buddy.mjs  every model job: what it is given, the gate, the judge, the fallbacks
 data/                 the hint lines and the word list
 evals/                the checks above
-scripts/              sprite cut-outs
+scripts/              sprite cut-outs and Pip's voice clips
 docs/                 how it works, the research, every decision, the measurements, screenshots
 ```
 
-Art is Kenney's CC0 isometric packs. Font is Fredoka, OFL. Pip's voice clips were generated once
-with a text-to-speech service and are included as audio files. Credits in [docs/CREDITS.md](docs/CREDITS.md).
+Art is Kenney's CC0 isometric packs. Font is Fredoka, OFL. Pip's voice clips are generated once with
+`scripts/voice_clips.mjs` from the same voice the server uses live, and included as audio files.
+Credits in [docs/CREDITS.md](docs/CREDITS.md).

@@ -1880,3 +1880,22 @@ there is still one voice. Rejected: shipping the Edge read-aloud protocol inside
 unofficial endpoint, and LGPL tooling around it, see the licence rule); generating every possible
 model line ahead of time (unbounded).
 
+
+---
+
+## D-087 — One speaker: no line plays over another, and Pip waits for her own voice
+18 Sep 2026 · **Decided**
+
+The owner, with the server voice on: lines overlapped and cut each other off. Cause: with a voice
+other than Ana the page had routed even the fixed lines through the server, so every line waited
+three to four seconds to be synthesised, while Pip's demo ran on fixed timers and each new line cut
+the last; a line that arrived late then played over the next. Three changes. Every spoken line now
+carries a token and a newer line drops any older one still in flight, so a late arrival never plays.
+Speaking returns a promise that resolves when the line has ended, and Pip's demo, her counting and
+the worked example wait for that instead of a timer. And the bundled clips are made in the same
+voice the server uses (`scripts/voice_clips.mjs`, marker file `VOICE`), so fixed lines are instant
+again and only fresh model lines wait for synthesis. Measured with real clicks: 24 lines over a
+sheet, a demo, a hint, a rephrase and a worked example, zero overlaps; a line is cut only when the
+child acts and a new card replaces it. Rejected: warming every fixed line through the server at each
+start (a cold start on the free host would cost a synthesis run each time).
+
