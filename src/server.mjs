@@ -38,7 +38,7 @@ const TTS = process.env.AZURE_SPEECH_KEY
   : null;
 const SAID = new Map();                                   // text -> mp3 Buffer, the cache
 const ALLOW = new Set();                                  // texts this server produced or ships; only these are voiced
-const SAY_CAP = +process.env.TTS_DAILY_CHARS || 300000;   // characters per day, then the browser voice takes over
+const SAY_CAP = +process.env.TTS_DAILY_CHARS || 60000;    // characters per day (about an hour of speech), then the browser voice takes over
 let sayDay = "", sayChars = 0;
 const allow = (...texts) => { for (const t of texts) if (typeof t === "string" && t.trim()) ALLOW.add(t.trim()); };
 const ttsRequest = {
