@@ -1841,3 +1841,18 @@ script ran. See docs/SHOW-RESULTS.md. Not offered in Packs (the unit there is a 
 of that chapter is the order, which a worked example on the board cannot show). Rejected: letting the
 model narrate a video-style explanation (words, not moves); fixing the whole fence for her.
 
+
+---
+
+## D-083 — The chrome around the art matches the art
+18 Sep 2026 · **Decided**
+
+The owner's assessment before recording: the game looked handmade next to its own Kenney art. The
+scene was fine; the surfaces around it were not. Four surfaces redone with the same palette and no
+new assets: the home page is now the game's own scene, framed, with a fence already up and the plot
+greening with her stars, the four chapters as signs on a path and the badges as wooden tokens; the
+How-to sheet has a wood header with Pip's face and pops in; the hint card is cream on wood with Pip
+in her own column and the two buttons as small wood buttons; the star moment has rays and its text
+sits on a paper chip, and the cheer card now waits for the star to pass. Rejected: new art, a
+mascot redraw, animation for its own sake.
+

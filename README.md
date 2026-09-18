@@ -33,6 +33,32 @@ emit a number. The leak rate is measured, not asserted.
 - **For the child, Pip is the AI.** The hint card carries Pip's face and is read aloud in Pip's voice, and
   a **Say it another way** button lets the child ask Pip for a fresh phrasing, which goes through the
   same gate and judge. The child never types; Pip never sees a number.
+- **Pip teaches, not only talks.** Three more model jobs, each boxed by code and measured:
+  **Pip cheers** says what she actually did right, from booleans, through a judge that rejects any
+  invented claim. **Pip plans the next fence** reads her last eight fences and picks the next one from
+  a list code drew up from her mistake, and says why; every pick is checked against that list.
+  **Pip shows her** writes a worked example as moves on her own wrong fence, which code simulates before
+  Pip performs them, fixing one part and handing the rest back. Results in
+  [docs/PLAN-RESULTS.md](docs/PLAN-RESULTS.md) and [docs/SHOW-RESULTS.md](docs/SHOW-RESULTS.md).
+
+## Why the child cannot chat with Pip
+
+A judge might ask why there is no chat box, no microphone, and no model reading the fence. It is a
+position, not an omission.
+
+- **A chat box answers.** The evidence this project rests on says an AI that answers makes learning
+  worse once it is taken away. Pip cannot answer because Pip is never given the number.
+- **A model that grades would be wrong sometimes, and silently.** The classifier is a pure function
+  over the placement log, tested on 162 hand-written sequences, right whenever it commits and silent
+  when two mistakes make the same fence. A model grading the fence would be right more often on
+  strange builds and wrong in ways nobody could audit.
+- **The child never types or speaks**, so nothing personal ever leaves the device. Under amended
+  COPPA a child's voice is personal information.
+
+What the model does instead is the part that needs judgment about words and about practice: how to
+say a hint to this child, what to praise, which fence to build next, how to show a repair. Each of
+those is proposed by the model and checked by code before the child sees it, and each fallback is a
+template. Press J in the game and every one of those checks is on screen while she plays.
 
 Read the evidence base in [docs/RESEARCH-LEARNER.md](docs/RESEARCH-LEARNER.md), the approved concept in
 [docs/CONCEPT-V3.2.md](docs/CONCEPT-V3.2.md), and every decision with its rejected alternatives in

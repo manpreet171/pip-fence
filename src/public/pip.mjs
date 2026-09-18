@@ -9,27 +9,41 @@ const CSS = `
 .pipface::before{left:8px}.pipface::after{right:8px}
 .pipface i{position:absolute;left:12px;right:12px;bottom:9px;height:5px;border-radius:0 0 6px 6px;border-bottom:2px solid #22303a}
 .piprow{display:flex;gap:10px;align-items:flex-start}
-.pipagain{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:10px;border:2px solid #a9702f;background:#f8f1e3;color:#7d5122;font:600 14px/1.2 inherit;cursor:pointer;pointer-events:auto;min-height:36px}
+.pipagain{display:inline-block;margin:8px 6px 0 0;padding:6px 14px;border-radius:12px;border:2px solid #7d5122;color:#f8f1e3;font:600 14px/1.2 inherit;cursor:pointer;pointer-events:auto;min-height:38px;text-shadow:0 1px 0 rgba(0,0,0,.4);
+  background:linear-gradient(180deg,rgba(255,240,210,.22),rgba(255,255,255,0) 38%,rgba(0,0,0,.10)),linear-gradient(180deg,#b97b3a,#a9702f);box-shadow:0 3px 0 #7d5122}
+.pipagain:active{transform:translateY(2px);box-shadow:0 1px 0 #7d5122}
 .pipagain[disabled]{opacity:.5}
-#howto{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(30,20,10,.55);padding:16px}
-#howto .card{max-width:520px;width:100%;background:#f8f1e3;border:3px solid #7d5122;border-radius:18px;padding:20px 22px;box-shadow:0 14px 30px rgba(0,0,0,.35);color:#22303a}
-#howto h2{margin:0 0 4px;font-size:24px;color:#7d5122}
-#howto .sub{margin:0 0 14px;color:#5d5246}
-#howto ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+#howto{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(30,20,10,.55);padding:16px;animation:pipfade .2s both}
+#howto .card{max-width:520px;width:100%;background:#f8f1e3;border:4px solid #7d5122;border-radius:22px;padding:0 0 20px;overflow:hidden;box-shadow:0 10px 0 #7d5122,0 22px 40px rgba(0,0,0,.4);color:#22303a;animation:pippop .35s cubic-bezier(.2,1.4,.4,1) both}
+#howto .head{display:flex;align-items:center;gap:14px;padding:16px 20px;color:#f8f1e3;text-shadow:0 1px 0 rgba(0,0,0,.4);border-bottom:3px solid #7d5122;
+  background:linear-gradient(180deg,rgba(255,240,210,.22),rgba(255,255,255,0) 38%,rgba(0,0,0,.10)),repeating-linear-gradient(90deg,rgba(0,0,0,0) 0 46px,rgba(60,30,10,.28) 46px 48px),linear-gradient(180deg,#b97b3a,#a9702f)}
+#howto .head .pipface{width:44px;height:52px}
+#howto h2{margin:0;font-size:24px;line-height:1.1}
+#howto .sub{margin:2px 0 0;font-size:15px;opacity:.92}
+#howto ol{padding:18px 22px 0}
+#howto .go{margin:18px 22px 0;width:calc(100% - 44px)}
+@keyframes pipfade{from{opacity:0}}
+@keyframes pippop{from{transform:scale(.8);opacity:0}}
+@media (prefers-reduced-motion:reduce){#howto,#howto .card{animation:none}}
+#howto ol{list-style:none;margin:0;display:grid;gap:12px}
 #howto li{display:flex;gap:14px;align-items:center;font-size:18px;line-height:1.3}
 #howto .n{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:700;color:#f8f1e3;
   background:linear-gradient(180deg,#b97b3a,#a9702f);border:3px solid #7d5122;box-shadow:0 3px 0 #7d5122}
-#howto .go{margin-top:18px;min-height:56px;width:100%;border-radius:16px;border:3px solid #7d5122;background:linear-gradient(180deg,#b97b3a,#a9702f);color:#f8f1e3;
+#howto .go{min-height:56px;border-radius:16px;border:3px solid #7d5122;background:linear-gradient(180deg,#b97b3a,#a9702f);color:#f8f1e3;
   font:600 20px/1 inherit;box-shadow:0 6px 0 #7d5122;cursor:pointer}
 .strip{display:flex;gap:5px;align-items:center;margin-top:6px}
 .strip i{display:block;width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.28);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
 .strip i.half{background:#d9c39a}.strip i.full{background:#ffd34d;box-shadow:0 0 6px #ffd34d}
 .strip i.now{outline:3px solid #f8f1e3;outline-offset:1px}
 .starmoment{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:30;pointer-events:none;text-align:center;
-  font:700 30px/1.2 inherit;color:#7d5122;text-shadow:0 2px 0 #fff;animation:starpop 2.2s ease-out both}
-.starmoment b{display:block;font-size:64px;color:#ffd34d;text-shadow:0 0 18px #ffb400,0 3px 0 #a9702f}
+  font:700 26px/1.2 inherit;color:#7d5122;animation:starpop 2.2s ease-out both}
+.starmoment span{display:inline-block;margin-top:6px;padding:8px 18px;border-radius:14px;background:#f8f1e3;border:3px solid #7d5122;box-shadow:0 4px 0 #7d5122}
+.starmoment b{display:block;font-size:72px;color:#ffd34d;text-shadow:0 0 18px #ffb400,0 3px 0 #a9702f;position:relative}
+.starmoment b::before{content:"";position:absolute;left:50%;top:50%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;z-index:-1;
+  background:repeating-conic-gradient(rgba(255,211,77,.35) 0 10deg,rgba(255,211,77,0) 10deg 20deg);mask:radial-gradient(circle,#000 30%,transparent 70%);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);animation:starspin 6s linear infinite}
+@keyframes starspin{to{transform:rotate(360deg)}}
 @keyframes starpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}80%{opacity:1}100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.starmoment{animation:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.starmoment{animation:none;opacity:1}.starmoment b::before{animation:none}}
 `;
 let cssDone = false;
 const css = () => { if (!cssDone) { document.head.insertAdjacentHTML("beforeend", `<style>${CSS}</style>`); cssDone = true; } };
@@ -42,7 +56,7 @@ export function howto({ key, title, sub, steps, go = "Let's play" }) {
   const seen = () => { try { return localStorage.getItem(key) === "1"; } catch { return false; } };
   const show = () => {
     document.getElementById("howto")?.remove();
-    document.body.insertAdjacentHTML("beforeend", `<div id="howto" role="dialog" aria-modal="true"><div class="card"><h2>${title}</h2><p class="sub">${sub}</p>
+    document.body.insertAdjacentHTML("beforeend", `<div id="howto" role="dialog" aria-modal="true"><div class="card"><div class="head">${face()}<div><h2>${title}</h2><p class="sub">${sub}</p></div></div>
       <ol>${steps.map((s, i) => `<li><span class="n">${i + 1}</span><span>${s}</span></li>`).join("")}</ol><button class="go">${go}</button></div></div>`);
     document.querySelector("#howto .go").onclick = () => { document.getElementById("howto").remove(); try { localStorage.setItem(key, "1"); } catch {} };
   };
@@ -60,7 +74,7 @@ export function strip(el, nodes, mastery, current) {
 export function star(full, text) {
   css();
   document.querySelector(".starmoment")?.remove();
-  document.body.insertAdjacentHTML("beforeend", `<div class="starmoment"><b>${full ? "★" : "☆"}</b>${text}</div>`);
+  document.body.insertAdjacentHTML("beforeend", `<div class="starmoment"><b>${full ? "★" : "☆"}</b><span>${text}</span></div>`);
   setTimeout(() => document.querySelector(".starmoment")?.remove(), 2400);
 }
 

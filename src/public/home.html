@@ -7,77 +7,82 @@
 <link rel="icon" href="data:,">
 <style>
   @font-face{font-family:"Fredoka";src:url(/assets/fonts/Fredoka.ttf) format("truetype");font-weight:300 700;font-display:swap}
-  :root{--font-display:"Fredoka","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;--ink:#22303a;--muted:#5d5246;--paper:#efe3cd;--cream:#f8f1e3;--wood:#a9702f;--wood2:#7d5122;--line:#dccfb6;
+  :root{--font-display:"Fredoka","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;--ink:#22303a;--muted:#5d5246;--paper:#efe3cd;--cream:#f8f1e3;--wood:#a9702f;--wood2:#7d5122;--line:#dccfb6;--gold:#ffd34d;
     --woodbg:linear-gradient(180deg,rgba(255,240,210,.22),rgba(255,255,255,0) 38%,rgba(0,0,0,.10)),repeating-linear-gradient(90deg,rgba(0,0,0,0) 0 46px,rgba(60,30,10,.28) 46px 48px),repeating-linear-gradient(0deg,rgba(255,225,180,.07) 0 2px,rgba(0,0,0,0) 2px 7px),linear-gradient(180deg,#b97b3a,#a9702f)}
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{min-height:100dvh;font:17px/1.45 var(--font-display);color:var(--ink);background:radial-gradient(ellipse at 50% 0%,#bfe6f7,#dff0d8 45%,var(--paper) 100%);padding:20px 16px 48px}
-  main{max-width:920px;margin:0 auto;display:grid;gap:20px}
-  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-  .mascot{width:64px;height:76px;border-radius:50% 50% 48% 48%/60% 60% 40% 40%;background:radial-gradient(circle at 35% 30%,#c9915a,#7d5122 70%);position:relative;flex:none;
-    box-shadow:inset -5px -5px 10px rgba(0,0,0,.25),0 4px 6px rgba(0,0,0,.3)}
-  .mascot::before,.mascot::after{content:"";position:absolute;top:26px;width:15px;height:17px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 5px var(--ink),inset -3px -3px 0 5px var(--ink)}
-  .mascot::before{left:15px}.mascot::after{right:15px}
-  .mascot i{position:absolute;left:22px;right:22px;bottom:17px;height:9px;border-radius:0 0 10px 10px;border-bottom:3px solid var(--ink)}
-  h1{margin:0;font-size:44px;line-height:1;color:var(--wood2)}
-  .tag{margin:4px 0 0;color:var(--muted);font-size:18px}
-  .games{display:grid;grid-template-columns:minmax(300px,560px);justify-content:center;gap:20px}
-  .game{background:var(--cream);border:3px solid var(--wood2);border-radius:20px;padding:18px 20px 20px;box-shadow:0 6px 0 var(--wood2),0 14px 24px rgba(40,25,10,.18);display:grid;gap:12px;align-content:start}
-  .game h2{margin:0;font-size:28px;color:var(--wood2);display:flex;align-items:center;gap:10px}
-  .game .what{margin:0;font-size:17px}
-  .pic{height:120px;border-radius:14px;display:grid;place-items:center;overflow:hidden;position:relative}
-  .pic.fence{background:linear-gradient(180deg,#8fd0f0 0 40%,#7fb84a 40%)}
-  .pic.seeds{background:linear-gradient(180deg,#e9dcc3,#d7c39a)}
-  .pic img{height:84px;image-rendering:auto;filter:drop-shadow(0 4px 4px rgba(0,0,0,.3))}
-  .pit{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#6b4423,#3d2411 75%);box-shadow:inset 0 6px 10px rgba(0,0,0,.6),0 1px 0 rgba(255,230,190,.35);display:inline-grid;place-items:center;margin:0 5px}
-  .seed{width:14px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c9915a,#6b3f1b 75%);display:inline-block;margin:1px}
-  .steps{margin:0;padding:0;list-style:none;display:grid;gap:8px}
-  .steps li{display:flex;gap:10px;align-items:center;font-size:16px}
-  .n{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:var(--cream);background:var(--woodbg);border:2px solid var(--wood2);box-shadow:0 2px 0 var(--wood2)}
-  .strip{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .strip i{display:block;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.2);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
-  .strip i.half{background:#d9c39a}.strip i.full{background:#ffd34d;box-shadow:0 0 6px #ffd34d}
-  .strip .lbl{font-size:14px;color:var(--muted);margin-left:6px}
+  body{min-height:100dvh;font:17px/1.45 var(--font-display);color:var(--ink);padding:0 0 48px;
+    background:radial-gradient(ellipse 60% 18% at 22% 12%,rgba(255,255,255,.75),rgba(255,255,255,0)),radial-gradient(ellipse 40% 12% at 78% 20%,rgba(255,255,255,.7),rgba(255,255,255,0)),linear-gradient(180deg,#8fd0f0 0,#bfe6f7 36%,#dff0d8 62%,#b7d98a 100%)}
+  main{max-width:960px;margin:0 auto;padding:0 16px;display:grid;gap:22px}
+  /* --- title --- */
+  header{display:flex;align-items:center;justify-content:center;gap:18px;padding:26px 0 4px;text-align:left}
+  .mascot{width:84px;height:100px;border-radius:50% 50% 48% 48%/60% 60% 40% 40%;background:radial-gradient(circle at 35% 30%,#c9915a,#7d5122 70%);position:relative;flex:none;
+    box-shadow:inset -6px -6px 12px rgba(0,0,0,.25),0 6px 8px rgba(0,0,0,.3);animation:bob 3.2s ease-in-out infinite}
+  .mascot::before,.mascot::after{content:"";position:absolute;top:34px;width:20px;height:22px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 6px var(--ink),inset -4px -4px 0 6px var(--ink)}
+  .mascot::before{left:19px}.mascot::after{right:19px}
+  .mascot i{position:absolute;left:28px;right:28px;bottom:22px;height:12px;border-radius:0 0 12px 12px;border-bottom:4px solid var(--ink)}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+  h1{margin:0;font-size:60px;line-height:.95;color:var(--wood2);text-shadow:0 2px 0 #fff4d6,0 4px 0 rgba(0,0,0,.12)}
+  .tag{margin:6px 0 0;color:var(--muted);font-size:19px}
+  /* --- the farm: the game's own scene, framed, with a fence already up --- */
+  .farm{position:relative;height:300px;border-radius:22px;border:4px solid var(--wood2);overflow:hidden;background:linear-gradient(180deg,#8fd0f0 0 38%,#9ccf67 38%);
+    box-shadow:0 8px 0 var(--wood2),0 18px 30px rgba(40,25,10,.22),inset 0 0 0 3px rgba(255,235,200,.35)}
+  .farm .scene{position:absolute;inset:0 0 58px 0}   /* the world sits above the Play button */
+  .farm .corn,.farm .hay{position:absolute;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));z-index:5}
+  .farm .corn{width:52px}
+  .farm .hay{width:46px;right:10px;bottom:64px}
+  .farm .yours{position:absolute;left:14px;top:12px;padding:6px 14px;border-radius:10px;background:var(--woodbg);border:2px solid var(--wood2);color:var(--cream);font-weight:600;font-size:15px;text-shadow:0 1px 0 rgba(0,0,0,.4);z-index:6}
+  .playwrap{display:grid;place-items:center;margin-top:-50px;position:relative;z-index:7}
+  .play{min-height:68px;min-width:min(360px,100%);padding:0 40px;border-radius:20px;border:4px solid var(--wood2);background:var(--woodbg);color:var(--cream);font:700 26px/1 var(--font-display);text-decoration:none;display:grid;place-items:center;
+    box-shadow:0 8px 0 var(--wood2),0 14px 18px rgba(20,30,20,.3),inset 0 0 0 2px rgba(255,235,200,.2);text-shadow:0 2px 0 rgba(0,0,0,.4);animation:pulse 2.4s ease-in-out infinite}
+  .play:active{transform:translateY(5px);box-shadow:0 3px 0 var(--wood2)}
+  @keyframes pulse{50%{transform:scale(1.03)}}
+  /* --- chapters: four signs on the path --- */
+  h2.sec{margin:6px 0 -8px;font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:center}
+  .chapters{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .ch{position:relative;background:var(--cream);border:3px solid var(--wood2);border-radius:16px;padding:14px 14px 16px;display:grid;gap:8px;align-content:start;box-shadow:0 5px 0 var(--wood2),0 10px 16px rgba(40,25,10,.16)}
+  .ch::before{content:"";position:absolute;left:50%;top:-14px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--wood2);box-shadow:inset 0 2px 3px rgba(0,0,0,.5)}
+  .ch h3{margin:0;font-size:22px;color:var(--wood2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .ch .do{margin:0;font-size:15px;color:var(--muted);line-height:1.3}
+  .ch.locked{background:var(--paper);opacity:.72}
+  .ch.locked h3::after{content:"";width:16px;height:20px;border-radius:4px;background:linear-gradient(180deg,transparent 0 40%,var(--wood2) 40%);box-shadow:inset 0 0 0 2px var(--wood2);border-radius:5px}
+  .ch.now{border-color:#e0a63a;box-shadow:0 5px 0 var(--wood2),0 0 0 4px rgba(255,211,77,.55),0 10px 16px rgba(40,25,10,.16)}
+  .ribbon{position:absolute;right:-8px;top:10px;padding:4px 12px;border-radius:8px 0 0 8px;background:#e0a63a;color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;box-shadow:0 2px 0 #a9702f}
+  .ribbon::after{content:"";position:absolute;right:0;bottom:-6px;border:3px solid #a9702f;border-color:#a9702f transparent transparent #a9702f}
+  .strip{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+  .strip i{display:block;width:15px;height:15px;border-radius:50%;background:rgba(0,0,0,.18);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+  .strip i.half{background:#d9c39a}.strip i.full{background:var(--gold);box-shadow:0 0 6px var(--gold)}
   .strip i.now{outline:3px solid var(--wood);outline-offset:1px}
-  /* the chapter map: four rows, six dots each; a locked chapter is dim, the next level is ringed and named */
-  .map{display:grid;gap:6px}
-  .ch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:15px}
-  .ch b{width:52px;color:var(--wood2)}
-  .ch.locked{opacity:.5}
-  .ch .lbl{font-size:13px;color:var(--muted)}
-  .ch .next{font-size:13px;font-weight:600;color:var(--wood2);background:#fff4d6;border:1px solid var(--wood);border-radius:8px;padding:1px 8px}
-  /* the plot greens up: a corn row per gold star, a hay bale per chapter finished */
-  .pic .corn,.pic .hay{position:absolute;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
-  .pic .corn{width:30px}
-  .pic .hay{width:46px;right:8px;bottom:10px}
-  .pic .goat{position:absolute;right:70px;bottom:6px;height:72px}
-  .play{min-height:56px;border-radius:16px;border:3px solid var(--wood2);background:var(--woodbg);color:var(--cream);font:600 20px/1 var(--font-display);text-decoration:none;display:grid;place-items:center;box-shadow:0 6px 0 var(--wood2),0 10px 14px rgba(20,30,20,.3);text-shadow:0 1px 0 rgba(0,0,0,.4)}
-  .play:active{transform:translateY(4px);box-shadow:0 2px 0 var(--wood2)}
-  .badges{background:var(--cream);border:2px solid var(--line);border-radius:16px;padding:16px 20px;box-shadow:0 4px 0 var(--line)}
-  .badges h2{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-  .badge{display:inline-flex;align-items:center;gap:8px;margin:4px 8px 4px 0;padding:8px 12px;border-radius:12px;background:var(--paper);border:2px solid var(--line);font-weight:600;font-size:15px;opacity:.45}
-  .badge.on{opacity:1;border-color:var(--wood);background:#fff4d6}
-  .badge b{font-size:20px;color:#ffb400}
-  .foot{color:var(--muted);font-size:14px}
+  .ch .st{font-size:13px;color:var(--muted)}
+  /* --- badges: wooden tokens --- */
+  .badges{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+  .badge{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:40px;background:var(--paper);border:2px solid var(--line);font-weight:600;font-size:15px;opacity:.5}
+  .badge b{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:#fff;background:#c9b89a;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+  .badge.on{opacity:1;border-color:var(--wood);background:#fff4d6;box-shadow:0 3px 0 var(--line)}
+  .badge.on b{color:#fff;background:radial-gradient(circle at 35% 30%,#ffe08a,#e0a63a 70%);box-shadow:0 0 8px rgba(255,211,77,.6),inset 0 -3px 0 rgba(0,0,0,.15)}
+  .foot{color:var(--muted);font-size:15px;text-align:center}
   .foot a{color:var(--wood2)}
+  @media (max-width:720px){
+    header{gap:14px;padding-top:18px}.mascot{width:66px;height:80px}.mascot::before,.mascot::after{top:27px;width:16px;height:18px}.mascot::before{left:15px}.mascot::after{right:15px}.mascot i{left:22px;right:22px;bottom:17px;height:9px;border-bottom-width:3px}
+    h1{font-size:46px}.tag{font-size:16px}.farm{height:230px}.farm .corn,.farm .hay{display:none}.chapters{grid-template-columns:1fr 1fr;gap:12px}.ch{padding:12px 12px 14px}.ch h3{font-size:19px}
+  }
+  @media (prefers-reduced-motion:reduce){.mascot,.play{animation:none}}
 </style>
 </head>
 <body>
 <main>
   <header><span class="mascot" aria-hidden="true"><i></i></span><div><h1>Pip</h1><p class="tag">Build the fence. Count with your hands. Pip talks you through it.</p></div></header>
 
-  <section class="games">
-    <article class="game">
-      <h2>Fence</h2>
-      <div class="pic fence" id="plot"><img class="goat" src="/assets/animals/goat.png" alt=""></div>
-      <p class="what">Build a fence with the right number of planks in every part, or the goat gets into the corn.</p>
-      <ol class="steps"><li><span class="n">1</span>Tap the cart, then tap a part of the fence.</li><li><span class="n">2</span>Every part needs the same planks.</li><li><span class="n">3</span>Tap Done. Fix the short part if the goat gets in.</li></ol>
-      <div class="map" id="map"></div>
-      <a class="play" href="/fence">Play Fence</a>
-    </article>
+  <section>
+    <div class="farm" id="farm"><div class="scene" id="scene"></div><span class="yours" id="yours">Your farm</span></div>
+    <div class="playwrap"><a class="play" href="/fence" id="play">Play</a></div>
   </section>
 
-  <section class="badges"><h2>Stars and badges</h2><div id="badges"></div></section>
+  <h2 class="sec">Chapters</h2>
+  <section class="chapters" id="map"></section>
+
+  <h2 class="sec">Badges</h2>
+  <section class="badges" id="badges"></section>
   <p class="foot"><a href="/public/parent.html">For grown-ups</a></p>
 </main>
 <script type="module">
@@ -88,16 +93,28 @@
   const m = fence.mastery || {}, ev = fence.events || [], nodes = f.GRAPH.map(g => g.node);
   const gold = Object.values(m).filter(v => v >= 1).length, silver = Object.values(m).filter(v => v === 0.5).length;
   const open = f.unlocked(m), nextNode = f.next(m), chapterDone = ch => f.GRAPH.filter(g => g.chapter === ch).every(g => m[g.node] > 0);
+  // The farm is the game's own scene with a fence already up: the same art she will build with.
+  if (f.mountScene) {
+    document.head.insertAdjacentHTML("beforeend", `<style>${f.FENCE_CSS}</style>`);
+    const scene = document.getElementById("scene"), plan = f.shape("3x4_concrete");
+    f.mountScene(scene, plan);
+    for (let p = 0; p < plan.groups; p++) for (let i = 0; i < plan.per; i++) f.appendPlank(scene, p, i);
+    scene.querySelectorAll(".hit").forEach(h => h.remove());
+  }
+  document.getElementById("yours").textContent = gold + silver ? `Your farm: ${gold} gold, ${silver} silver` : "Your farm";
+  document.getElementById("play").textContent = Object.keys(m).length ? "Keep building" : "Play";
+  const DO = ["Put the planks up.", "Order in packs first.", "Count the gaps, fill them.", "Choose how many parts."];
   const dot = n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}${n === nextNode ? " now" : ""}"></i>`;
   document.getElementById("map").innerHTML = f.CHAPTERS.map((name, ch) => {
-    const ns = f.GRAPH.filter(g => g.chapter === ch), g = ns.filter(x => m[x.node] >= 1).length, locked = ch > open;
-    return `<div class="ch${locked ? " locked" : ""}"><b>${name}</b><span class="strip">${ns.map(x => dot(x.node)).join("")}</span>` +
-      (locked ? `<span class="lbl">Locked. Three gold stars in ${f.CHAPTERS[ch - 1]} open it.</span>` : ns.some(x => x.node === nextNode) ? `<span class="next">Next</span>` : `<span class="lbl">${g} gold</span>`) + `</div>`; }).join("")
-    + `<span class="lbl" style="font-size:14px;color:var(--muted)">${gold} gold, ${silver} silver</span>`;
-  // Corn in two ranks of twelve, a bale per chapter finished. Sprites are the game's own farm art.
-  const corn = Array.from({ length: gold }, (_, k) => `<img class="corn" src="/assets/farm/cornDouble_E.png" alt="" style="left:${8 + (k % 12) * 38 + (k >= 12 ? 0 : 19)}px;bottom:${k >= 12 ? 14 : 34}px;z-index:${k >= 12 ? 2 : 1}">`);
-  const hay = f.CHAPTERS.map((_, ch) => chapterDone(ch) ? `<img class="hay" src="/assets/farm/hayBales_E.png" alt="" style="bottom:${10 + ch * 14}px;z-index:${3 + ch}">` : "");
-  document.getElementById("plot").insertAdjacentHTML("afterbegin", corn.join("") + hay.join(""));
+    const ns = f.GRAPH.filter(g => g.chapter === ch), g = ns.filter(x => m[x.node] >= 1).length, locked = ch > open, now = ns.some(x => x.node === nextNode);
+    return `<article class="ch${locked ? " locked" : ""}${now ? " now" : ""}">${now ? `<span class="ribbon">Next</span>` : ""}<h3>${name}</h3><p class="do">${DO[ch]}</p>` +
+      `<span class="strip">${ns.map(x => dot(x.node)).join("")}</span>` +
+      `<span class="st">${locked ? `Three gold stars in ${f.CHAPTERS[ch - 1]} open it.` : chapterDone(ch) ? "Chapter done." : `${g} of ${ns.length} gold`}</span></article>`; }).join("");
+  // Corn in two ranks, a bale per chapter finished. Sprites are the game's own farm art.
+  // Two ranks of six on the left grass, front rank lower; past twelve the label carries the count.
+  const corn = Array.from({ length: Math.min(gold, 12) }, (_, k) => `<img class="corn" src="/assets/farm/cornDouble_E.png" alt="" style="left:${22 + (k % 6) * 46 + (k >= 6 ? 0 : 23)}px;bottom:${k >= 6 ? 66 : 92}px;z-index:${k >= 6 ? 6 : 5}">`);
+  const hay = f.CHAPTERS.map((_, ch) => chapterDone(ch) ? `<img class="hay" src="/assets/farm/hayBales_E.png" alt="" style="bottom:${64 + ch * 14}px;z-index:${7 + ch}">` : "");
+  document.getElementById("farm").insertAdjacentHTML("beforeend", corn.join("") + hay.join(""));
   const badges = [
     ["First fence", "A fence finished", Object.keys(m).length > 0],
     ["Goat keeper", "Three gold stars", gold >= 3],
@@ -110,7 +127,7 @@
     ["Farmhand", "All four chapters unlocked", open >= 3],
     ["All the plots", "Every level mastered", nodes.length > 0 && nodes.every(n => m[n] >= 1)],
   ];
-  document.getElementById("badges").innerHTML = badges.map(([t, d, on]) => `<span class="badge ${on ? "on" : ""}" title="${d}"><b>${on ? "★" : "☆"}</b>${t}</span>`).join("");
+  document.getElementById("badges").innerHTML = badges.map(([t, d, on]) => `<span class="badge ${on ? "on" : ""}" title="${d}"><b>★</b>${t}</span>`).join("");
 </script>
 </body>
 </html>

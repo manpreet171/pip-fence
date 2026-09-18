@@ -78,14 +78,18 @@
   #grown:hover{text-decoration:underline}
 
   /* --- bubble on the gap, pips on the rails ------------------------------------------------- */
-  #bubble{pointer-events:none;position:absolute;z-index:6;background:var(--paper);border:2px solid var(--wood);border-radius:14px;padding:12px 16px;
-    font-size:18px;font-weight:500;line-height:1.35;color:var(--ink);box-shadow:0 8px 18px rgba(20,30,20,.35);animation:fade .25s both}
+  #bubble{pointer-events:none;position:absolute;z-index:6;background:var(--cream);border:3px solid var(--wood2);border-radius:18px;padding:12px 16px 12px 14px;
+    font-size:18px;font-weight:500;line-height:1.35;color:var(--ink);box-shadow:0 5px 0 var(--wood2),0 12px 22px rgba(20,30,20,.35);animation:fade .25s both;
+    display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:start}
+  #bubble .pipface{grid-row:1/span 3;margin-top:2px}
+  #bubble #btext{grid-column:2}
+  #bubble #bsrc,#bubble .pipagain{grid-column:2}
   /* the tail sits on whichever edge faces the gap: --tx along the top/bottom edge, --ty along a side */
-  #bubble::after{content:"";position:absolute;width:16px;height:16px;background:var(--paper);transform:rotate(45deg);border:0 solid var(--wood)}
-  #bubble[data-side=bottom]::after{left:var(--tx,50%);bottom:-10px;margin-left:-8px;border-width:0 2px 2px 0}
-  #bubble[data-side=top]::after{left:var(--tx,50%);top:-10px;margin-left:-8px;border-width:2px 0 0 2px}
-  #bubble[data-side=left]::after{top:var(--ty,50%);left:-10px;margin-top:-8px;border-width:0 0 2px 2px}
-  #bubble[data-side=right]::after{top:var(--ty,50%);right:-10px;margin-top:-8px;border-width:2px 2px 0 0}
+  #bubble::after{content:"";position:absolute;width:16px;height:16px;background:var(--cream);transform:rotate(45deg);border:0 solid var(--wood2)}
+  #bubble[data-side=bottom]::after{left:var(--tx,50%);bottom:-10px;margin-left:-8px;border-width:0 3px 3px 0}
+  #bubble[data-side=top]::after{left:var(--tx,50%);top:-10px;margin-left:-8px;border-width:3px 0 0 3px}
+  #bubble[data-side=left]::after{top:var(--ty,50%);left:-10px;margin-top:-8px;border-width:0 0 3px 3px}
+  #bubble[data-side=right]::after{top:var(--ty,50%);right:-10px;margin-top:-8px;border-width:3px 3px 0 0}
   #bsrc{display:block;margin-top:6px;font:11px/1 ui-monospace,monospace;font-weight:400;color:var(--muted)}
   #bsrc:empty,body.judge #bsrc{display:none}
   body.judge #scene{top:88px}   /* with the panel open the stage is narrow: seat the world under the sign */
@@ -324,9 +328,11 @@
     const h = L.findLast(e => e.e === "hint"), mid = Math.floor(s.groups / 2);
     const sum = { first_try: !hinted && L.filter(e => e.e === "commit").length === 1, used_hint: !!h, fixed_after_count: !!h && L.some(e => e.e === "tap_count" && e.t > h.t) && !L.some(e => e.e === "show" && e.t > h.t),   // Pip's own count is not hers
       mode: s.mode === "concrete" ? "build" : s.mode, chapter_done: GRAPH.every(g => g.chapter !== s.chapter || S.mastery[g.node] > 0) };
+    // The card waits for the star moment to pass, so the two never sit on top of each other.
+    const after = fn => setTimeout(fn, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : 2300);
     if (typeof buddy.cheer === "function" && (sum.first_try || sum.fixed_after_count || sum.chapter_done))
-      buddy.cheer(sum).then(c => { if (S.done && S.node === node) bubble(c?.text || "The fence is done.", c?.source || "", mid); }, () => bubble("The fence is done.", "", mid));
-    else bubble("The fence is done.", "", mid);
+      buddy.cheer(sum).then(c => after(() => { if (S.done && S.node === node) bubble(c?.text || "The fence is done.", c?.source || "", mid); }), () => after(() => bubble("The fence is done.", "", mid)));
+    else after(() => { if (S.done && S.node === node) bubble("The fence is done.", "", mid); });
     render();
   }
   // Pip plans the next fence (D-081). Code lists the fences that are open and exercise the last
