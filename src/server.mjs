@@ -107,8 +107,8 @@ async function buddy(req, res) {
   try { out = await phrase(redact(id, tier, shape), { ...model(), wordlist: WORDLIST }); }
   catch { out = { text: TEMPLATES[id][tier], source: "template", reason: "error" }; }
   const { text, source, reason } = out; allow(text);
-  const model = source === "model" && PHRASER.provider ? PROVIDERS[PHRASER.provider].model : undefined;
-  return send(res, 200, JSON.stringify({ text, source, ...(reason && { reason }), ...(model && { model }) }), "application/json");
+  const modelName = source === "model" && PHRASER.provider ? PROVIDERS[PHRASER.provider].model : undefined;
+  return send(res, 200, JSON.stringify({ text, source, ...(reason && { reason }), ...(modelName && { model: modelName }) }), "application/json");
 }
 // The parent note: validated summary in, gated note out; same provider, same fallback discipline.
 async function noteRoute(req, res) {

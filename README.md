@@ -70,7 +70,7 @@ turned out to already exist as Khanmigo. Then the first build was stopped on day
 it was a quiz with a farm behind it. Decision D-043 in the log is the moment we admitted that and
 started again from the research. The fence came out of that restart.
 
-Every one of those turns, eighty-four decisions in all, is in
+Every one of those turns, eighty-five decisions in all, is in
 [docs/DECISIONS.md](docs/DECISIONS.md) with what we rejected and why. Rung was the working name
 until 17 September, the day before the deadline. We kept the dates and the mistakes in because they are the real story.
 
@@ -131,6 +131,7 @@ python evals/run_all.py
 |---|---|
 | `readinglevel.py --assert` | All 48 hint lines: two sentences at most, no digits or number words, words from the early-reader list |
 | `classifier_eval.mjs` | 169 hand-written builds. Right whenever it commits, silent when two mistakes look the same |
+| `server_smoke.mjs` | Every model route answers with a named fallback and never an error, against a key the provider refuses |
 | `buddy_test.mjs` | 86 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
 
 With a live model, measured and written up in `docs/results/`:

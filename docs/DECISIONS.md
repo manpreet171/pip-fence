@@ -2047,3 +2047,20 @@ has a place on the fence. Verified with real clicks on a later level: both butto
 card, the arrow on the short part, and Show me finishing the part. Rejected: running Pip's demo on
 every level (she would build the fence for the child).
 
+
+---
+
+## D-097 — Every hint had been the template since noon, and nobody could see it
+18 Sep 2026 · **Decided**
+
+The owner: "Are you sure the AI is working? I don't want anything hardcoded." Checked live: every
+hint was the written fallback with reason "error". Cause: the daily cap added at noon is a
+function named `model`, and the hint route already had a local constant named `model` for the
+model's name, declared after the call. The call hit the constant before its initialisation, threw,
+and the route's own catch turned that into the template. The other four jobs had no such constant
+and kept working, so nothing looked wrong. Fixed by renaming the constant. Added `server_smoke.mjs`
+to the suite: it starts the server with a key the provider refuses and asserts every model route
+answers with a named fallback reason and never "error", so a route that throws can no longer pass.
+The check fails on the old code and passes on the new. Rejected: trusting the unit tests alone (the
+hint layer was correct; the route around it was not).
+
