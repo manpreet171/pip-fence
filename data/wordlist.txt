@@ -696,3 +696,6 @@ ready
 picked
 easier
 harder
+note
+reach
+blew

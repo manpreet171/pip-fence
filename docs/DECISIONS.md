@@ -1856,3 +1856,24 @@ in her own column and the two buttons as small wood buttons; the star moment has
 sits on a paper chip, and the cheer card now waits for the star to pass. Rejected: new art, a
 mascot redraw, animation for its own sake.
 
+
+---
+
+## D-084 — Words a six-year-old can read, and a voice a six-year-old wants to hear
+18 Sep 2026 · **Decided**
+
+The owner, after playing with the sound on: the text is too old for the youngest players and the
+voice is wrong for the product. Two changes. **Words.** Every child-facing line was swept against the
+500-word list and rewritten for a reader of six: sentences of eight words or fewer where the meaning
+allowed, one idea each, no trade words. "Deliver" is "Bring it", "Order" is "I need", "Next plot" is
+"Next fence", "Say it another way" is "Say it a new way", "fix the fence" is "fill the gaps". Sixteen
+hint templates were shortened with the same meaning; the gate still passes all forty-eight. **Voice.**
+The browser's built-in voices are adult and flat. Every fixed line Pip says, one hundred of them,
+now ships as a small audio file made once from one child's voice (`scripts/make_voice.py`, Microsoft's
+Ana neural voice through the edge-tts package), keyed by the line's text in a manifest. A line the
+model phrased has no file and is spoken by the browser's friendliest voice, which in Edge on Windows
+is the same Ana. The How-to sheet is read aloud line by line, since the child it is for cannot read
+it yet. Rejected: a paid text-to-speech call at run time for every line (a key, a cost and a network
+round trip for words that never change); recording a human (no child's voice may be recorded for
+this product under the same rule that keeps the microphone off).
+

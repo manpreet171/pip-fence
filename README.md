@@ -86,6 +86,17 @@ Open http://localhost:5177/ for the Pip home page; the game is at `/fence`; the 
   decision, the redacted payload, the gate verdict and latency, the mastery map.
   Levels: `{2x3,3x3,3x4,4x3,4x5,2x5}_{concrete,packs}`.
 
+## Pip's voice
+
+Every fixed line Pip says ships as a small audio clip made once from one child's voice, so the game
+sounds the same on every device. To remake them after changing a line:
+
+```bash
+pip install edge-tts && python scripts/make_voice.py
+```
+
+Lines the model phrases at run time are spoken by the browser's own voice.
+
 ## Evals
 
 ```bash

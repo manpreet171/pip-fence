@@ -71,7 +71,7 @@
 </head>
 <body>
 <main>
-  <header><span class="mascot" aria-hidden="true"><i></i></span><div><h1>Pip</h1><p class="tag">Build the fence. Count with your hands. Pip talks you through it.</p></div></header>
+  <header><span class="mascot" aria-hidden="true"><i></i></span><div><h1>Pip</h1><p class="tag">Build the fence. Count with your hands. Pip helps you.</p></div></header>
 
   <section>
     <div class="farm" id="farm"><div class="scene" id="scene"></div><span class="yours" id="yours">Your farm</span></div>
@@ -103,13 +103,13 @@
   }
   document.getElementById("yours").textContent = gold + silver ? `Your farm: ${gold} gold, ${silver} silver` : "Your farm";
   document.getElementById("play").textContent = Object.keys(m).length ? "Keep building" : "Play";
-  const DO = ["Put the planks up.", "Order in packs first.", "Count the gaps, fill them.", "Choose how many parts."];
+  const DO = ["Put the planks up.", "Get packs first.", "Fill the gaps.", "Pick how many parts."];
   const dot = n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}${n === nextNode ? " now" : ""}"></i>`;
   document.getElementById("map").innerHTML = f.CHAPTERS.map((name, ch) => {
     const ns = f.GRAPH.filter(g => g.chapter === ch), g = ns.filter(x => m[x.node] >= 1).length, locked = ch > open, now = ns.some(x => x.node === nextNode);
     return `<article class="ch${locked ? " locked" : ""}${now ? " now" : ""}">${now ? `<span class="ribbon">Next</span>` : ""}<h3>${name}</h3><p class="do">${DO[ch]}</p>` +
       `<span class="strip">${ns.map(x => dot(x.node)).join("")}</span>` +
-      `<span class="st">${locked ? `Three gold stars in ${f.CHAPTERS[ch - 1]} open it.` : chapterDone(ch) ? "Chapter done." : `${g} of ${ns.length} gold`}</span></article>`; }).join("");
+      `<span class="st">${locked ? `Get three gold stars in ${f.CHAPTERS[ch - 1]} to open this.` : chapterDone(ch) ? "Chapter done." : `${g} of ${ns.length} gold`}</span></article>`; }).join("");
   // Corn in two ranks, a bale per chapter finished. Sprites are the game's own farm art.
   // Two ranks of six on the left grass, front rank lower; past twelve the label carries the count.
   const corn = Array.from({ length: Math.min(gold, 12) }, (_, k) => `<img class="corn" src="/assets/farm/cornDouble_E.png" alt="" style="left:${22 + (k % 6) * 46 + (k >= 6 ? 0 : 23)}px;bottom:${k >= 6 ? 66 : 92}px;z-index:${k >= 6 ? 6 : 5}">`);
@@ -119,13 +119,13 @@
     ["First fence", "A fence finished", Object.keys(m).length > 0],
     ["Goat keeper", "Three gold stars", gold >= 3],
     ["Pack builder", "A packs level mastered", Object.keys(m).some(k => k.endsWith("_packs") && m[k] >= 1)],
-    ["Pip's friend", "Asked Pip to say it another way", ev.some(e => e.e === "hint" && e.tier > 1)],
+    ["Pip's friend", "Asked Pip to say it a new way", ev.some(e => e.e === "hint" && e.tier > 1)],
     ["Careful counter", "Five fences without a hint", gold >= 5],
     ["Chapter two", "Packs unlocked", open >= 1],
     ["Fixer", "A fix level mastered", Object.keys(m).some(k => k.endsWith("_fix") && m[k] >= 1)],
     ["Fair shares", "A share level mastered", Object.keys(m).some(k => k.endsWith("_share") && m[k] >= 1)],
     ["Farmhand", "All four chapters unlocked", open >= 3],
-    ["All the plots", "Every level mastered", nodes.length > 0 && nodes.every(n => m[n] >= 1)],
+    ["All the fences", "Every level mastered", nodes.length > 0 && nodes.every(n => m[n] >= 1)],
   ];
   document.getElementById("badges").innerHTML = badges.map(([t, d, on]) => `<span class="badge ${on ? "on" : ""}" title="${d}"><b>★</b>${t}</span>`).join("");
 </script>

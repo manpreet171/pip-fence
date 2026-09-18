@@ -82,9 +82,9 @@ export function codeShow({ per, parts, cart }) {
   const p = parts.findIndex(n => n !== per); if (p < 0) return [];
   const short = parts[p] < per, n = Math.abs(per - parts[p]);
   if (short && cart < n) return [];
-  return [{ op: "point", part: p }, { op: "say", text: short ? "This part is short. I count it first." : "This part has a plank over the post. I count it first." }, { op: "count", part: p },
+  return [{ op: "point", part: p }, { op: "say", text: short ? "This part is short. I count it first." : "This part has a plank sticking out. I count it first." }, { op: "count", part: p },
     ...Array.from({ length: n }, () => ({ op: short ? "place" : "remove", part: p })),
-    { op: "say", text: short ? "Now it comes up to the top of its post. You do the other parts like this." : "Now it stops at the top of its post. Look at the other parts like this." }];
+    { op: "say", text: short ? "Now it reaches the top of its post. You do the other parts like this." : "Now it stops at the top of its post. Look at the other parts like this." }];
 }
 
 // Final planks per part plus the bookkeeping classify() needs. Pure arithmetic on the log. Fix starts

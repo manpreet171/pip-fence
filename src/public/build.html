@@ -121,8 +121,8 @@
   <div id="sign"><span class="brand">Pip · Fence</span><span id="task"></span><span id="strip"></span></div>
   <div id="hud">
     <div id="cart" class="tray"><span class="lbl" id="cartl">Cart</span><div id="pile"></div></div>
-    <div id="slip" class="tray" hidden><span class="lbl">Order</span><div id="note"><button id="addpack" title="add a pack"></button><div id="slipn"></div></div></div>
-    <button class="btn" id="deliver" hidden>Deliver</button>
+    <div id="slip" class="tray" hidden><span class="lbl">I need</span><div id="note"><button id="addpack" title="add a pack"></button><div id="slipn"></div></div></div>
+    <button class="btn" id="deliver" hidden>Bring it</button>
     <button class="btn" id="addpart" hidden>+ part</button>
     <button class="btn" id="delpart" hidden>&minus; part</button>
     <button class="btn" id="build" hidden>Build</button>
@@ -182,8 +182,8 @@
     const s = sh();
     mountScene(scene, s.mode === "share" ? { ...s, groups: S.n } : s);
     S.parts.forEach((n, p) => { for (let i = 0; i < n; i++) appendPlank(scene, p, i); });
-    $("task").textContent = s.mode === "share" ? `${s.groups * s.per} planks · parts of ${s.per} · how many parts?`
-      : `${s.groups} parts · ${s.per} planks in each part` + ({ packs: ` · packs of ${s.pack}`, fix: " · fix the fence" }[s.mode] || "");
+    $("task").textContent = s.mode === "share" ? `${s.groups * s.per} planks · ${s.per} in each part · how many parts?`
+      : `${s.groups} parts · ${s.per} planks in each part` + ({ packs: ` · packs of ${s.pack}`, fix: " · fill the gaps" }[s.mode] || "");
     stripNow();
     hideBubble(); render();
   }
@@ -202,16 +202,16 @@
     $("cart").hidden = !d; $("slip").hidden = d || share; $("deliver").hidden = d || share; $("done").hidden = !d;
     $("addpart").hidden = d || !share; $("delpart").hidden = d || !share || !S.n; $("build").hidden = d || !share || !S.n;
     $("again").hidden = !(s.mode !== "concrete" && d && lvl().some(e => e.e === "hint") && !S.done);
-    $("again").textContent = share ? "Build again" : "Order again";
+    $("again").textContent = "Try again";
     if (d) {
       $("pile").innerHTML = heap(S.cart, packs ? pack(s.pack) : plank(), packs ? 34 : 34);
       $("cart").classList.toggle("held", !!S.held);
-      $("cartl").textContent = !S.cart ? "Cart is empty" : S.held ? "In hand. Tap a part." : "Cart";
+      $("cartl").textContent = !S.cart ? "Cart is empty" : S.held ? "Got it. Tap a part." : "Cart";
     } else if (!share) {                               // the order slip: pack silhouettes in packs, single planks in fix
       $("addpack").innerHTML = pack(packs ? s.pack : 1);
       $("slipn").innerHTML = Array.from({ length: S.slip }, () => pack(packs ? s.pack : 1)).join("");
     }
-    $("done").textContent = S.done ? "Next plot" : "Done";
+    $("done").textContent = S.done ? "Next fence" : "Done";
   }
 
   // --- input -----------------------------------------------------------------------------------
@@ -354,7 +354,7 @@
     if (L.some(e => e.e === "hint" && e.id === "ambiguous")) { const n = next(S.mastery, { id: "ambiguous", node: S.node }); return n ? start(n) : end(); }
     const last = { id: L.findLast(e => e.e === "hint")?.id || "correct", node: S.node }, cands = candidates(S.mastery, last);
     if (!cands.length) return end();
-    $("done").disabled = true; $("done").textContent = "Pip is choosing";
+    $("done").disabled = true; $("done").textContent = "Pip is picking";
     const p = typeof buddy.plan === "function" ? await buddy.plan({ mastery: S.mastery, history: recent(), last }) : null;
     $("done").disabled = false;
     const valid = cands.includes(p?.node), node = valid ? p.node : (next(S.mastery, last) ?? cands[0]);
@@ -365,7 +365,7 @@
   // Every plot fenced. Mastery stays (the parent screen reads it) until she taps Start again.
   function end() {
     S.done = S.ended = true; save(); clearTimeout(S.idle); hideBubble();
-    $("task").textContent = "Every plot has a fence.";
+    $("task").textContent = "Every fence is done!";
     for (const id of ["cart", "slip", "deliver", "done", "again"]) $(id).hidden = true;
     $("restart").hidden = false;
   }
@@ -415,18 +415,34 @@
   // text, once per card, never over the counting pips. One control, remembered on this device.
   const tts = globalThis.speechSynthesis, SOUND = "rung.sound";
   let sound = true; try { sound = localStorage.getItem(SOUND) !== "0"; } catch {}
-  $("sound").hidden = !tts;
+  $("sound").hidden = false;
   const soundLabel = () => { $("sound").textContent = sound ? "Sound on" : "Sound off"; };
   soundLabel();
-  $("sound").onclick = () => { sound = !sound; try { localStorage.setItem(SOUND, sound ? "1" : "0"); } catch {} soundLabel(); if (!sound) tts.cancel(); };
+  $("sound").onclick = () => { sound = !sound; try { localStorage.setItem(SOUND, sound ? "1" : "0"); } catch {} soundLabel(); if (!sound) hush(); };
+  // Pip's voice (D-084): every fixed line ships as a small audio file made from one child's voice
+  // (scripts/make_voice.py); the manifest maps text to file. A line with no file, which is always a
+  // model-phrased one, is spoken by the browser's own voice, the friendliest one it has.
+  let VOICE = await Promise.race([fetch("/assets/voice/manifest.json").then(r => r.ok ? r.json() : {}), new Promise(r => setTimeout(() => r({}), 1500))]).catch(() => ({}));
+  let clip = null;
+  const hush = () => { tts?.cancel(); if (clip) { clip.pause(); clip = null; } };
+  const PREFER = /Ana|Maisie|Libby|Sonia|Aria|Jenny|Ava|Emma|Google UK English Female|Samantha|Zira/;
+  function voiceNow(text, rate = 0.92) {                 // -> resolves when the line has been said
+    return new Promise(done => {
+      if (VOICE[text]) { clip = new Audio("/assets/voice/" + VOICE[text]); clip.onended = clip.onerror = done; clip.play().catch(done); return; }
+      if (!tts) return done();
+      const u = new SpeechSynthesisUtterance(text); u.rate = rate; u.pitch = 1.1; u.lang = "en"; u.onend = u.onerror = done;
+      const vs = tts.getVoices().filter(v => /^en/i.test(v.lang));
+      const v = vs.find(v => PREFER.test(v.name) && /Natural|Online/.test(v.name)) || vs.find(v => PREFER.test(v.name)) || vs[0]; if (v) u.voice = v;
+      tts.speak(u);
+    });
+  }
+  // The sheet is read aloud line by line, because the child it is for cannot read it yet.
+  async function sayAll(lines) { for (const l of lines) { if (!sound || !document.getElementById("howto")) return; hush(); await voiceNow(l); await new Promise(r => setTimeout(r, 350)); } }
   function speak(text) {
-    if (!tts || !sound) return;
+    if (!sound) return;
     const wait = (S.pips || 0) - Date.now();
     if (wait > 0) return setTimeout(() => { if (!$("bubble").hidden && $("btext").textContent === text) speak(text); }, wait);
-    tts.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.rate = 0.92; u.pitch = 1; u.lang = "en";
-    const v = tts.getVoices().find(v => /^en/i.test(v.lang)); if (v) u.voice = v;
-    tts.speak(u);
+    hush(); voiceNow(text);
   }
   // Beside the gap, never on it (D-070): bubbleSpot keeps the card off every post, rail and the goat, and
   // off the sign; on a phone with no room beside, it goes in the band under the sign.
@@ -448,22 +464,22 @@
   // new move on the real board (demo()).
   const HOW = {
     concrete: { key: "pip.howto.fence", title: "How to play: Build", sub: "Build the fence so the goat stays out of the corn.",
-      steps: ["Tap the cart to pick up a plank. Tap a part of the fence to put it there.",
-              "Every part needs the same number of planks. The sign tells you how many.",
-              "Tap Done. If a part is short, the goat gets in. Fix it and try again."] },
-    packs: { key: "pip.howto.packs", title: "How to play: Packs", sub: "The planks come in packs now. Order the packs first.",
-      steps: ["A pack holds more than one plank. Look inside a pack on the order slip.",
-              "Tap the pack on the slip once for every pack you need. Then tap Deliver.",
-              "Tap the cart, then a part. A whole pack goes on at once. Tap Done when every part is full."] },
-    fix: { key: "pip.howto.fix", title: "How to play: Fix", sub: "The wind knocked planks out. Fill the gaps.",
-      steps: ["Look at each part. Count the empty spaces, not the planks that are there.",
-              "Tap the plank on the slip once for every empty space in the whole fence. Then tap Deliver.",
-              "Put the planks in the gaps. Tap Done when every part is full again."] },
-    share: { key: "pip.howto.share", title: "How to play: Share", sub: "Share the planks out. You choose how many parts.",
-      steps: ["The sign says how many planks you have and how many go in each part.",
-              "Tap + part until there is a part for every full set of planks. Then tap Build.",
-              "Fill every part from the cart. Tap Done when the cart is empty and every part is full."] } };
-  const howFor = mode => pip.howto({ ...HOW[mode], go: "Show me, Pip" });
+      steps: ["Tap the cart. You pick up a plank. Tap a part. The plank goes on.",
+              "Every part needs the same planks. The sign says how many.",
+              "Tap Done. If a part is short, the goat gets in. Fix it."] },
+    packs: { key: "pip.howto.packs", title: "How to play: Packs", sub: "Now the planks come in packs. Get the packs first.",
+      steps: ["A pack holds more than one plank. Look inside a pack.",
+              "Tap the pack once for each pack you need. Then tap Bring it.",
+              "Tap the cart, then a part. A whole pack goes on. Tap Done when every part is full."] },
+    fix: { key: "pip.howto.fix", title: "How to play: Fix", sub: "The wind blew some planks out. Fill the gaps.",
+      steps: ["Look at each part. Count the empty spaces, not the planks.",
+              "Tap the plank once for each empty space. Then tap Bring it.",
+              "Put the planks in the gaps. Tap Done."] },
+    share: { key: "pip.howto.share", title: "How to play: Share", sub: "Share the planks out. You pick how many parts.",
+      steps: ["The sign says how many planks. And how many go in each part.",
+              "Tap + part until every plank has a part. Then tap Build.",
+              "Fill every part. Tap Done when the cart is empty."] } };
+  const howFor = mode => pip.howto({ ...HOW[mode], go: "Show me, Pip", say: lines => sayAll(lines), quiet: hush });
   $("howtob").onclick = () => howFor(sh().mode)();
 
   // --- Pip builds the first part herself on a fresh install, counting aloud, then hands over ------------
@@ -471,7 +487,7 @@
   const GUIDE = { concrete: "pip.guide.fence", packs: "pip.guide.packs", fix: "pip.guide.fix", share: "pip.guide.share" };
   const guided = () => { try { return localStorage.getItem(GUIDE[sh().mode]) === "1"; } catch { return false; } };
   const guideDone = () => { try { localStorage.setItem(GUIDE[sh().mode], "1"); } catch {} };
-  function speakNow(text) { if (!tts || !sound) return; const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; u.lang = "en"; const v = tts.getVoices().find(v => /^en/i.test(v.lang)); if (v) u.voice = v; tts.speak(u); }
+  function speakNow(text) { if (sound) voiceNow(text, 0.95); }
   const COUNT = ["one", "two", "three", "four", "five", "six"];
   async function demo() {
     const s = sh(); if (lvl().some(e => ["place", "order", "parts"].includes(e.e))) return guideDone();
@@ -479,28 +495,28 @@
     const say = async (text, part, ms) => { bubble(text, "", part); await sl(ms); };
     await say("Watch me first.", 0, 1600);
     if (s.mode === "concrete") {
-      await say("The sign says how many planks each part needs. I take a plank from the cart and put it on this part.", 0, 3600);
+      await say("The sign says how many planks go in each part. I take a plank. I put it on this part.", 0, 3400);
       S.held = "plank"; render();
       for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); speakNow(COUNT[k] || ""); await sl(900); }
       S.held = null; render();
-      bubble("That part is full. Now you do the other parts. Tap the cart, then a part.", "", 0);
+      bubble("This part is full. Now you do the other parts. Tap the cart. Then tap a part.", "", 0);
     } else if (s.mode === "packs") {
-      await say("The planks come in packs now. Look at the pack on the slip. I count the planks inside it.", 0, 3200);
+      await say("Now the planks come in packs. Look at the pack. I count the planks in it.", 0, 3000);
       for (let k = 0; k < s.pack; k++) { speakNow(COUNT[k] || ""); await sl(800); }
-      await say("So a pack is more than a plank. I tap the pack on the slip once, and that orders a whole pack.", 0, 3400);
+      await say("A pack is more than one plank. I tap the pack once. That gets me a whole pack.", 0, 3200);
       S.slip = 1; render(); await sl(1200);
-      bubble("Now you order the rest. Think how many planks a part needs, then tap the slip for the packs. Then tap Deliver.", "", 0);
+      bubble("Now you get the rest. How many planks does a part need? Tap the pack for each pack you need. Then tap Bring it.", "", 0);
     } else if (s.mode === "fix") {
       const p = Math.max(0, S.parts.findIndex(n => n < s.per)), gaps = s.per - S.parts[p];
-      await say("The wind knocked planks out. This part has empty spaces at the top. I count the spaces, not the planks.", p, 3800);
+      await say("The wind blew some planks out. This part has empty spaces at the top. I count the spaces, not the planks.", p, 3800);
       for (let k = 0; k < gaps; k++) { speakNow(COUNT[k] || ""); S.slip++; render(); await sl(900); }
-      await say("I tapped the slip once for each empty space in this part.", p, 2600);
-      bubble("Now you count the empty spaces in the other parts and tap the slip for them. Then tap Deliver.", "", p);
+      await say("I tapped once for each empty space in this part.", p, 2400);
+      bubble("Now you count the empty spaces in the other parts. Tap once for each space. Then tap Bring it.", "", p);
     } else if (s.mode === "share") {
-      await say("The sign says how many planks we have, and how many go in each part. Nobody said how many parts. We choose.", 0, 4000);
+      await say("The sign says how many planks we have. And how many go in each part. But not how many parts. We pick that.", 0, 4000);
       S.n = 1; mount(); await sl(600);
-      await say("I added a part. It will take a full set of planks from the cart.", 0, 2800);
-      bubble("Keep adding parts until every plank has a part to go on. Then tap Build.", "", 0);
+      await say("I added a part. It needs a full set of planks.", 0, 2600);
+      bubble("Add a part for every full set of planks. Then tap Build.", "", 0);
     }
     guideDone();
   }

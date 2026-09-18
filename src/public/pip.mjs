@@ -51,14 +51,15 @@ const css = () => { if (!cssDone) { document.head.insertAdjacentHTML("beforeend"
 export const face = () => `<span class="pipface" aria-hidden="true"><i></i></span>`;
 
 // How to play: three steps, shown once on a fresh install (key in localStorage) and on demand.
-export function howto({ key, title, sub, steps, go = "Let's play" }) {
+export function howto({ key, title, sub, steps, go = "Let's play", say, quiet }) {
   css();
   const seen = () => { try { return localStorage.getItem(key) === "1"; } catch { return false; } };
   const show = () => {
     document.getElementById("howto")?.remove();
     document.body.insertAdjacentHTML("beforeend", `<div id="howto" role="dialog" aria-modal="true"><div class="card"><div class="head">${face()}<div><h2>${title}</h2><p class="sub">${sub}</p></div></div>
       <ol>${steps.map((s, i) => `<li><span class="n">${i + 1}</span><span>${s}</span></li>`).join("")}</ol><button class="go">${go}</button></div></div>`);
-    document.querySelector("#howto .go").onclick = () => { document.getElementById("howto").remove(); try { localStorage.setItem(key, "1"); } catch {} };
+    document.querySelector("#howto .go").onclick = () => { document.getElementById("howto").remove(); quiet?.(); try { localStorage.setItem(key, "1"); } catch {} };
+    say?.([sub, ...steps]);
   };
   if (!seen()) show();
   return show;
@@ -92,8 +93,8 @@ export function showme(cardTextEl, handler) {
 // through the same gate and judge and returns the text (or the template when the model is out).
 export function again(cardTextEl, handler) {
   css();
-  const b = document.createElement("button"); b.className = "pipagain"; b.type = "button"; b.textContent = "Say it another way";
-  b.onclick = async () => { b.disabled = true; b.textContent = "Pip is thinking…"; try { await handler(); } finally { b.disabled = false; b.textContent = "Say it another way"; } };
+  const b = document.createElement("button"); b.className = "pipagain"; b.type = "button"; b.textContent = "Say it a new way";
+  b.onclick = async () => { b.disabled = true; b.textContent = "Pip is thinking…"; try { await handler(); } finally { b.disabled = false; b.textContent = "Say it a new way"; } };
   cardTextEl.after(b);
   return b;
 }

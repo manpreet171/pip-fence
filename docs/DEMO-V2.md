@@ -31,6 +31,8 @@ Every number spoken on camera comes from a committed doc, named below in bracket
 - "100% accurate" (say *right whenever it commits*), "zero dependencies" without *runtime*, "independent QA passed" without *and I then played every state by hand*, "improves learning".
 
 ## Before filming
+- Record in Microsoft Edge on Windows: the model's own lines then use the same child's voice (Ana) as the bundled clips. In Chrome they fall back to Google's voice.
+- Reach `/fence` by tapping Play on the home page, not by typing the URL, so the browser lets the How-to sheet read itself aloud.
 - Clear `rung.v1` in the browser; run with `DEEPSEEK_API_KEY` set so `?debug=1` shows `model`.
 - Start the control arm in a second window with `CONTROL_ARM=1 PORT=5178 node src/server.mjs`.
 - Tap Done inside a few seconds of the last plank; the idle timer is 45 s.
