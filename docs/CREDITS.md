@@ -1,19 +1,21 @@
-# CREDITS
+# Credits
 
 ## Artwork
-Isometric village art by **Kenney** (kenney.nl) — released under **CC0 1.0 Universal
-(public domain)**. No attribution is required; credited here as good practice.
+Isometric art by **Kenney** (kenney.nl), CC0 1.0 public domain. No attribution is required;
+credited here as good practice. Licence text ships beside the assets.
 
-- *Isometric Tiles: Landscape* (128 tiles) — ground, paths, water (`src/public/assets/iso/`, licence alongside)
-- *Isometric Miniature Farm* (all east-facing sprites) — buildings, fences, planks, crops, props (`src/public/assets/farm/`, `assets/probe/`, `assets/fence/` cut-outs; licence alongside)
-- *Animal Pack Redux* — goat, chicken, cow, pig (`src/public/assets/animals/`). No sheep exists in any Kenney pack; the escaping animal is a goat by necessity, not choice (see `docs/ART-FEASIBILITY.md`).
-
-CC0 permits commercial and personal use without permission. License text ships alongside
-the assets where the pack provided one.
+- *Isometric Tiles: Landscape*: ground, paths (`src/public/assets/iso/`)
+- *Isometric Miniature Farm*: buildings, fences, planks, crops, props (`src/public/assets/farm/`, `fence/`)
+- *Animal Pack Redux*: the goat (`src/public/assets/animals/`). No Kenney pack has a sheep.
 
 ## Type
 **Fredoka** by Milena Brandão and the Fredoka Project Authors, SIL Open Font License 1.1
-(`src/public/assets/fonts/Fredoka.ttf`, licence text in `OFL.txt` beside it).
+(`src/public/assets/fonts/`).
+
+## Voice
+Pip's fixed lines are audio clips made once from Microsoft's Ana neural voice through the
+`edge-tts` package (`scripts/make_voice.py`). Lines the model phrases at run time use the
+browser's own voice.
 
 ## Everything else
-Engine, adaptive model, coach, evaluation harness and application code: Manpreet Singh.
+Game, classifier, hint layer, evaluation harness and application code: Manpreet Singh.

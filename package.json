@@ -1,0 +1,7 @@
+{
+  "name": "pip",
+  "private": true,
+  "description": "A fence-building maths game for children aged 6 to 10. The arithmetic is the build.",
+  "engines": { "node": ">=22" },
+  "scripts": { "start": "node src/server.mjs", "test": "python evals/run_all.py" }
+}

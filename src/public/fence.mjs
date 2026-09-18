@@ -189,7 +189,11 @@ function resolveAmbiguous(events, hints, c, s, out) {
 // Part 2: DOM. Runs only inside exported functions, so `node` imports stay clean.
 // Sprites are the Kenney cut-outs from scripts/make_parts.py. Geometry is in source px, scaled by
 // K so one fence part (122 source px between post centres) spans one tile edge (66 world px).
-import { iso, BB } from "./village.mjs";
+// Isometric placement: tile (r, c) to screen, and each farm sprite's measured opaque bounds
+// [left, top, right, bottom] in its 256x512 source, so art is anchored by its feet, not its box.
+const TW = 132, TH = 66, DEEP = 3;   // tile diamond 132x66; the paddock is `groups` tiles wide and DEEP tiles back
+const iso = (r, c, originX, originY) => ({ x: originX + (c - r) * (TW / 2), y: originY + (c + r) * (TH / 2) });
+export const BB = {"fenceHigh":[0,277,134,451],"dirtFarmland":[0,373,256,512],"cornDouble":[1,285,231,491],"hayBalesStacked":[22,346,211,489],"woodWallDoorClosed":[0,220,141,455],"roofSingle":[0,313,256,512],"woodWallWindow":[0,220,141,455],"roof":[0,242,256,512],"woodWallGateClosed":[0,220,141,455],"chimneyBase":[0,250,136,452],"chimneyTop":[61,250,113,441],"planksHigh":[0,354,256,510],"ladderStraight":[41,275,145,457],"cornYoungDouble":[32,376,219,490],"sacksCrate":[71,401,163,469],"planksSide":[0,364,256,512]};
 
 // The slice classify() reads: the current level, and after an `order_reset` ("Order again") only the
 // events since it — plus the earlier hints, so the tier keeps climbing. Pure; here so the parent page
@@ -199,7 +203,6 @@ export function level(events) {
   return i < 0 ? L : [L[0], ...L.slice(1, i).filter(e => e.e === "hint"), ...L.slice(i + 1)];
 }
 
-const TW = 132, TH = 66, DEEP = 3;                    // the paddock is `groups` tiles wide and DEEP tiles back
 const K = 66 / 122;                                   // farm art is scaled per call from its 256-wide canvas
 const KT = TW / 256;                                  // a 256-wide farm canvas on one 132-wide tile
 const POST_W = 14, RAIL_W = 108, RAIL_H = 65, SLAB = 11, PITCH = 24;
@@ -232,7 +235,7 @@ function goatFeet(p, inside, g) {
 const goatBox = (p, inside, g) => { const q = goatFeet(p, inside, g); return { l: q.x - GOAT_W / 2, t: q.y - GOAT_H, w: GOAT_W, h: GOAT_H }; };
 const at = (b, g) => `left:${px(b.l - g.bx.l)};top:${px(b.t - g.bx.t)};width:${px(b.w)};height:${px(b.h)}`;  // explicit height: the box is hittable before the image decodes
 
-// Farm art anchored by the bottom-centre of its measured opaque bounds (BB), the way village.mjs seats
+// Farm art anchored by the bottom-centre of its measured opaque bounds (BB), so every sprite stands on its feet
 // buildings; (x,y) is the ground point, w the on-screen canvas width. For props (hay, sack).
 const farm = (key, x, y, z, g, w = TW) => { const bb = BB[key], k = w / 256;
   return `<img class="bld" src="${A}farm/${key}_E.png" alt="" style="z-index:${z};left:${px(x - ((bb[0] + bb[2]) / 2) * k - g.bx.l)};top:${px(y - bb[3] * k - g.bx.t)};width:${px(w)}">`; };

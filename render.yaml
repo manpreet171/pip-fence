@@ -1,0 +1,12 @@
+# One-click deploy: https://render.com/deploy?repo=https://github.com/manpreet171/pip-fence
+services:
+  - type: web
+    name: pip
+    runtime: node
+    plan: free
+    buildCommand: ""
+    startCommand: node src/server.mjs
+    healthCheckPath: /
+    envVars:
+      - key: DEEPSEEK_API_KEY
+        sync: false

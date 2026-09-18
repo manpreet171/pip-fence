@@ -2,8 +2,7 @@
 
 `node evals/latency_cost.mjs` against the shipped `phrase()` path: real redacted payloads for all 8
 misconception ids × tiers 1–3, the full output gate applied, template fallback on any rejection.
-Provider: **DeepSeek `deepseek-v4-flash`**, thinking disabled, JSON mode (D-067). Raw log:
-`evals/latency_cost_deepseek.txt`.
+Provider: **DeepSeek `deepseek-v4-flash`**, thinking disabled, JSON mode (D-067). Raw log kept locally.
 
 | Metric | Value |
 |---|---|

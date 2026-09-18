@@ -9,7 +9,7 @@ is a rejection. The judge sees no number: the template has none by construction 
 has already passed the gate.
 
 `node evals/judge_eval.mjs` — 20 live rephrases, tiers 2 and 3 (tier 1 never calls the model),
-`deepseek-v4-flash` phrasing and judging. Raw log: `evals/judge_eval_results.txt`.
+`deepseek-v4-flash` phrasing and judging. Raw log kept locally.
 
 | Outcome | Count |
 |---|---|

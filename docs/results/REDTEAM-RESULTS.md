@@ -1,14 +1,19 @@
 # RED-TEAM RESULTS — does the redacted buddy payload leak the answer? (4 Sep 2026)
 
-Answers REVIEW-R1 #1 (FATAL): "the model cannot leak a number it was never given" was false in
-v3 because the build state handed the target over in factored form. CONCEPT-V3.1 §3 redacts the
-payload to zero integers. This eval measures whether that redaction actually works — i.e. the
+> **Final result (Update 5, the shipped payload):** an attacker model shown everything the hint
+> model is shown recovers the answer no better than always guessing the commonest one (+0.0%
+> lift), and shown only the hint the child sees, worse (−3.3%). The five updates below are the
+> trail: a real leak was found on the first design and closed.
+
+An early design claimed "the model cannot leak a number it was never given". That was false,
+because the build state handed the target over in factored form. The payload now carries zero
+integers. This eval measures whether that redaction actually works — i.e. the
 **architecture**, not the output gate.
 
 Harness: `evals/redteam_leak.py`. Method: serialise the *exact* v3.1 payload for 60 fixtures
 (6 shapes × 2 modes × 6 misconceptions), hand the entire input to an attacker model from a
 **different family than the coach** (DeepSeek vs Claude Haiku — per the self-preference note in
-`AI-ARCHITECTURE.md`), and ask it to infer target total, per-part, parts, and planks still
+the design notes), and ask it to infer target total, per-part, parts, and planks still
 needed. Score against chance.
 
 ## Result
@@ -81,7 +86,7 @@ The first run let the attacker abstain (it answered 0, outside the answer set), 
 4. **Gate honesty (Review R2, N2):** the zero-digit/zero-number-word gate is **lexical**. It
    protects the *target total*; it does not and cannot close the semantic channel ("add another
    plank"). That is deliberate — the next action is exactly what a tutor hints. The claim is
-   narrowed accordingly in CONCEPT-V3.2.
+   narrowed accordingly in the design.
 
 **Standing residuals:** one attacker family only (no second-family key available here); rerun on
 the *final* templates before citing; balance the fixture marginal so the majority baseline is
@@ -106,7 +111,7 @@ residual is closed. Standing residual: one attacker family only (no second key a
 
 ## UPDATE 3 — v3.2 shape set (6×2 → 2×5), final templates, forced choice
 
-CONCEPT-V3.2 rebalanced the shapes so no total dominates, and scheduled this rerun for day 8.
+The design rebalanced the shapes so no total dominates; this is the rerun.
 Run today instead. Attacker DeepSeek (≠ coach family), 60 fixtures, forced choice from the
 answer set {6, 9, 10, 12, 20}:
 
@@ -136,8 +141,7 @@ majority-shape 20.0% (lift −5.0%); totals on these fixtures {6: 11, 9: 9, 10: 
 Modal guess 12 on 57/60 fixtures — pure prior. By tier: 6/21, 9/18, 3/21 — the walk-her-there
 tier-3 templates leak nothing extra. By id, the only cell above the baseline is
 `counted_groups_as_group_size` 4/6; at n=6 with a 31.7% prior that is P≈0.10 under no-leak, and the
-attacker's guess there was 12 in every case — the prior again, not the template. **PASS.** Raw:
-`evals/redteam_leak_results_tiers.json`.
+attacker's guess there was 12 in every case — the prior again, not the template. **PASS.** Raw log kept locally.
 
 **Infrastructure note, so nobody repeats it.** `deepseek-v4-flash` is a reasoning model. The first
 two runs today returned `finish_reason: length` with 8K–32K characters of `reasoning_content` and an
@@ -192,4 +196,4 @@ digit, a number word, or an ordinal (`second`…`twelfth` were searched for; onl
   allowed — the templates use it and it carries no count. No hint in this run used an ordinal; the
   gate now rejects them before one does.
 
-Raw: `evals/redteam_leak_results_tiers.json`, `evals/redteam_leak_results_output.json`.
+Raw logs kept locally; `python evals/redteam_leak.py` regenerates them.

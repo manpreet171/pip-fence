@@ -10,3 +10,6 @@ __pycache__/
 heritage/
 docs/history/
 evals/history/
+
+# measured runs are written up in docs/results; raw output stays local
+evals/results/

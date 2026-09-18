@@ -9,16 +9,21 @@ Built for the Nerdy AI Hackathon Challenge, September 2026.
 
 ![The home page: the farm, the chapters, the badges](docs/shots/home.png)
 
-## Run it
+## Try it
 
 ```bash
-node src/server.mjs
+git clone https://github.com/manpreet171/pip-fence.git && cd pip-fence && node src/server.mjs
 ```
 
 Open http://localhost:5177. No dependencies, Node 22. Set `DEEPSEEK_API_KEY` or
 `ANTHROPIC_API_KEY` for the model; without a key every line falls back to a template and the game
-still works. Press **J** in the game to watch the AI pipeline live. How it all works:
+still works. Sound on, and use Edge on Windows if you can: Pip's voice then matches throughout.
+Press **J** in the game to watch the AI pipeline live. How it all works:
 [docs/DESIGN.md](docs/DESIGN.md).
+
+To put it online in two minutes:
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/manpreet171/pip-fence)
+The free plan sleeps when idle, so the first load can take half a minute.
 
 ## Where it came from
 
