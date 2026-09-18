@@ -442,6 +442,10 @@ export const FENCE_CSS = `
 .isoworld *{pointer-events:none}                       /* scenery never eats a tap; only rails and hit regions are targets */
 .isoworld .hit,.isoworld .rail{pointer-events:auto}
 .isoworld .hit{position:absolute;z-index:50}
+/* while Pip waits for a tap on a part, the parts glow so the child knows where to tap */
+body.probe .isoworld .hit{background:rgba(255,211,77,.28);animation:probeglow 1.2s ease-in-out infinite}
+@keyframes probeglow{50%{background:rgba(255,211,77,.55)}}
+@media (prefers-reduced-motion:reduce){body.probe .isoworld .hit{animation:none}}
 .isoworld .ground{z-index:0;background:#8ab549 url(${SPRITE.grass}) repeat;background-size:264px 132px}
 .isoworld .haze{position:absolute;z-index:1;background:linear-gradient(180deg,rgba(223,240,216,0) 0,rgba(223,240,216,.92) 30%,rgba(223,240,216,0) 100%)}
 .isoworld .shd{border-radius:50%;background:radial-gradient(ellipse at center,rgba(25,45,15,.42) 0,rgba(25,45,15,.18) 45%,rgba(25,45,15,0) 72%)}

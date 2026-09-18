@@ -1899,3 +1899,18 @@ sheet, a demo, a hint, a rephrase and a worked example, zero overlaps; a line is
 child acts and a new card replaces it. Rejected: warming every fixed line through the server at each
 start (a cold start on the free host would cost a synthesis run each time).
 
+
+---
+
+## D-088 — The probe says tap, the parts glow, and it gives up after twenty seconds
+18 Sep 2026 · **Decided**
+
+The owner, on a 3 by 4 fence built 3, 3, 3: "it says this, but nothing after that. I am still
+confused." The probe was right in the classifier and wrong on the screen: "Show me a part that
+looks finished" named no action, nothing on screen invited a tap, and the fallback lived on the
+45-second idle timer. Now the line is "Tap a part you think is finished", the parts glow while
+Pip waits, and after twenty seconds with no tap the page logs a commit (reason `probe_timeout`)
+and the classifier's existing rule takes the likelier branch, unconfirmed. Verified with real
+clicks both ways. Rejected: dropping the probe and guessing (the whole point of an ambiguous
+verdict is not to guess); a longer wait (a child has moved on by then).
+

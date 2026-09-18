@@ -102,7 +102,7 @@ What would show it teaches, and has not been run yet:
 
 ## Open questions
 
-- Does the probe ("Show me a part that looks finished") resolve ambiguity for a seven-year-old, or
+- Does the probe ("Tap a part you think is finished") resolve ambiguity for a seven-year-old, or
   does she tap at random? Only a child can answer.
 - Is Fix easier or harder than Packs for this age? The chapter order is a guess from the maths, not
   from data.

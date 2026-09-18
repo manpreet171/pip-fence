@@ -80,7 +80,8 @@ until 17 September, the day before the deadline. We kept the dates and the mista
 - **Mistakes are named, not scored.** Code reads every tap and works out *which* mistake the fence
   shows: a part short, parts and planks swapped, a plank over the post, a pack treated as a plank,
   the gaps miscounted, the shares uneven. Fifteen of them. When two mistakes make the same fence,
-  Pip asks her to point to a finished part instead of guessing.
+  Pip asks her to tap a part she thinks is finished, and the parts glow until she does. Her tap
+  decides. If she does not tap, Pip gives the likelier hint after twenty seconds.
 - **Four chapters on one board.** Build, Packs, Fix and Share. Same fence, and it quietly becomes
   multiplication, units inside units, subtraction and addition, and division. A chapter opens when
   she has three gold stars in the one before.

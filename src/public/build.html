@@ -198,6 +198,7 @@
     return Array.from({ length: n }, (_, k) => { const row = Math.floor(k / per), col = k % per;
       return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
   function render() {
+    document.body.classList.toggle("probe", !!S.probe);
     const s = sh(), d = delivered(), packs = s.mode === "packs", share = s.mode === "share";
     $("cart").hidden = !d; $("slip").hidden = d || share; $("deliver").hidden = d || share; $("done").hidden = !d;
     $("addpart").hidden = d || !share; $("delpart").hidden = d || !share || !S.n; $("build").hidden = d || !share || !S.n;
@@ -291,7 +292,7 @@
       el.style.cssText = `left:${px(p.x)};top:${px(p.y)};animation-delay:${i * .45}s`;
       $("stage").appendChild(el); setTimeout(() => el.remove(), still ? 1200 : i * 450 + 2100);
     }
-    if (S.probe) { S.probe = false; const r = classify(lvl()); if (r.id !== "ambiguous" && IDS.includes(r.id)) setTimeout(() => showHint(r), n * 450 + 400); }
+    if (S.probe) { S.probe = false; clearTimeout(S.probeT); const r = classify(lvl()); if (r.id !== "ambiguous" && IDS.includes(r.id)) setTimeout(() => showHint(r), n * 450 + 400); }
   }
 
   // --- commit → classify → hint on the gap ------------------------------------------------------
@@ -308,7 +309,13 @@
   async function showHint(r) {
     log({ e: "hint", id: r.id, tier: r.tier });
     const at = gapAt(r.counts);
-    if (r.id === "ambiguous") { S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0 }; J?.update(); return bubble(TEMPLATES.ambiguous[1], "template", at); }
+    if (r.id === "ambiguous") {
+      S.probe = true; S.hint = { id: r.id, tier: 1, source: "template", reason: "probe", ms: 0 }; J?.update();
+      // No tap within 20 s: the classifier's own rule says take the likelier branch, unconfirmed. A
+      // commit event carries the time; the page does not decide which branch, classify() does.
+      clearTimeout(S.probeT); S.probeT = setTimeout(() => { if (S.probe && !S.done) { S.probe = false; log({ e: "commit", reason: "probe_timeout" }); const p = classify(lvl()); if (IDS.includes(p.id) && p.id !== "ambiguous") showHint(p); render(); } }, 20500);
+      render(); return bubble(TEMPLATES.ambiguous[1], "template", at);
+    }
     const tok = ++S.tok, key = r.id + r.tier;
     S.hintR = r;
     const h = await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;

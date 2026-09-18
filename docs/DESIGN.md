@@ -35,8 +35,9 @@ the misconception from the shape of the wrong build:
   fixed one part only;
 - in Share: a part per plank, as many parts as planks in a part, a part too few, a part too many.
 
-When two mistakes make the same fence, it says so and asks her to point to a part she thinks is
-done. That tap decides. The classifier is tested on 162 hand-written sequences and is right
+When two mistakes make the same fence, it says so and asks her to tap a part she thinks is
+done; the parts glow until she does. That tap decides. If she does not tap within twenty seconds,
+Pip gives the likelier hint, marked as unconfirmed. The classifier is tested on 162 hand-written sequences and is right
 whenever it commits.
 
 ## Where the AI is
