@@ -62,8 +62,8 @@ And an AI that hands over answers makes them worse at working alone once it is g
 - R9. Every model output passes a lexical gate (no digits, no number words, no affect words, simple
   vocabulary, two sentences at most) and either a semantic judge or a simulator. Any failure ships
   the template. The game is complete with no model at all.
-- R10. The child can ask for the same hint said a new way, and after a second hint can ask Pip to
-  show her on her own fence. Pip fixes one part and hands the rest back.
+- R10. On any hint the child can ask for it said a new way, or ask Pip to show her on her own
+  fence; the arrow sits on the gap while the hint is read. Pip fixes one part and hands the rest back.
 - R11. When a fence is finished, praise names what she actually did, from facts, or says nothing
   specific.
 - R12. The next fence is chosen from her record, only among fences in her chapter that code says exercise her mistake.

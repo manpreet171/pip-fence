@@ -81,7 +81,7 @@ Progress lives in one key in the browser's local storage.
   part in her demo, the arrow points at it. The demo says what a part is: the fence from one post
   to the next.
 - **Hints on the gap**, spoken. **Say it a new way** asks for a fresh phrasing. **Show me, Pip**
-  appears after the second hint. A plank over the post comes back with a tap anywhere on that part.
+  is on every hint card, and the arrow sits on the gap while the hint is read. A plank over the post comes back with a tap anywhere on that part.
 - **Pip cheers** what she did: first try, a count that fixed a short part, the chapter finished. Only
   what the log shows; a plank taken back after an over-count is not "the short part fixed".
 - **Stars, badges, and a farm that greens up** on the home page as she masters levels.

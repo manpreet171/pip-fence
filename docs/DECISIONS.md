@@ -2032,3 +2032,18 @@ to the low rail fences: the finished sides show what a finished fence looks like
 reference the child counts against, and the barn stays the only solid wood on the farm. Rejected:
 keeping the walls (a wall says nothing about how many planks a part holds).
 
+
+---
+
+## D-096 — Pip's help is on every hint, and the hint has a place
+18 Sep 2026 · **Decided**
+
+The owner, on the later levels: "Pip gives help only on the first stage; later she says one line
+and nothing happens." The code was right and the feeling was right too. Level one has Pip's demo;
+later levels had one sentence, no pointing, and the "Show me, Pip" button hidden until the child
+asked for a second phrasing, which a child does not know to do. Now "Show me, Pip" is on every hint
+card from the first, and the arrow sits on the gap for five seconds when a hint lands, so the hint
+has a place on the fence. Verified with real clicks on a later level: both buttons on the first
+card, the arrow on the short part, and Show me finishing the part. Rejected: running Pip's demo on
+every level (she would build the fence for the child).
+

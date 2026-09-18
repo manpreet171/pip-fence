@@ -213,21 +213,21 @@
       return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
   // The arrow: Pip points at what she is talking about, and at the next thing to tap on the child's
   // first move of a level. A six-year-old does not know what "part" or "cart" means until shown.
-  function pointAt(target, ms = 4000) {
+  function pointAt(target, ms = 4000, auto = false) {
     const el = target === "cart" ? $("cart") : scene.querySelector(`.hit[data-part="${target}"]`); if (!el) return;
-    const r = el.getBoundingClientRect(), o = $("stage").getBoundingClientRect(), a = $("arrow");
+    const r = el.getBoundingClientRect(), o = $("stage").getBoundingClientRect(), a = $("arrow"); a.auto = auto;
     // a part's hit region runs from the ground to the post top; the tip sits on the rails, not on the corn behind them
     a.style.left = px(r.left + r.width / 2 - o.left); a.style.top = px(r.top - o.top + (target === "cart" ? -6 : r.height * 0.45)); a.hidden = false;
     clearTimeout(a.t); a.t = setTimeout(() => { a.hidden = true; }, ms);
   }
-  const unpoint = () => { const a = $("arrow"); clearTimeout(a.t); a.hidden = true; };
+  const unpoint = (autoOnly = false) => { const a = $("arrow"); if (autoOnly && !a.auto) return; clearTimeout(a.t); a.hidden = true; };
   function render() {
     document.body.classList.toggle("probe", !!S.probe);
     // her first move of a level: the arrow sits on the cart while her hand is empty, on a short part while it is full
     if (!S.demoing && !S.showing && !S.done && delivered() && !(S.hers > 0)) {
-      if (!S.held && S.cart > 0) pointAt("cart", 60000);
-      else if (S.held) { const p = S.parts.findIndex(n => n < sh().per); if (p >= 0) pointAt(p, 60000); }
-    } else if (!S.demoing) unpoint();
+      if (!S.held && S.cart > 0) pointAt("cart", 60000, true);
+      else if (S.held) { const p = S.parts.findIndex(n => n < sh().per); if (p >= 0) pointAt(p, 60000, true); }
+    } else if (!S.demoing) unpoint(true);     // a redraw clears only the arrow it placed itself, never Pip's
     document.body.classList.toggle("hold", !!S.held && !S.done);
     document.body.classList.toggle("busy", !!(S.demoing || S.showing));
     $("cart").classList.toggle("ready", !S.held && S.cart > 0 && !S.done && delivered() && !S.showing);
@@ -356,7 +356,7 @@
     S.hintR = r;
     const h = await (S.pre?.key === key ? S.pre.h : timed(r)); S.pre = null;
     S.hint = { id: r.id, tier: r.tier, payload: payload(r), ...h }; J?.update();
-    if (tok === S.tok) bubble(h.text, h.source, at);
+    if (tok === S.tok) { bubble(h.text, h.source, at); pointAt(at, 5000); }   // the hint has a place: the arrow sits on the gap
     render();
   }
   function finish(r) {
@@ -454,7 +454,7 @@
   });
   function bubble(text, source, part) {
     againBtn.hidden = !S.hintR || S.done || S.probe || !!S.showing;
-    showBtn.hidden = againBtn.hidden || (S.hintR?.tier || 1) < 2 || sh().mode === "packs" || (sh().mode === "share" && !S.parts.length);
+    showBtn.hidden = againBtn.hidden || sh().mode === "packs" || (sh().mode === "share" && !S.parts.length);
     const b = $("bubble"); S.bpart = part;
     $("btext").textContent = text; $("bsrc").textContent = DEBUG ? source : "";
     b.hidden = false; placeBubble(); return speak(text);
