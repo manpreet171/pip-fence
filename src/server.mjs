@@ -13,6 +13,17 @@ const PORT = process.env.PORT || 5177;
 // Provider follows the key: Anthropic if present, else DeepSeek, else templates only (D-067).
 const PHRASER = process.env.ANTHROPIC_API_KEY ? { provider: "anthropic", apiKey: process.env.ANTHROPIC_API_KEY }
   : process.env.DEEPSEEK_API_KEY ? { provider: "deepseek", apiKey: process.env.DEEPSEEK_API_KEY } : {};
+// The key is spent only through here: a hard daily cap on model requests, whatever the traffic.
+// Past the cap every job falls back to its template (they all treat a missing key as "no call"),
+// so a public link cannot drain the balance and the game keeps working. Resets at midnight UTC.
+const CAP = +process.env.MODEL_DAILY_CAP || 1500;
+let day = "", spent = 0;
+function model() {
+  const d = new Date().toISOString().slice(0, 10);
+  if (d !== day) { day = d; spent = 0; }
+  if (!PHRASER.apiKey || spent >= CAP) return {};
+  spent++; return PHRASER;
+}
 const WORDLIST = parseWordlist(await readFile(join(HERE, "..", "data", "wordlist.txt"), "utf8"));
 const BODY_KEYS = ["age", "reading_level", "misconception_id", "tier", "shape", "nouns", "template", "constraint"];
 
@@ -30,7 +41,7 @@ async function buddy(req, res) {
     && Object.values(shape).every(v => v === "some" || typeof v === "boolean") && !/\d/.test(JSON.stringify(shape));
   if (!ok) return send(res, 400, "bad payload");
   let out;
-  try { out = await phrase(redact(id, tier, shape), { ...PHRASER, wordlist: WORDLIST }); }
+  try { out = await phrase(redact(id, tier, shape), { ...model(), wordlist: WORDLIST }); }
   catch { out = { text: TEMPLATES[id][tier], source: "template", reason: "error" }; }
   const { text, source, reason } = out;
   const model = source === "model" && PHRASER.provider ? PROVIDERS[PHRASER.provider].model : undefined;
@@ -43,7 +54,7 @@ async function noteRoute(req, res) {
   catch { return send(res, 400, "bad json"); }
   if (!validNote(body)) return send(res, 400, "bad payload");
   let out;
-  try { out = await writeNote(body, PHRASER); } catch { out = { ...noteFallback(body), source: "template", reason: "error" }; }
+  try { out = await writeNote(body, model()); } catch { out = { ...noteFallback(body), source: "template", reason: "error" }; }
   return send(res, 200, JSON.stringify(out), "application/json");
 }
 // Pip cheers: validated booleans in, one gated and judged sentence out; the same fallback discipline.
@@ -53,7 +64,7 @@ async function cheerRoute(req, res) {
   catch { return send(res, 400, "bad json"); }
   if (!validCheer(body)) return send(res, 400, "bad payload");
   let out;
-  try { out = await writeCheer(body, { ...PHRASER, wordlist: WORDLIST }); } catch { out = { text: cheerFallback(body), source: "template", reason: "error" }; }
+  try { out = await writeCheer(body, { ...model(), wordlist: WORDLIST }); } catch { out = { text: cheerFallback(body), source: "template", reason: "error" }; }
   const { text, source, reason } = out;
   return send(res, 200, JSON.stringify({ text, source, ...(reason && { reason }) }), "application/json");
 }
@@ -64,7 +75,7 @@ async function planRoute(req, res) {
   catch { return send(res, 400, "bad json"); }
   if (!validPlan(body)) return send(res, 400, "bad payload");
   let out;
-  try { out = await writePlan(body, candidates(body.mastery, body.last), { ...PHRASER, wordlist: WORDLIST }); }
+  try { out = await writePlan(body, candidates(body.mastery, body.last), { ...model(), wordlist: WORDLIST }); }
   catch { out = { node: null, why: "", source: "template", reason: "error" }; }
   const { node, why, source, reason } = out;
   return send(res, 200, JSON.stringify({ node, why, source, ...(reason && { reason }) }), "application/json");
@@ -76,7 +87,7 @@ async function showRoute(req, res) {
   catch { return send(res, 400, "bad json"); }
   if (!validShowBody(body)) return send(res, 400, "bad payload");
   let out;
-  try { out = await writeShow(body, { ...PHRASER, wordlist: WORDLIST, valid: validShow, fallback: codeShow }); }
+  try { out = await writeShow(body, { ...model(), wordlist: WORDLIST, valid: validShow, fallback: codeShow }); }
   catch { out = { steps: codeShow(body), source: "template", reason: "error" }; }
   const { steps, source, reason } = out;
   return send(res, 200, JSON.stringify({ steps, source, ...(reason && { reason }) }), "application/json");
@@ -95,7 +106,7 @@ const send = (res, code, body, type = "text/plain") =>
 // ponytail: fixed window per IP, in memory; enough to stop a script spending the key, not a DDoS answer
 const HITS = new Map(), LIMIT = 60, WINDOW = 60_000;
 function limited(req) {
-  const ip = req.socket.remoteAddress || "?", now = Date.now(), h = HITS.get(ip) || { t: now, n: 0 };
+  const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket.remoteAddress || "?", now = Date.now(), h = HITS.get(ip) || { t: now, n: 0 };
   if (now - h.t > WINDOW) { h.t = now; h.n = 0; }
   h.n++; HITS.set(ip, h);
   if (HITS.size > 5000) HITS.clear();
@@ -105,6 +116,8 @@ function limited(req) {
 const server = createServer(async (req, res) => {
   try {
     if (req.method === "POST" && req.url.startsWith("/api/") && limited(req)) return send(res, 429, "slow down");
+    // A browser always sends Origin on a cross-site POST; only our own pages may call the model routes.
+    if (req.method === "POST" && req.url.startsWith("/api/") && req.headers.origin && new URL(req.headers.origin).host !== req.headers.host) return send(res, 403, "no");
     if (req.method === "POST" && req.url === "/api/buddy") return buddy(req, res);
     if (req.method === "POST" && req.url === "/api/note") return noteRoute(req, res);
     if (req.method === "POST" && req.url === "/api/cheer") return cheerRoute(req, res);
