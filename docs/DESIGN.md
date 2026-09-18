@@ -68,8 +68,10 @@ Progress lives in one key in the browser's local storage.
 - **How to play** per chapter, three steps, read aloud, then Pip shows the new move on the real
   board and hands over.
 - **Pip counts with her.** Each plank she places, Pip says the number that part now holds. The
-  cart pulses while her hand is empty and the parts glow while it is full, so the next tap is
-  always obvious.
+  cart pulses while her hand is empty and the parts glow while it is full. On her first move of a
+  level a bouncing arrow sits on the next thing to tap, and while Pip talks about the cart or a
+  part in her demo, the arrow points at it. The demo says what a part is: the fence from one post
+  to the next.
 - **Hints on the gap**, spoken. **Say it a new way** asks for a fresh phrasing. **Show me, Pip**
   appears after the second hint.
 - **Stars, badges, and a farm that greens up** on the home page as she masters levels.

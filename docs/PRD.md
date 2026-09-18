@@ -49,7 +49,7 @@ And an AI that hands over answers makes them worse at working alone once it is g
   exactly that many), Share (choose how many parts). Six shapes each. A chapter opens on three gold
   stars in the one before.
 - R5. How to play is three steps per chapter, read aloud, followed by Pip showing the new move on
-  the real board once.
+  the real board once, pointing with an arrow at what she names. The first sheet says what a part is.
 - R6. Every child-facing word passes an early-reader word list (Dolch and Fry sight words plus the game's own nouns). Fixed lines are spoken in a
   child's voice.
 

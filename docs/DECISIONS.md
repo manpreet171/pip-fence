@@ -1929,3 +1929,18 @@ the probe, so at every moment the next tap is the only thing lit. Pip's own demo
 themselves and are not double-counted. Verified with real clicks. Rejected: a pointing hand
 overlay (one more thing on a screen for a working memory of three slots); saying "full" (a leak).
 
+
+---
+
+## D-090 — The arrow: Pip points at what she names
+18 Sep 2026 · **Decided**
+
+The owner: "You call it part. How does a child know where you are pointing? Where is the cart?"
+One bouncing arrow, drawn in CSS, no image. In Pip's demo it sits on the part while she says
+"This is one part of the fence, from this post to the next post", on the cart while she takes a
+plank, on the part while she places it, and on the cart when she hands over. On the child's first
+move of every level it sits on the cart while her hand is empty and on the first short part while
+it is full, and disappears after her first plank. The sheet's first step now says what a part is.
+Verified with real clicks at every step. Rejected: a pointing hand sprite (one more thing to read);
+arrows on every move (noise after the first).
+

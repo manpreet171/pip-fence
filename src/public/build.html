@@ -53,6 +53,10 @@
   #cart{cursor:pointer}
   #cart.held{box-shadow:0 6px 0 var(--wood2),0 0 0 4px rgba(255,214,120,.75),0 0 28px rgba(255,200,90,.85)}
   /* the next tap is always obvious: the cart breathes while her hand is empty, the parts glow while it is full */
+  #arrow{position:absolute;z-index:60;pointer-events:none;width:0;height:0;border:18px solid transparent;border-top:30px solid #ffd34d;transform:translate(-50%,-100%);
+    filter:drop-shadow(0 0 0 #7d5122) drop-shadow(0 3px 0 #7d5122) drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:arrowbob .7s ease-in-out infinite}
+  @keyframes arrowbob{50%{transform:translate(-50%,-100%) translateY(-12px)}}
+  @media (prefers-reduced-motion:reduce){#arrow{animation:none}}
   #cart.ready{animation:cartpulse 1.6s ease-in-out infinite}
   @keyframes cartpulse{50%{box-shadow:0 6px 0 var(--wood2),0 0 0 5px rgba(255,214,120,.55),0 0 26px rgba(255,200,90,.7)}}
   body.hold .isoworld .hit{background:rgba(255,211,77,.28);animation:probeglow 1.2s ease-in-out infinite}
@@ -121,6 +125,7 @@
 <body>
 <div id="stage">
   <div id="scene" class="scene"></div>
+  <div id="arrow" hidden></div>
   <div id="vig"></div>
   <div id="bubble" role="status" aria-live="polite" data-side="bottom" hidden><span id="btext"></span><span id="bsrc"></span></div>
   <div id="sign"><span class="brand">Pip · Fence</span><span id="task"></span><span id="strip"></span></div>
@@ -177,7 +182,7 @@
     const s = shape(node);
     // Fix starts from the pre-built planks with an empty cart; share from a bare plot with the whole load.
     Object.assign(S, { node, parts: s.pre ? [...s.pre] : Array(s.mode === "share" ? 0 : s.groups).fill(0), cart: s.mode === "packs" || s.mode === "fix" ? 0 : s.groups * s.per,
-      n: 0, held: null, slip: 0, pre: null, probe: false, done: false, ended: false, at: Date.now() });
+      n: 0, held: null, slip: 0, pre: null, probe: false, done: false, ended: false, hers: 0, at: Date.now() });
     S.events = S.events.slice(-500);
     log({ e: "level_start", node, at: S.at });
     mount();
@@ -202,8 +207,23 @@
     const x0 = Math.max(8, (W - 50 - per * step) / 2);
     return Array.from({ length: n }, (_, k) => { const row = Math.floor(k / per), col = k % per;
       return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
+  // The arrow: Pip points at what she is talking about, and at the next thing to tap on the child's
+  // first move of a level. A six-year-old does not know what "part" or "cart" means until shown.
+  function pointAt(target, ms = 4000) {
+    const el = target === "cart" ? $("cart") : scene.querySelector(`.hit[data-part="${target}"]`); if (!el) return;
+    const r = el.getBoundingClientRect(), o = $("stage").getBoundingClientRect(), a = $("arrow");
+    // a part's hit region runs from the ground to the post top; the tip sits on the rails, not on the corn behind them
+    a.style.left = px(r.left + r.width / 2 - o.left); a.style.top = px(r.top - o.top + (target === "cart" ? -6 : r.height * 0.45)); a.hidden = false;
+    clearTimeout(a.t); a.t = setTimeout(() => { a.hidden = true; }, ms);
+  }
+  const unpoint = () => { const a = $("arrow"); clearTimeout(a.t); a.hidden = true; };
   function render() {
     document.body.classList.toggle("probe", !!S.probe);
+    // her first move of a level: the arrow sits on the cart while her hand is empty, on a short part while it is full
+    if (!S.demoing && !S.showing && !S.done && delivered() && !(S.hers > 0)) {
+      if (!S.held && S.cart > 0) pointAt("cart", 60000);
+      else if (S.held) { const p = S.parts.findIndex(n => n < sh().per); if (p >= 0) pointAt(p, 60000); }
+    } else if (!S.demoing) unpoint();
     document.body.classList.toggle("hold", !!S.held && !S.done);
     $("cart").classList.toggle("ready", !S.held && S.cart > 0 && !S.done && delivered() && !S.showing);
     const s = sh(), d = delivered(), packs = s.mode === "packs", share = s.mode === "share";
@@ -269,7 +289,7 @@
     S.parts[part] += n; S.cart--; if (!S.cart) S.held = null;
     if (!S.showing) hideBubble(); S.probe = false;
     log({ e: "place", unit, ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
-    if (!S.showing && !S.demoing) speakNow(COUNT[S.parts[part] - 1] || "");   // her own count, said back; Pip's demos count for themselves
+    if (!S.showing && !S.demoing) { S.hers = (S.hers || 0) + 1; speakNow(COUNT[S.parts[part] - 1] || ""); }   // her own count, said back; Pip's demos count for themselves
     const r = classify(lvl());
     if (r.id === "correct") { log({ e: "commit", reason: "left_plot" }); return finish(r); }
     // Prefetch: the build is complete-and-wrong (cart empty) or a part overflows. Held until commit.
@@ -499,8 +519,8 @@
   // new move on the real board (demo()).
   const HOW = {
     concrete: { key: "pip.howto.fence", title: "How to play: Build", sub: "Build the fence so the goat stays out of the corn.",
-      steps: ["Tap the cart. You pick up a plank. Tap a part. The plank goes on.",
-              "Every part needs the same planks. The sign says how many.",
+      steps: ["A part is the fence from one post to the next post. Every part needs the same planks.",
+              "Tap the cart. You pick up a plank. Tap a part. The plank goes on.",
               "Tap Done. If a part is short, the goat gets in. Fix it."] },
     packs: { key: "pip.howto.packs", title: "How to play: Packs", sub: "Now the planks come in packs. Get the packs first.",
       steps: ["A pack holds more than one plank. Look inside a pack.",
@@ -533,11 +553,13 @@
     const say = async (text, part, ms) => { const t0 = Date.now(); await bubble(text, "", part); await sl(Math.max(600, ms - (Date.now() - t0))); };
     await say("Watch me first.", 0, 1600);
     if (s.mode === "concrete") {
-      await say("The sign says how many planks go in each part. I take a plank. I put it on this part.", 0, 3400);
+      pointAt(0, 6000); await say("This is one part of the fence. It goes from this post to the next post.", 0, 3400);
+      pointAt("cart", 5000); await say("The sign says how many planks go in each part. I take a plank from the cart.", 0, 3400);
+      pointAt(0, 4000); await say("I put it on this part.", 0, 1200);
       S.held = "plank"; render();
       for (let k = 0; k < s.per; k++) { if (!S.cart) break; place(0); await speakNow(COUNT[k] || ""); await sl(350); }
       S.held = null; render();
-      bubble("This part is full. Now you do the other parts. Tap the cart. Then tap a part.", "", 0);
+      unpoint(); bubble("This part is full. Now you do the other parts. Tap the cart. Then tap a part.", "", 0);
     } else if (s.mode === "packs") {
       await say("Now the planks come in packs. Look at the pack. I count the planks in it.", 0, 3000);
       for (let k = 0; k < s.pack; k++) { await speakNow(COUNT[k] || ""); await sl(300); }
