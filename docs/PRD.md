@@ -94,7 +94,7 @@ What would show it teaches, and has not been run yet:
 | Risk | What we did | What remains |
 |---|---|---|
 | The model leaks the answer | No integers in the payload; gate; judge; red-team measured | The gate is lexical; a sentence that points the wrong way relies on the judge, which is a model |
-| A child cannot read the hint | Early-reader word list, two sentences, spoken aloud | Some model lines still use the browser's voice |
+| A child cannot read the hint | Early-reader word list, two sentences, spoken aloud, one voice through the server | Without a voice key the model's fresh lines use the browser's voice |
 | The classifier meets a mistake nobody wrote a fixture for | Ambiguity is a first-class verdict with a probe | Real play will find cases; they become fixtures |
 | Extrinsic rewards crowd out the mechanic | Stars only for mastery, no points, no streaks | The farm greening is a reward; we think it is the right kind |
 | A public link spends the key | Daily cap, per-address limit, own-origin only | The free host sleeps between visits |
@@ -113,6 +113,5 @@ What would show it teaches, and has not been run yet:
 
 1. The child pilot above. Nothing else matters more.
 2. Parent accounts so progress survives a cleared browser; same data, stored server-side.
-3. One voice: server-side text-to-speech for the model's lines, cached.
-4. Fixtures from real play, and diagnostic fences for every ambiguous pair.
-5. A fifth chapter for remainders, on the same board.
+3. Fixtures from real play, and diagnostic fences for every ambiguous pair.
+4. A fifth chapter for remainders, on the same board.

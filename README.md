@@ -147,9 +147,9 @@ We would rather say this here than have you find it.
   measurement, not a child. That is the biggest gap, and we know it.
 - **The classifier agrees with its own spec**, not with real children. It will meet mistakes
   nobody wrote a test for.
-- **Pip has two voices.** Her hundred written lines are a child's voice. When the model writes a
-  fresh line, the browser reads it. In Edge on Windows they match. Elsewhere they do not, and it
-  shows.
+- **Pip needs a voice key to be one voice.** With a text-to-speech key on the server, every line,
+  fixed or freshly written by the model, is spoken by the same child's voice. Without one, the
+  model's fresh lines fall back to the browser's own voice, and it shows.
 - **It is not deep.** Twenty-four levels of one mechanic. Enough to show the idea. Thin as a
   product.
 - **The word gate is only a word gate.** It stops digits and number words. It cannot stop a

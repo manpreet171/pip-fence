@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, extname, resolve, sep } from "node:path";
 import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist, validNote, writeNote, noteFallback, PROVIDERS, validCheer, writeCheer, cheerFallback, validPlan, writePlan, validShowBody, writeShow } from "./engine/buddy.mjs";
 import { candidates, validShow, codeShow } from "./public/fence.mjs";
+import { createHash } from "node:crypto";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5177;
@@ -24,7 +25,57 @@ function model() {
   if (!PHRASER.apiKey || spent >= CAP) return {};
   spent++; return PHRASER;
 }
+// Pip's voice at run time (D-086). Lines the model writes are spoken by the same neural voice as
+// the bundled clips, through the server: the browser asks /api/say for a line, the server will only
+// synthesise a line it produced itself (or a fixed line), caches the audio by text, and returns mp3.
+// Provider follows the key. No key: the route answers 404 and the browser uses its own voice.
+const TTS = process.env.AZURE_SPEECH_KEY
+  ? { kind: "azure", key: process.env.AZURE_SPEECH_KEY, region: process.env.AZURE_SPEECH_REGION || "eastus", voice: process.env.TTS_VOICE || "en-US-AnaNeural" }
+  : process.env.ELEVENLABS_API_KEY
+  ? { kind: "elevenlabs", key: process.env.ELEVENLABS_API_KEY, voice: process.env.TTS_VOICE || "pFZP5JQG7iQjIQuC4Bku" }
+  : process.env.OPENAI_API_KEY
+  ? { kind: "openai", key: process.env.OPENAI_API_KEY, voice: process.env.TTS_VOICE || "coral" }
+  : null;
+const SAID = new Map();                                   // text -> mp3 Buffer, the cache
+const ALLOW = new Set();                                  // texts this server produced or ships; only these are voiced
+const SAY_CAP = +process.env.TTS_DAILY_CHARS || 300000;   // characters per day, then the browser voice takes over
+let sayDay = "", sayChars = 0;
+const allow = (...texts) => { for (const t of texts) if (typeof t === "string" && t.trim()) ALLOW.add(t.trim()); };
+const ttsRequest = {
+  azure: (t) => [`https://${TTS.region}.tts.speech.microsoft.com/cognitiveservices/v1`, { method: "POST",
+    headers: { "Ocp-Apim-Subscription-Key": TTS.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3", "User-Agent": "pip" },
+    body: `<speak version='1.0' xml:lang='en-US'><voice name='${TTS.voice}'><prosody rate='-5%'>${t.replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</prosody></voice></speak>` }],
+  elevenlabs: (t) => [`https://api.elevenlabs.io/v1/text-to-speech/${TTS.voice}?output_format=mp3_22050_32`, { method: "POST",
+    headers: { "xi-api-key": TTS.key, "Content-Type": "application/json" },
+    body: JSON.stringify({ text: t, model_id: "eleven_turbo_v2_5" }) }],
+  openai: (t) => ["https://api.openai.com/v1/audio/speech", { method: "POST",
+    headers: { authorization: "Bearer " + TTS.key, "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gpt-4o-mini-tts", voice: TTS.voice, input: t, response_format: "mp3", instructions: "A warm, playful young child's voice, speaking slowly and clearly to a friend." }) }],
+};
+async function sayRoute(req, res) {
+  if (!TTS) return send(res, 404, "no voice");
+  let body;
+  try { let raw = ""; for await (const c of req) { raw += c; if (raw.length > 1024) throw 0; } body = JSON.parse(raw); }
+  catch { return send(res, 400, "bad json"); }
+  const text = typeof body?.text === "string" ? body.text.trim() : "";
+  if (!text || text.length > 300 || !ALLOW.has(text)) return send(res, 403, "not a line of mine");
+  if (SAID.has(text)) return send(res, 200, SAID.get(text), "audio/mpeg");
+  const d = new Date().toISOString().slice(0, 10); if (d !== sayDay) { sayDay = d; sayChars = 0; }
+  if (sayChars + text.length > SAY_CAP) return send(res, 404, "quiet today");
+  try {
+    const [url, init] = ttsRequest[TTS.kind](text);
+    const r = await fetch(url, { ...init, signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return send(res, 502, "voice failed");
+    const buf = Buffer.from(await r.arrayBuffer());
+    sayChars += text.length;
+    if (SAID.size > 3000) SAID.clear();
+    SAID.set(text, buf);
+    return send(res, 200, buf, "audio/mpeg");
+  } catch { return send(res, 502, "voice failed"); }
+}
 const WORDLIST = parseWordlist(await readFile(join(HERE, "..", "data", "wordlist.txt"), "utf8"));
+for (const id in TEMPLATES) for (const t in TEMPLATES[id]) allow(TEMPLATES[id][t]);
+try { allow(...Object.keys(JSON.parse(await readFile(join(HERE, "public", "assets", "voice", "manifest.json"), "utf8")))); } catch {}
 const BODY_KEYS = ["age", "reading_level", "misconception_id", "tier", "shape", "nouns", "template", "constraint"];
 
 // The trust boundary. The body is payload(result) from the browser; we keep only {id, tier, shape},
@@ -43,7 +94,7 @@ async function buddy(req, res) {
   let out;
   try { out = await phrase(redact(id, tier, shape), { ...model(), wordlist: WORDLIST }); }
   catch { out = { text: TEMPLATES[id][tier], source: "template", reason: "error" }; }
-  const { text, source, reason } = out;
+  const { text, source, reason } = out; allow(text);
   const model = source === "model" && PHRASER.provider ? PROVIDERS[PHRASER.provider].model : undefined;
   return send(res, 200, JSON.stringify({ text, source, ...(reason && { reason }), ...(model && { model }) }), "application/json");
 }
@@ -65,7 +116,7 @@ async function cheerRoute(req, res) {
   if (!validCheer(body)) return send(res, 400, "bad payload");
   let out;
   try { out = await writeCheer(body, { ...model(), wordlist: WORDLIST }); } catch { out = { text: cheerFallback(body), source: "template", reason: "error" }; }
-  const { text, source, reason } = out;
+  const { text, source, reason } = out; allow(text);
   return send(res, 200, JSON.stringify({ text, source, ...(reason && { reason }) }), "application/json");
 }
 // Pip plans the next fence: validated record in, a pick from code's own candidate list plus one gated line out.
@@ -77,7 +128,7 @@ async function planRoute(req, res) {
   let out;
   try { out = await writePlan(body, candidates(body.mastery, body.last), { ...model(), wordlist: WORDLIST }); }
   catch { out = { node: null, why: "", source: "template", reason: "error" }; }
-  const { node, why, source, reason } = out;
+  const { node, why, source, reason } = out; allow(why);
   return send(res, 200, JSON.stringify({ node, why, source, ...(reason && { reason }) }), "application/json");
 }
 // Pip shows her: real counts in, a script of moves out, simulated before it is sent; code's script otherwise.
@@ -89,7 +140,7 @@ async function showRoute(req, res) {
   let out;
   try { out = await writeShow(body, { ...model(), wordlist: WORDLIST, valid: validShow, fallback: codeShow }); }
   catch { out = { steps: codeShow(body), source: "template", reason: "error" }; }
-  const { steps, source, reason } = out;
+  const { steps, source, reason } = out; allow(...steps.filter(s => s.op === "say").map(s => s.text));
   return send(res, 200, JSON.stringify({ steps, source, ...(reason && { reason }) }), "application/json");
 }
 const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript", ".css": "text/css",
@@ -123,6 +174,8 @@ const server = createServer(async (req, res) => {
     if (req.method === "POST" && req.url === "/api/cheer") return cheerRoute(req, res);
     if (req.method === "POST" && req.url === "/api/plan") return planRoute(req, res);
     if (req.method === "POST" && req.url === "/api/show") return showRoute(req, res);
+    if (req.method === "POST" && req.url === "/api/say") return sayRoute(req, res);
+    if (req.method === "GET" && req.url === "/api/say") return send(res, 200, JSON.stringify({ voice: TTS ? TTS.voice : null }), "application/json");
     const path = req.url.split("?")[0];
     const file = resolve(HERE, (ROUTES[path] || path.replace(/^\/assets\//, "/public/assets/")).replace(/^\/+/, ""));
     const routed = Object.values(ROUTES).some(p => file === join(HERE, p));

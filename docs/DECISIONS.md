@@ -1862,3 +1862,21 @@ it is in git history up to commit `9533298`, and D-077 and the kill-test decisio
 what was tried and why it lost. Rejected: rewriting the decision log to fix old paths (append-only);
 keeping the trail in the tree "for the judges" (a reader who wants it has the history).
 
+
+---
+
+## D-086 — One voice: the model's lines are spoken by the same neural voice as the clips
+18 Sep 2026 · **Decided**
+
+The owner, recording the video: "I hear two different voices." The fixed lines were a child's voice
+from bundled clips; anything the model wrote on the spot was read by the browser. Now the server
+has a `/api/say` route: the browser asks for a line, the server synthesises it with a neural voice
+(Azure's Ana, the same voice as the clips, or ElevenLabs or OpenAI by key), caches the audio by
+text, and returns mp3. The server voices only lines it produced itself or ships as fixed lines, so
+the route cannot be used as a free text-to-speech service; a daily character cap stops a runaway.
+With no voice key the route says so and the browser voice is used as before, so nothing depends on
+it. When the server voice is not Ana, the page routes even the fixed lines through the server, so
+there is still one voice. Rejected: shipping the Edge read-aloud protocol inside the server (an
+unofficial endpoint, and LGPL tooling around it, see the licence rule); generating every possible
+model line ahead of time (unbounded).
+

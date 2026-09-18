@@ -22,7 +22,7 @@ flowchart LR
     UI --> VO
   end
   subgraph Server["Node 22 server (no dependencies)"]
-    RT["server.mjs<br/>static files, 5 model routes<br/>validation, rate limit, daily cap, origin check"]
+    RT["server.mjs<br/>static files, 5 model routes, 1 voice route<br/>validation, rate limit, daily caps, origin check"]
     BS["buddy.mjs (server side)<br/>prompts, gate, judge, simulator hooks, templates"]
     RT --> BS
   end
@@ -79,6 +79,7 @@ path on which the child sees nothing: every branch ends in a line.
 | Browser → server | Five JSON bodies, 4 KB cap (8 KB for plan) | Every key, id and type re-validated; unknown keys rejected; digits rejected where booleans are expected |
 | Server → model | Prompts with **no integer derived from the fence**: booleans, plain-words meanings, fence names | Redaction is measured by a red-team attack, not asserted ([results/REDTEAM-RESULTS.md](results/REDTEAM-RESULTS.md)) |
 | Model → server | One JSON object per job | Schema check; lexical gate; semantic judge (hint, cheer, plan) or simulator (show); template fallback |
+| Browser → voice | `POST /api/say` with one line of text | Only a line the server itself produced or ships is voiced; 300 characters at most; cached by text; a daily character cap; 404 with no key, and the browser voice takes over |
 | Server → browser | `{text, source, reason?}` or a validated pick / script | The browser re-checks the plan's pick against its own candidate list and re-simulates the show script before performing it |
 | Internet → server | Any POST | Per-address limit 60/min (real address behind the proxy); daily cap on model calls, 1,500 by default; cross-origin POSTs refused; the key lives only in the server's environment and is never logged |
 
@@ -179,8 +180,9 @@ are published with the rejected outputs, so they can be argued with.
 - **Progress lives in one browser.** A cleared browser is a lost farm. Path: a parent account with
   the same `rung.v1` document stored server-side, keyed by a code the parent holds. The event
   schema does not change.
-- **One voice, two sources.** Fixed lines are bundled clips; model lines use the browser's voice.
-  Path: a server-side text-to-speech call with a cache keyed on the text, so every line is one voice.
+- **The voice cache is in memory.** `/api/say` synthesises each fresh line once per instance and
+  keeps it in memory; a restart or a second instance synthesises again. Path: the same shared store
+  as the limiter, keyed on the text.
 - **The free host sleeps.** First visit after fifteen idle minutes takes up to fifty seconds. Path: a
   paid instance, or a ping.
 

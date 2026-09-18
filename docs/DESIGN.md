@@ -70,7 +70,8 @@ Progress lives in one key in the browser's local storage.
   appears after the second hint.
 - **Stars, badges, and a farm that greens up** on the home page as she masters levels.
 - Every word she reads was checked against an early-reader word list (Dolch and Fry sight words plus the game's own nouns). Pip's fixed lines are
-  audio clips made once from one child's voice.
+  audio clips made once from one child's voice; with a voice key on the server, the model's fresh
+  lines are spoken by that same voice.
 
 ## What is measured
 

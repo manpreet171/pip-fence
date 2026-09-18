@@ -425,14 +425,31 @@
   let VOICE = await Promise.race([fetch("/assets/voice/manifest.json").then(r => r.ok ? r.json() : {}), new Promise(r => setTimeout(() => r({}), 1500))]).catch(() => ({}));
   let clip = null;
   const hush = () => { tts?.cancel(); if (clip) { clip.pause(); clip = null; } };
+  // The server's voice (D-086): if it has one, every line comes through it, so the model's lines and
+  // the fixed lines sound the same. The bundled clips are the same voice (Ana) when the server uses
+  // Ana; otherwise the server voices even the fixed lines, so there is still only one voice.
+  let SERVER_VOICE = null; fetch("/api/say").then(r => r.ok ? r.json() : {}).then(j => { SERVER_VOICE = j?.voice || null; }).catch(() => {});
+  const blobs = new Map();
+  async function fromServer(text) {
+    if (!SERVER_VOICE) return null;
+    if (blobs.has(text)) return blobs.get(text);
+    try { const r = await fetch("/api/say", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }), signal: AbortSignal.timeout(9000) });
+      if (!r.ok) return null; const u = URL.createObjectURL(await r.blob()); blobs.set(text, u); return u; } catch { return null; }
+  }
+  // voices load late in some browsers; keep the list fresh and pick the friendliest natural one
+  let VOICES = []; const loadVoices = () => { VOICES = (tts?.getVoices() || []).filter(v => /^en/i.test(v.lang)); }; loadVoices(); tts?.addEventListener?.("voiceschanged", loadVoices);
   const PREFER = /Ana|Maisie|Libby|Sonia|Aria|Jenny|Ava|Emma|Google UK English Female|Samantha|Zira/;
-  function voiceNow(text, rate = 0.92) {                 // -> resolves when the line has been said
+  async function voiceNow(text, rate = 0.92) {           // -> resolves when the line has been said
+    const play = src => new Promise(done => { clip = new Audio(src); clip.onended = clip.onerror = done; clip.play().catch(done); });
+    const anaClips = !SERVER_VOICE || /Ana/i.test(SERVER_VOICE);
+    if (VOICE[text] && anaClips) return play("/assets/voice/" + VOICE[text]);
+    const url = await fromServer(text); if (url) return play(url);
+    if (VOICE[text]) return play("/assets/voice/" + VOICE[text]);
     return new Promise(done => {
-      if (VOICE[text]) { clip = new Audio("/assets/voice/" + VOICE[text]); clip.onended = clip.onerror = done; clip.play().catch(done); return; }
       if (!tts) return done();
+      if (!VOICES.length) loadVoices();
       const u = new SpeechSynthesisUtterance(text); u.rate = rate; u.pitch = 1.1; u.lang = "en"; u.onend = u.onerror = done;
-      const vs = tts.getVoices().filter(v => /^en/i.test(v.lang));
-      const v = vs.find(v => PREFER.test(v.name) && /Natural|Online/.test(v.name)) || vs.find(v => PREFER.test(v.name)) || vs[0]; if (v) u.voice = v;
+      const v = VOICES.find(v => PREFER.test(v.name) && /Natural|Online/.test(v.name)) || VOICES.find(v => PREFER.test(v.name)) || VOICES[0]; if (v) u.voice = v;
       tts.speak(u);
     });
   }
