@@ -2077,7 +2077,8 @@ nothing. The prompt now says: say the same thing in your own words, do not repea
 keep the meaning exactly, use only short plain words, and names the number words the gate bans;
 temperature 0.6. Measured after: none of twelve were copies, ten shipped, one ran to three
 sentences and one pointed at the wrong part, and the judge caught that one. The twenty-hint judge
-run: 12 shipped, 2 gate, 6 judge, all six right to overturn. Written lines remain the fallback and
+run on the settled prompt: 14 shipped, 6 overturned by the judge, none copied. A stricter shape
+("first what is wrong, then what to do") was tried and dropped: it made the model add instructions. Written lines remain the fallback and
 the meaning the model must keep. Rejected: raising the temperature further (more overturns, no
 gain); removing the templates (they are the reference the judge needs).
 

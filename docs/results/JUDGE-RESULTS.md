@@ -1,6 +1,6 @@
 # JUDGE RESULTS — a model judging the model, measured (17 Sep 2026; re-run 18 Sep 2026, own words)
 
-> **Re-run 18 Sep 2026, after the hint prompt was changed to "say it in your own words, do not repeat the template"** (D-098): 20 live hints on `deepseek-v4-flash`, **12 shipped from the model, 2 stopped by the gate, 6 overturned by the judge**, p50 1.7 s, p95 2.4 s for the two calls. Before the change 7 of 9 model hints were word-for-word copies of the template; after it, none. The six overturns were all right to overturn (for example "take that part off the cart", "put the short planks there again"). The original run follows.
+> **Re-run 18 Sep 2026, after the hint prompt was changed to "say it in your own words, do not repeat the template"** (D-098): 20 live hints on `deepseek-v4-flash`, **14 shipped from the model, 0 stopped by the gate, 6 overturned by the judge**, p50 1.8 s, p95 2.3 s for the two calls. Before the change 7 of 9 model hints were word-for-word copies of the template; after it, none. The six overturns were all right to overturn (for example "take that part off the cart", "put the short planks there again"). The original run follows.
 
 
 The lexical gate stops digits and number words. It cannot see a sentence that points the wrong way.

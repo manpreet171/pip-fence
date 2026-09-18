@@ -139,7 +139,7 @@ With a live model, measured and written up in `docs/results/`:
 | Run | Result |
 |---|---|
 | [Latency and cost](docs/results/LATENCY-RESULTS.md) | 20 live hints: under a second, about a hundredth of a cent each |
-| [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases in Pip's own words: 12 shipped, 2 stopped by the gate, 6 caught by the judge |
+| [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases in Pip's own words: 14 shipped, 6 caught by the judge, none copied from the written line |
 | [Red team](docs/results/REDTEAM-RESULTS.md) | An attacker shown everything the model sees guesses the answer no better than always saying the commonest one |
 | [The planner](docs/results/PLAN-RESULTS.md) | 8 learner records: every pick inside code's list, six of eight different from the fixed order, for sensible reasons |
 | [Worked examples](docs/results/SHOW-RESULTS.md) | 6 fence states: 5 scripts passed the simulator and ran, 1 replaced by code's own |

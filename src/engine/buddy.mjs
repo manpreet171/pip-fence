@@ -146,9 +146,9 @@ export async function hint(result, { timeoutMs = 2500, fetchImpl = globalThis.fe
 // Provider follows the key: Anthropic (Haiku, strict JSON schema) if ANTHROPIC_API_KEY is set, else
 // DeepSeek (v4-flash, JSON mode, thinking disabled) with DEEPSEEK_API_KEY. Same payload, same gate,
 // same template fallback either way; the gate is what makes the output safe, not the vendor (D-067).
-const SYSTEM = () => "You phrase one hint for a child aged 8 reading at a 500-word level. Max 2 sentences. " +
+const SYSTEM = () => "You phrase one hint for a child aged 8 reading at a 500-word level. At most two sentences, as short as the template; never a third sentence. " +
   "The input's template says what the hint must mean; say that same thing in your own words, as if talking to her, " +
-  "and do not repeat the template word for word. Keep its meaning exactly: point her to the same part and the same fix. " +
+  "and do not repeat the template word for word. Keep its meaning exactly: point her to the same part and the same fix, and add no new instruction. " +
   "Use only short plain words a child of six reads: look, part, plank, post, top, short, tall, cart, count, again, empty, full, sign. " +
   "No pet names. Use no numbers of any kind: no digits, and never the words one, once, single, both, pair, half or any number word. " +
   "Never state or imply how many. Point with words. Never say sad, disappointed, or miss you.";
