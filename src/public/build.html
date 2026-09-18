@@ -52,6 +52,11 @@
   .tray::before{left:22px}.tray::after{right:22px}
   #cart{cursor:pointer}
   #cart.held{box-shadow:0 6px 0 var(--wood2),0 0 0 4px rgba(255,214,120,.75),0 0 28px rgba(255,200,90,.85)}
+  /* the next tap is always obvious: the cart breathes while her hand is empty, the parts glow while it is full */
+  #cart.ready{animation:cartpulse 1.6s ease-in-out infinite}
+  @keyframes cartpulse{50%{box-shadow:0 6px 0 var(--wood2),0 0 0 5px rgba(255,214,120,.55),0 0 26px rgba(255,200,90,.7)}}
+  body.hold .isoworld .hit{background:rgba(255,211,77,.28);animation:probeglow 1.2s ease-in-out infinite}
+  @media (prefers-reduced-motion:reduce){#cart.ready,body.hold .isoworld .hit{animation:none}}
   .lbl{font-size:15px;font-weight:600;line-height:1.2;min-width:64px;max-width:110px;text-shadow:0 1px 0 rgba(0,0,0,.35)}
   #pile{position:relative;flex:1;height:64px;min-width:240px;border-radius:8px;background:rgba(45,22,6,.5);box-shadow:inset 0 3px 8px rgba(0,0,0,.45),inset 0 -1px 0 rgba(255,225,180,.15)}
   .plank{width:58px;display:block;filter:brightness(1.18) saturate(1.05) drop-shadow(0 2px 2px rgba(0,0,0,.6))}
@@ -199,6 +204,8 @@
       return `<span style="position:absolute;left:${x0 + col * step + row * (step / 2)}px;bottom:${2 + row * 9}px;transform:rotate(${row % 2 ? 3 : -3}deg)">${item}</span>`; }).join(""); };
   function render() {
     document.body.classList.toggle("probe", !!S.probe);
+    document.body.classList.toggle("hold", !!S.held && !S.done);
+    $("cart").classList.toggle("ready", !S.held && S.cart > 0 && !S.done && delivered() && !S.showing);
     const s = sh(), d = delivered(), packs = s.mode === "packs", share = s.mode === "share";
     $("cart").hidden = !d; $("slip").hidden = d || share; $("deliver").hidden = d || share; $("done").hidden = !d;
     $("addpart").hidden = d || !share; $("delpart").hidden = d || !share || !S.n; $("build").hidden = d || !share || !S.n;
@@ -262,6 +269,7 @@
     S.parts[part] += n; S.cart--; if (!S.cart) S.held = null;
     if (!S.showing) hideBubble(); S.probe = false;
     log({ e: "place", unit, ...(n > 1 && { n }), group: part, n_in_group: S.parts[part] });
+    if (!S.showing && !S.demoing) speakNow(COUNT[S.parts[part] - 1] || "");   // her own count, said back; Pip's demos count for themselves
     const r = classify(lvl());
     if (r.id === "correct") { log({ e: "commit", reason: "left_plot" }); return finish(r); }
     // Prefetch: the build is complete-and-wrong (cart empty) or a part overflows. Held until commit.
@@ -514,10 +522,13 @@
   const GUIDE = { concrete: "pip.guide.fence", packs: "pip.guide.packs", fix: "pip.guide.fix", share: "pip.guide.share" };
   const guided = () => { try { return localStorage.getItem(GUIDE[sh().mode]) === "1"; } catch { return false; } };
   const guideDone = () => { try { localStorage.setItem(GUIDE[sh().mode], "1"); } catch {} };
-  function speakNow(text) { return sound ? voiceNow(text, 0.95) : Promise.resolve(); }
+  function speakNow(text) { if (!sound) return Promise.resolve(); hush(); return voiceNow(text, 0.95); }   // a count word replaces whatever was playing
   const COUNT = ["one", "two", "three", "four", "five", "six"];
   async function demo() {
     const s = sh(); if (lvl().some(e => ["place", "order", "parts"].includes(e.e))) return guideDone();
+    S.demoing = true; try { await demoRun(s); } finally { S.demoing = false; render(); }
+  }
+  async function demoRun(s) {
     const sl = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));
     const say = async (text, part, ms) => { const t0 = Date.now(); await bubble(text, "", part); await sl(Math.max(600, ms - (Date.now() - t0))); };
     await say("Watch me first.", 0, 1600);

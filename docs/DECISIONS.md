@@ -1914,3 +1914,18 @@ and the classifier's existing rule takes the likelier branch, unconfirmed. Verif
 clicks both ways. Rejected: dropping the probe and guessing (the whole point of an ambiguous
 verdict is not to guess); a longer wait (a child has moved on by then).
 
+
+---
+
+## D-089 — Pip counts with her, the cart breathes, the parts glow
+18 Sep 2026 · **Decided**
+
+The owner: "I am still not confident with the whole process, which button, where the child has to
+click. Can Pip say one, two as she puts the planks?" Yes, and it is the right kind of voice: the
+child's own count said back, never a verdict. Each plank placed, Pip says the number that part now
+holds. It never says "full" or "done", which would hand over the answer the game exists to let her
+find. The cart pulses while her hand is empty and the parts glow while it is full, the same glow as
+the probe, so at every moment the next tap is the only thing lit. Pip's own demos count for
+themselves and are not double-counted. Verified with real clicks. Rejected: a pointing hand
+overlay (one more thing on a screen for a working memory of three slots); saying "full" (a leak).
+

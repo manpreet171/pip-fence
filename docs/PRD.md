@@ -40,8 +40,9 @@ And an AI that hands over answers makes them worse at working alone once it is g
 
 ### The game
 - R1. The task is stated on a sign in plain words: parts, planks in each part. Never an equation.
-- R2. The child places planks by tapping the cart and then a part. A wrong build stays on screen
-  as built. Nothing is marked wrong.
+- R2. The child places planks by tapping the cart and then a part. Pip says the count that part now
+  holds. The cart pulses while her hand is empty and the parts glow while it is full. A wrong build
+  stays on screen as built. Nothing is marked wrong, and the count never says "full".
 - R3. On Done, or when the last plank goes on, code classifies the build. If it is right, the fence
   is done. If not, the goat walks through the gap and a hint lands on the gap.
 - R4. Four chapters on one board: Build, Packs (order packs first), Fix (count the gaps, order

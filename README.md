@@ -85,6 +85,9 @@ until 17 September, the day before the deadline. We kept the dates and the mista
 - **Four chapters on one board.** Build, Packs, Fix and Share. Same fence, and it quietly becomes
   multiplication, units inside units, subtraction and addition, and division. A chapter opens when
   she has three gold stars in the one before.
+- **Pip counts with her.** Every plank she places, Pip says the number that part now has, in her
+  own voice. The cart pulses when her hand is empty and the parts glow when it is full, so there is
+  never a question of what to tap next.
 - **Every word is one a six-year-old can read**, checked against an early-reader word list (Dolch and Fry sight words plus the game's own nouns).
   Pip's lines are spoken in a child's voice, not a robot's.
 
