@@ -1,2 +1,0 @@
-# Evaluation-only dependencies (the shipped app has none).
-openai>=1.0
