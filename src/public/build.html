@@ -420,7 +420,7 @@
   soundLabel();
   $("sound").onclick = () => { sound = !sound; try { localStorage.setItem(SOUND, sound ? "1" : "0"); } catch {} soundLabel(); if (!sound) hush(); };
   // Pip's voice (D-084): every fixed line ships as a small audio file made from one child's voice
-  // (scripts/make_voice.py); the manifest maps text to file. A line with no file, which is always a
+  // (generated once, bundled as files); the manifest maps text to file. A line with no file, which is always a
   // model-phrased one, is spoken by the browser's own voice, the friendliest one it has.
   let VOICE = await Promise.race([fetch("/assets/voice/manifest.json").then(r => r.ok ? r.json() : {}), new Promise(r => setTimeout(() => r({}), 1500))]).catch(() => ({}));
   let clip = null;
