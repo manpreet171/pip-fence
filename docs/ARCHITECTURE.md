@@ -51,20 +51,20 @@ sequenceDiagram
   participant S as server.mjs
   participant M as Model
   C->>G: taps Done (or the last plank goes on)
-  G->>F: classify(events)
-  F-->>G: {id: off_by_one_in_one_group, tier: 1, counts}
+  G->>F: classify the event log
+  F-->>G: id off_by_one_in_one_group, tier 1, counts
   G->>G: goat walks to the gap
-  G->>S: POST /api/buddy {id, tier, shape: booleans only}
-  S->>S: re-validate keys, ids, types; reject any digit in the shape
+  G->>S: POST /api/buddy with id, tier, and a shape of booleans only
+  S->>S: re-validate keys, ids and types, reject any digit in the shape
   S->>S: rebuild the payload from validated fields (client text never forwarded)
-  S->>M: phrase(payload) job, JSON schema, 2 s timeout
-  M-->>S: {tier, misconception_id, text}
-  S->>S: gate: ≤2 sentences, no digits, no number words, ≤2 words off the 500-word list
-  S->>M: judge(template, candidate), temperature 0, 1 s timeout
-  M-->>S: {ok: true}
-  S-->>G: {text, source: "model"}
+  S->>M: phrase job, JSON schema, 2 s timeout
+  M-->>S: tier, misconception_id, text
+  S->>S: gate, at most 2 sentences, no digits, no number words, simple words
+  S->>M: judge job, template vs candidate, temperature 0, 1 s timeout
+  M-->>S: ok true
+  S-->>G: text, source model
   G->>C: card on the gap, Pip's face, spoken
-  Note over S,G: any failure at any step: the template line ships, source "template", with the reason
+  Note over S,G: any failure at any step ships the template line, source template, with the reason
 ```
 
 Three things to notice. The classifier ran before any network call, so the verdict never depends
