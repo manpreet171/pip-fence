@@ -2007,3 +2007,16 @@ clears the progress key and the How-to and demo markers and returns to the home 
 parent's page and not the child's, so a child cannot wipe the farm by accident. Rejected: a reset
 button in the game (a child taps everything).
 
+
+---
+
+## D-094 — The board waits while Pip is showing
+18 Sep 2026 · **Decided**
+
+The owner: "If the child is fast during the demo, then what?" A tap on the cart or a part while
+Pip was building her part, or during her worked example, would place planks in the middle of her
+moves and muddle the count. Now, while Pip's demo or worked example runs, the scene, the cart, the
+note and every game button take no taps and are dimmed; Sound and Home stay live. Verified: eighteen
+rapid taps during the demo left no plank and no event, and the first tap after it worked. Rejected:
+letting a tap skip the demo (a child who taps fast is the one who needs to see it).
+

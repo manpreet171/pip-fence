@@ -51,6 +51,7 @@ And an AI that hands over answers makes them worse at working alone once it is g
   The last fence of all ends with a star, Pip's last line and Start again.
 - R5. How to play is three steps per chapter, read aloud, followed by Pip showing the new move on
   the real board once, pointing with an arrow at what she names. The first sheet says what a part is.
+  While Pip is showing, the board and the buttons take no taps.
 - R6. Every child-facing word passes an early-reader word list (Dolch and Fry sight words plus the game's own nouns). Fixed lines are spoken in a
   child's voice.
 

@@ -57,6 +57,9 @@
     filter:drop-shadow(0 0 0 #7d5122) drop-shadow(0 3px 0 #7d5122) drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:arrowbob .7s ease-in-out infinite}
   @keyframes arrowbob{50%{transform:translate(-50%,-100%) translateY(-12px)}}
   @media (prefers-reduced-motion:reduce){#arrow{animation:none}}
+  /* while Pip is showing (her demo, her worked example) the board and the buttons wait; sound and Home stay live */
+  body.busy #scene,body.busy #cart,body.busy #slip,body.busy #deliver,body.busy #done,body.busy #again,body.busy #addpart,body.busy #delpart,body.busy #build,body.busy #howtob{pointer-events:none}
+  body.busy #cart,body.busy #slip,body.busy #deliver,body.busy #done,body.busy #again,body.busy #addpart,body.busy #delpart,body.busy #build{opacity:.55;transition:opacity .3s}
   #cart.ready{animation:cartpulse 1.6s ease-in-out infinite}
   @keyframes cartpulse{50%{box-shadow:0 6px 0 var(--wood2),0 0 0 5px rgba(255,214,120,.55),0 0 26px rgba(255,200,90,.7)}}
   body.hold .isoworld .hit{background:rgba(255,211,77,.28);animation:probeglow 1.2s ease-in-out infinite}
@@ -226,6 +229,7 @@
       else if (S.held) { const p = S.parts.findIndex(n => n < sh().per); if (p >= 0) pointAt(p, 60000); }
     } else if (!S.demoing) unpoint();
     document.body.classList.toggle("hold", !!S.held && !S.done);
+    document.body.classList.toggle("busy", !!(S.demoing || S.showing));
     $("cart").classList.toggle("ready", !S.held && S.cart > 0 && !S.done && delivered() && !S.showing);
     const s = sh(), d = delivered(), packs = s.mode === "packs", share = s.mode === "share";
     $("cart").hidden = !d; $("slip").hidden = d || share; $("deliver").hidden = d || share; $("done").hidden = !d;
@@ -244,7 +248,9 @@
   }
 
   // --- input -----------------------------------------------------------------------------------
+  const busy = () => !!(S.demoing || S.showing);
   $("cart").onclick = () => {
+    if (busy()) return;
     if (S.done || !S.cart || S.held) return;          // already holding: no-op, the hand stays held (D-065)
     S.held = sh().mode === "packs" ? "pack" : "plank";
     log({ e: "plank_held", held: S.held });
@@ -268,6 +274,7 @@
     log({ e: "commit", reason: "left_plot" }); onCommit();
   };
   onTap(scene, (part, i, e) => {
+    if (busy()) return;
     if (S.done || !delivered()) return;
     if (part === null) {
       if (!S.held) return log({ e: "tap_idle" });
@@ -432,7 +439,7 @@
     S.show = { steps, source, reason: out.reason }; J?.update();
     if (!steps.length) return;
     log({ e: "show", source, moves: steps.length });
-    S.showing = true; showBtn.hidden = againBtn.hidden = true;
+    S.showing = true; showBtn.hidden = againBtn.hidden = true; render();
     const sl = ms => new Promise(res => setTimeout(res, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));
     try {
       for (const st of steps) {
@@ -443,7 +450,7 @@
         else if (st.op === "place" && S.cart && S.parts[st.part] < s.per) { S.held = "plank"; place(st.part); S.held = null; render(); await speakNow(COUNT[S.parts[st.part] - 1] || ""); await sl(350); }
         else if (st.op === "remove" && S.parts[st.part] > 0) { remove(st.part); await sl(900); }
       }
-    } finally { S.showing = false; S.counting = null; }
+    } finally { S.showing = false; S.counting = null; render(); }
   });
   function bubble(text, source, part) {
     againBtn.hidden = !S.hintR || S.done || S.probe || !!S.showing;
@@ -553,7 +560,7 @@
   const COUNT = ["one", "two", "three", "four", "five", "six"];
   async function demo() {
     const s = sh(); if (lvl().some(e => ["place", "order", "parts"].includes(e.e))) return guideDone();
-    S.demoing = true; try { await demoRun(s); } finally { S.demoing = false; render(); }
+    S.demoing = true; render(); try { await demoRun(s); } finally { S.demoing = false; render(); }
   }
   async function demoRun(s) {
     const sl = ms => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : ms));

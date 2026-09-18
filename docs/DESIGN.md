@@ -73,7 +73,8 @@ Progress lives in one key in the browser's local storage.
 ## What she sees
 
 - **How to play** per chapter, three steps, read aloud, then Pip shows the new move on the real
-  board and hands over. The sheet has a close, so Home is never out of reach.
+  board and hands over. While Pip is showing, in her demo or her worked example, the board and the
+  buttons do not take taps and are dimmed, so a fast child cannot muddle what she is doing. The sheet has a close, so Home is never out of reach.
 - **Pip counts with her.** Each plank she places, Pip says the number that part now holds. The
   cart pulses while her hand is empty and the parts glow while it is full. On her first move of a
   level a bouncing arrow sits on the next thing to tap, and while Pip talks about the cart or a
