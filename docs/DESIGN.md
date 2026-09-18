@@ -61,6 +61,9 @@ Every job has a template fallback, so the game plays the same with no key and no
 Press **J** in the game to watch the pipeline live: the event log, the classifier's verdict, the
 payload the model got, and who chose the next fence and why.
 
+**Starting over** lives on the grown-ups page, behind a confirmation, so a child cannot wipe the
+farm by accident. After the last fence, the ending screen offers it too.
+
 ## Why there is no chat box
 
 An AI that answers makes learning worse once it is taken away. Pip cannot answer because Pip is

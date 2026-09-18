@@ -1995,3 +1995,15 @@ live: three notes in a row from the model, all true to the log. Rejected: droppi
 note for the template only (the parent audit found the template plain but the model's note more
 useful when it stays inside the facts); a longer page (the parent has ten seconds).
 
+
+---
+
+## D-093 — Start over lives on the grown-ups page
+18 Sep 2026 · **Decided**
+
+The owner: "If I have to restart the game, is that possible?" It was, only at the very end or by
+clearing the browser. Now the grown-ups page has "Start the farm over" behind a confirmation. It
+clears the progress key and the How-to and demo markers and returns to the home page. It is on the
+parent's page and not the child's, so a child cannot wipe the farm by accident. Rejected: a reset
+button in the game (a child taps everything).
+

@@ -70,7 +70,7 @@ turned out to already exist as Khanmigo. Then the first build was stopped on day
 it was a quiz with a farm behind it. Decision D-043 in the log is the moment we admitted that and
 started again from the research. The fence came out of that restart.
 
-Every one of those turns, eighty decisions in all, is in
+Every one of those turns, eighty-one decisions in all, is in
 [docs/DECISIONS.md](docs/DECISIONS.md) with what we rejected and why. Rung was the working name
 until 17 September, the day before the deadline. We kept the dates and the mistakes in because they are the real story.
 

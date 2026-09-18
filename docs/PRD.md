@@ -69,7 +69,8 @@ And an AI that hands over answers makes them worse at working alone once it is g
 
 ### The parent
 - R13. A page with the week's fences, a short note written from the child's mistakes and never from
-  a transcript, and one question to ask out loud. No blame words. Nothing invented.
+  a transcript, and one question to ask out loud. No blame words. Nothing invented. The only
+  start-over control is here, behind a confirmation.
 
 ### Privacy and safety
 - R14. Nothing personal leaves the device. No typing, no audio in, no identifiers. Progress is one
