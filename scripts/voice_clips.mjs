@@ -2,8 +2,8 @@
 // page reads. Uses the same voice the server uses at run time, so fixed and fresh lines match.
 // Run once after the lines change; existing files are kept.
 //
-//   set OPENAI_API_KEY=...            (PowerShell: $env:OPENAI_API_KEY="...")
-//   node scripts/voice_clips.mjs      [voice]   default coral
+//   set AZURE_SPEECH_KEY=...  set AZURE_SPEECH_REGION=eastus   (PowerShell: $env:AZURE_SPEECH_KEY="...")
+//   node scripts/voice_clips.mjs      [voice]   default en-US-AnaNeural, the voice the server uses
 //
 // No dependencies. Lines are collected from the hint layer, the cheer fallbacks, code's worked-example
 // lines and the game page's own strings, exactly as the page will speak them.
@@ -12,9 +12,9 @@ import { createHash } from "node:crypto";
 import { TEMPLATES, cheerFallback } from "../src/engine/buddy.mjs";
 import { codeShow } from "../src/public/fence.mjs";
 
-const KEY = process.env.OPENAI_API_KEY;
-if (!KEY) { console.error("OPENAI_API_KEY is not set"); process.exit(1); }
-const VOICE = process.argv[2] || process.env.TTS_VOICE || "coral";
+const KEY = process.env.AZURE_SPEECH_KEY, REGION = process.env.AZURE_SPEECH_REGION || "eastus";
+if (!KEY) { console.error("AZURE_SPEECH_KEY is not set"); process.exit(1); }
+const VOICE = process.argv[2] || process.env.TTS_VOICE || "en-US-AnaNeural";
 const OUT = new URL("../src/public/assets/voice/", import.meta.url);
 mkdirSync(OUT, { recursive: true });
 
@@ -40,10 +40,10 @@ if (fresh) console.log(`voice changed to ${VOICE}: remaking every clip`);
 async function one(text) {
   const path = new URL(name(text), OUT);
   if (existsSync(path) && !fresh) return "kept";
-  const r = await fetch("https://api.openai.com/v1/audio/speech", { method: "POST",
-    headers: { authorization: "Bearer " + KEY, "content-type": "application/json" },
-    body: JSON.stringify({ model: "gpt-4o-mini-tts", voice: VOICE, input: text, response_format: "mp3",
-      instructions: "A warm, playful young child's voice, speaking slowly and clearly to a friend." }) });
+  const esc = text.replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
+  const r = await fetch(`https://${REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, { method: "POST",
+    headers: { "Ocp-Apim-Subscription-Key": KEY, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3", "User-Agent": "pip" },
+    body: `<speak version='1.0' xml:lang='en-US'><voice name='${VOICE}'><prosody rate='-5%'>${esc}</prosody></voice></speak>` });
   if (!r.ok) throw new Error(`${r.status} for "${text}"`);
   writeFileSync(path, Buffer.from(await r.arrayBuffer()));
   return "made";

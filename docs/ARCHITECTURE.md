@@ -79,7 +79,7 @@ path on which the child sees nothing: every branch ends in a line.
 | Browser → server | Five JSON bodies, 4 KB cap (8 KB for plan) | Every key, id and type re-validated; unknown keys rejected; digits rejected where booleans are expected |
 | Server → model | Prompts with **no integer derived from the fence**: booleans, plain-words meanings, fence names | Redaction is measured by a red-team attack, not asserted ([results/REDTEAM-RESULTS.md](results/REDTEAM-RESULTS.md)) |
 | Model → server | One JSON object per job | Schema check; lexical gate; semantic judge (hint, cheer, plan) or simulator (show); template fallback |
-| Browser → voice | `POST /api/say` with one line of text | Only a line the server itself produced or ships is voiced; 300 characters at most; cached by text; a daily character cap; 404 with no key, and the browser voice takes over |
+| Browser → voice | `POST /api/say` with one line of text | Only a line the server itself produced or ships is voiced; 300 characters at most; cached by text; a daily character cap; 404 with no key, and the browser voice takes over. Provider by key: Azure (Ana, the clips' voice, what the live site runs), OpenAI or ElevenLabs |
 | Server → browser | `{text, source, reason?}` or a validated pick / script | The browser re-checks the plan's pick against its own candidate list and re-simulates the show script before performing it |
 | Internet → server | Any POST | Per-address limit 60/min (real address behind the proxy); daily cap on model calls, 1,500 by default; cross-origin POSTs refused; the key lives only in the server's environment and is never logged |
 
@@ -133,6 +133,7 @@ any unmastered node that exercises the last mistake, and nothing else.
 | Planner picks a fence not on code's list | Code's own next fence; the model's line is dropped | reason `choice` |
 | Show script is illegal or fixes nothing | Code's own script for the first wrong part | reason `simulation` |
 | Daily cap reached | Templates until midnight UTC | the server stops calling the model |
+| No speech key, or the voice cap reached | Fixed lines still play from the clips; fresh model lines are read by the browser's own voice | `/api/say` answers 404 |
 | Storage blocked (private window, cleared) | The game runs; progress does not persist | every read and write is wrapped |
 | Two mistakes make the same fence | A probe: "Tap a part you think is finished." The parts glow; her tap decides. After 20 s with no tap, the likelier hint, marked unconfirmed | id `ambiguous`, 25 of 162 fixtures; commit reason `probe_timeout` |
 | No taps for 45 s on a wrong fence | The level commits itself and the hint appears | reason `idle` |

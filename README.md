@@ -22,8 +22,9 @@ git clone https://github.com/manpreet171/pip-fence.git && cd pip-fence && node s
 ```
 
 Open http://localhost:5177. Nothing to install, just Node 22. Add `DEEPSEEK_API_KEY` or
-`ANTHROPIC_API_KEY` if you want the live model; without a key Pip uses her written lines and the
-game plays the same. Turn the sound on. Press **J** during play to see what the AI is doing.
+`ANTHROPIC_API_KEY` if you want the live model, and `AZURE_SPEECH_KEY` with `AZURE_SPEECH_REGION`
+if you want Pip's own voice for the lines the model writes; without keys Pip uses her written lines
+and your browser's voice, and the game plays the same. Turn the sound on. Press **J** during play to see what the AI is doing.
 
 Your own copy online, one click:
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/manpreet171/pip-fence)
@@ -151,9 +152,9 @@ We would rather say this here than have you find it.
   measurement, not a child. That is the biggest gap, and we know it.
 - **The classifier agrees with its own spec**, not with real children. It will meet mistakes
   nobody wrote a test for.
-- **Pip needs a voice key to be one voice.** With a text-to-speech key on the server, every line,
-  fixed or freshly written by the model, is spoken by the same child's voice. Without one, the
-  model's fresh lines fall back to the browser's own voice, and it shows.
+- **Pip's voice needs a key.** On the live site every line, fixed or freshly written by the
+  model, is the same child's voice, because the server holds a speech key. Run it yourself without
+  one and the model's fresh lines fall back to your browser's voice, and it shows.
 - **It is not deep.** Twenty-four levels of one mechanic. Enough to show the idea. Thin as a
   product.
 - **The word gate is only a word gate.** It stops digits and number words. It cannot stop a
