@@ -1,8 +1,8 @@
 # TEST REPORT 2 — Rung after the scene rebuild and the three AI additions (7 Sep 2026, 11 days to 18 Sep)
 
 Independent QA pass, round 2. Build under test: the committed tree at `e104a9a` ("Parent note: the thing to ask may be an
-instruction; fallback counts fences plainly"); the working tree differs from it only by line endings and the gitignored
-the local pointer file. Server under test: the running `node src/server.mjs` on :5177 with a DeepSeek key live (every `/api/buddy`
+instruction; fallback counts fences plainly"); the working tree differs from it only by line endings and one local, untracked file.
+Server under test: the running `node src/server.mjs` on :5177 with a DeepSeek key live (every `/api/buddy`
 answer below is `source:"model"`). No source, data or eval file was edited; no git command other than the one clone.
 
 **Harness (the round-1 lesson, applied).** Every browser case was driven by Playwright 1.63 (installed in the QA temp
@@ -177,7 +177,7 @@ Scanned `build.html`, `judge.mjs`, `parent.html`, `fence.mjs`, `buddy.mjs`, `ser
 - Attribution strings (`claude|anthropic|co-authored|generated with|assistant`, case-insensitive): `buddy.mjs:116` comment "Anthropic (Haiku, strict JSON schema) if ANTHROPIC_API_KEY is set" · `:141` provider key `anthropic:` · `:142,145` model id `claude-haiku-4-5-20251001` · `:143` `https://api.anthropic.com/v1/messages` · `:144` header `anthropic-version` · `:164,165,217,241` `provider = "anthropic"` defaults · `server.mjs:14` comment "Anthropic if present, else DeepSeek" · `:15` `ANTHROPIC_API_KEY` · `README.md:43` `ANTHROPIC_API_KEY` + model id. Every hit is a vendor-as-provider reference (model id, API host, env var, provider key/default). **Zero** hits for `Claude` outside the model id, `Co-Authored`, `Generated with`, `assistant`.
 
 ### 15. Cold clone — PASS
-`git clone` → `e104a9a`; `PORT=5188 node src/server.mjs` → `Rung running on http://localhost:5188`. GET: `/build` 200 text/html 24,836 B · `/public/judge.mjs` 200 text/javascript · `/assets/fonts/Fredoka.ttf` 200 **font/ttf** 159,184 B · `/assets/fence/board.png` 200 **image/png** · `/fence.mjs`, `/buddy.mjs`, `/village.mjs`, `/public/parent.html` 200 · `/assets/ground/{grass,dirt,tree}.png`, `/assets/farm/{fenceHigh_E,woodWall_N,roofSingleWall_N,cornYoungDouble_E,hayBalesStacked_E,sacksCrate_E,dirtFarmland_E}.png`, `/assets/animals/goat.png` all 200 image/png. `POST /api/buddy` → `source:"model"`; `POST /api/note` (open over_count, one solo fence) → `source:"model"`, a consistent three-sentence note. `python evals/run_all.py` in the clone → ALL PASS. `diff -r --strip-trailing-cr` clone vs working tree: only `CLAUDE.md` (gitignored). Server killed afterwards.
+`git clone` → `e104a9a`; `PORT=5188 node src/server.mjs` → `Rung running on http://localhost:5188`. GET: `/build` 200 text/html 24,836 B · `/public/judge.mjs` 200 text/javascript · `/assets/fonts/Fredoka.ttf` 200 **font/ttf** 159,184 B · `/assets/fence/board.png` 200 **image/png** · `/fence.mjs`, `/buddy.mjs`, `/village.mjs`, `/public/parent.html` 200 · `/assets/ground/{grass,dirt,tree}.png`, `/assets/farm/{fenceHigh_E,woodWall_N,roofSingleWall_N,cornYoungDouble_E,hayBalesStacked_E,sacksCrate_E,dirtFarmland_E}.png`, `/assets/animals/goat.png` all 200 image/png. `POST /api/buddy` → `source:"model"`; `POST /api/note` (open over_count, one solo fence) → `source:"model"`, a consistent three-sentence note. `python evals/run_all.py` in the clone → ALL PASS. `diff -r --strip-trailing-cr` clone vs working tree: only one local, untracked file. Server killed afterwards.
 
 ---
 

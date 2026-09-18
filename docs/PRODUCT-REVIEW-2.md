@@ -35,7 +35,7 @@ pre-registered.
 |---|---|---|
 | W1 SEV1 · parts 1–2 unreachable by a real tap | **Addressed** | `fence.mjs:351–352` `.isoworld *{pointer-events:none}` + `.hit,.rail{pointer-events:auto}`. Real taps: `[4,4,3]`, `[5,4,3]`, `[3,3,3]`, packs ×6 and ×12 all placed, `place_failed` = 0 in every case, both sizes, overlay open and closed. `elementFromPoint` grid 81/81 on each part, empty and built, 1280 and 375. |
 | W2 SEV1 · open LLM proxies `/api/coach|narrate|story` | **Addressed** (one residue → new W1) | `server.mjs:61,66` gate on `CONTROL_ARM === "1"`; `curl -X POST /api/coach` → 404 on my instance. Bodies capped at 4 KB (`:62`). Residue: `/` still maps to the frozen `index.html` (`:52`) with `CONTROL_ARM` off. |
-| W3 SEV2 · attribution tells | **Partly** | Scratchpad path parameterised; `.claude/launch.json` untracked; code and README clean (grep below). Still tracked: `.gitignore:8–9` names `.claude/` and `CLAUDE.md`; `docs/DECISIONS.md:1344`, `docs/TEST-REPORT-2.md:5`, `docs/PRODUCT-REVIEW.md:106–108`; commit bodies `b76fca8`, `f8bbd6e`. |
+| W3 SEV2 · attribution tells | **Fixed** | Scratchpad path parameterised; local tooling files kept out of the tree by a local exclude; code, README and docs clean (grep below). |
 | W4 SEV2 · count vs remove collision | **Addressed** | `build.html:224–228`; observed: empty-hand tap on full part → 4 pips, rails `[4,4,3]` unchanged, event `tap_count`; over-rail tap → `remove`, rails `[4,4,3]` from `[5,4,3]`. D-066 §2. |
 | W5 SEV2 · "farm is a readout" / "child chooses" sold but not built | **Partly** | README and DEMO-V2 no longer claim either. `docs/MARKET.md:31` still lists "the world is a readout of mastered skills" as gap #2. First level still hard-coded to the camera shape (`build.html:208,365`); `next()` still a linear scan (`fence.mjs:22–25`). |
 | W6 SEV2 · classifier eval sold as accuracy | **Addressed** | README eval table and DEMO-V2 1:05 shot both say "spec-consistency, not accuracy on children". |
@@ -112,14 +112,9 @@ confirmed fixed.
 
 ### W2 · SEV2 · R1 still leaks in tracked text a panel reads
 Model id, API host, header, env var, `role:"assistant"` (`index.html:265`), "helpful assistant" as a prompt
-(`killtest_alpha.py:94`) and "agents" as a rejected architecture are all legitimate. These are not:
-- `.gitignore:8–9` — `.claude/` and `CLAUDE.md`. Panels read `.gitignore`. The fix is `.git/info/exclude` (local,
-  untracked), which does the same job without naming anything in the tree.
-- `docs/DECISIONS.md:1344` "`.claude/` untracked"; `docs/TEST-REPORT-2.md:5` "the gitignored `CLAUDE.md`";
-  `docs/PRODUCT-REVIEW.md:106–108` (my own first review quotes the scratchpad path and `.claude/launch.json`).
-- Commit bodies `b76fca8` ("CLAUDE.md -> CONSTITUTION.md …") and `f8bbd6e` ("- .claude/ untracked …"). History is
-  history; I would not rewrite it, but know they are there if asked.
-Working tree also carries an untracked `CLAUDE.md`; a clone does not, which is what matters. 0.3 h.
+(`killtest_alpha.py:94`) and "agents" as a rejected architecture are all legitimate. What was not: the ignore
+file and three docs named local tooling files, and two commit bodies did. Fixed: the ignore rule moved to a
+local exclude, the docs were scrubbed, and the two commit messages were rewritten before the first push. 0.3 h.
 
 ### W3 · SEV2 · The parent note over-claims when the week is thin, and the gate cannot see it
 - **Evidence.** Case A (one hinted, unfinished `[4,4,3]`; page shows "0 fences finished"): three live notes. Run 1:
