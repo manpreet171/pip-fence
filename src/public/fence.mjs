@@ -55,8 +55,11 @@ const EXERCISES = {
 export function candidates(mastery, last) {
   const u = unlocked(mastery), fit = EXERCISES[last?.id] || (() => true);
   const open = GRAPH.filter(g => g.chapter <= u && (mastery[g.node] || 0) < 1);
-  const c = open.filter(fit);
-  return (c.length ? c : open).map(g => g.node);
+  // Never leave a chapter while it still has an unmastered fence (D-091): the next chapter opens on
+  // the map at three gold stars, but she is sent there only when every fence here is gold.
+  const here = open.filter(g => g.chapter === shape(last?.node)?.chapter), pool = here.length ? here : open;
+  const c = pool.filter(fit);
+  return (c.length ? c : pool).map(g => g.node);
 }
 
 // Pip shows her, on her own fence (D-082). A worked example is a script of moves in a fixed
@@ -134,7 +137,7 @@ export function classify(events) {
   const perGroup = c.every(n => n === s.per - 1);
   // The probe was shown for the collision: its outcome (tap, or silence past 20 s) outranks the idle rule,
   // otherwise the 45 s idle commit would always land on idle_off_task and the escalation could never fire.
-  if (asGroups && perGroup && hints.some(h => h.id === "ambiguous")) return resolveAmbiguous(events, hints, c, s, out);
+  if (asGroups && perGroup && hints.some(h => h.id === "ambiguous")) return resolveAmbiguous(events, hints, c, s, out, "off_by_one_in_one_group", "counted_groups_as_group_size");
 
   // Interface, not maths: the last act was a failed tap, while holding, aimed at a part that is short.
   if (prev?.e === "place_failed" && c[prev.nearest_group] < s.per) return out("interface_failure");
@@ -147,7 +150,11 @@ export function classify(events) {
   // apart and we stay silent. The right count falls through to the concrete rules for the filling.
   if (s.mode === "share" && parts !== s.groups) {
     const ids = [parts === T && "parts_equal_total", parts === s.per && "parts_equal_per", parts === s.groups - 1 && "parts_one_short", parts === s.groups + 1 && "parts_one_over"].filter(Boolean);
-    return ids.length === 1 ? out(ids[0]) : out("ambiguous", false);
+    if (ids.length === 1) return out(ids[0]);
+    // parts_equal_per against parts_one_short/over (per = groups±1): the probe decides. A full part
+    // called finished means she knows a part's size and is out by a part; a bare or short one means
+    // she read the sign's planks as parts. No tap: the sign reading, unconfirmed.
+    return ids.length === 2 ? resolveAmbiguous(events, hints, c, s, out, ids.find(i => i !== "parts_equal_per"), "parts_equal_per") : out("ambiguous", false);
   }
 
   // Fix: exactly one part's shortfall ordered and only that part filled; fewer than the gaps and all of it
@@ -161,7 +168,7 @@ export function classify(events) {
   // Packs: one pack per part, when a pack is not a part.
   if (s.mode === "packs" && ordered === s.groups && s.pack !== s.per) return out("pack_unit_confusion");
 
-  if (asGroups && perGroup) return resolveAmbiguous(events, hints, c, s, out);
+  if (asGroups && perGroup) return resolveAmbiguous(events, hints, c, s, out, "off_by_one_in_one_group", "counted_groups_as_group_size");
   if (asGroups) return out("counted_groups_as_group_size");
   if (sum === T && c.includes(0)) return out("right_total_wrong_grouping");
   if (c.some(n => n > s.per)) return out("over_count");
@@ -172,17 +179,17 @@ export function classify(events) {
   return out("ambiguous", false);
 }
 
-// The collision (per-1 === groups: 2x3, 3x4, 4x5). Before the "show me a finished part" hint we
-// say ambiguous. After it, a tap on a part she calls finished resolves it: a full part means she
-// holds a correct reference; a short one means she counted parts as the size of a part. No tap
-// within 20 s -> escalate on the likelier branch, unconfirmed.
-function resolveAmbiguous(events, hints, c, s, out) {
+// A collision (concrete: per-1 === groups on 2x3, 3x4, 4x5; share: per === groups±1). Before the
+// "tap a part you think is finished" probe we say ambiguous. After it, her tap resolves it: a full
+// part means she holds a correct reference (`full`); a short one means she mixed the two numbers up
+// (`short`). No tap within 20 s -> the likelier branch, `short`, unconfirmed.
+function resolveAmbiguous(events, hints, c, s, out, full, short) {
   const h = hints.findLast(x => x.id === "ambiguous");
   if (!h) return out("ambiguous", false);
   const tap = events.find(e => e.e === "tap_count" && e.t > h.t);
-  if (tap) return out(c[tap.group] === s.per ? "off_by_one_in_one_group" : "counted_groups_as_group_size");
+  if (tap) return out(c[tap.group] === s.per ? full : short);
   const commit = events.findLast(e => e.e === "commit");
-  return commit.t - h.t >= 20000 ? out("counted_groups_as_group_size", false) : out("ambiguous", false);
+  return commit.t - h.t >= 20000 ? out(short, false) : out("ambiguous", false);
 }
 
 // ---------------------------------------------------------------------------------------------

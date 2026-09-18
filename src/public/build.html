@@ -146,7 +146,7 @@
   </div>
 </div>
 <script type="module">
-  import { GRAPH, IDS, shape, next, unlocked, candidates, validShow, codeShow, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
+  import { GRAPH, CHAPTERS, IDS, shape, next, unlocked, candidates, validShow, codeShow, classify, level, mountScene, appendPlank, removePlank, onTap, bubbleSpot, railPoint, goatWalk, FENCE_CSS } from "/fence.mjs";
   import * as buddy from "/buddy.mjs";
   import * as pip from "/public/pip.mjs";
   const { TEMPLATES, hint, payload } = buddy;
@@ -155,6 +155,7 @@
   const $ = id => document.getElementById(id), px = n => n.toFixed(1) + "px";
   const Q = new URLSearchParams(location.search), DEBUG = Q.has("debug");
   const IDLE_MS = 45000, KEY = "rung.v1", BOARD = "/assets/fence/board.png";
+  const SHORT = ["off_by_one_in_one_group", "off_by_one_per_group", "counted_groups_as_group_size", "one_group_only", "ambiguous"];   // hints about a short part
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ v: 1, mastery: S.mastery, build: { node: S.node, parts: S.parts, cart: S.cart, n: S.n }, events: S.events, ended: S.ended })); } catch {} };
 
@@ -239,7 +240,7 @@
       $("addpack").innerHTML = pack(packs ? s.pack : 1);
       $("slipn").innerHTML = Array.from({ length: S.slip }, () => pack(packs ? s.pack : 1)).join("");
     }
-    $("done").textContent = S.done ? "Next fence" : "Done";
+    $("done").textContent = S.done ? (candidates(S.mastery, { node: S.node }).length ? "Next fence" : "Finish") : "Done";
   }
 
   // --- input -----------------------------------------------------------------------------------
@@ -251,11 +252,11 @@
   };
   $("addpack").onclick = () => { const s = sh(); if (S.slip < s.groups * s.per) { S.slip++; render(); } };
   $("slipn").onclick = e => { if (e.target.closest(".pack")) { S.slip--; render(); } };
-  $("deliver").onclick = () => { if (!S.slip) return; S.cart = S.slip; log({ e: "order", ...(sh().mode === "fix" ? { planks: S.slip } : { packs: S.slip }) }); render(); };
+  $("deliver").onclick = () => { if (!S.slip) return; S.cart = S.slip; log({ e: "order", ...(sh().mode === "fix" ? { planks: S.slip } : { packs: S.slip }) }); hideBubble(); render(); };
   // Share: frame the parts one at a time (the scene re-mounts around them), then Build locks the frame.
   $("addpart").onclick = () => { const s = sh(); if (S.n < Math.min(8, s.groups * s.per)) { S.n++; mount(); } };
   $("delpart").onclick = () => { if (S.n) { S.n--; mount(); } };
-  $("build").onclick = () => { if (!S.n) return; S.parts = Array(S.n).fill(0); log({ e: "parts", n: S.n }); render(); };
+  $("build").onclick = () => { if (!S.n) return; S.parts = Array(S.n).fill(0); log({ e: "parts", n: S.n }); hideBubble(); render(); };
   // Same level, so earlier hints still count and the tier escalates; level() drops the old order and rails.
   $("again").onclick = () => { const s = sh(); S.retry = true;
     Object.assign(S, { parts: s.pre ? [...s.pre] : s.mode === "share" ? [] : S.parts.fill(0), cart: s.mode === "share" ? s.groups * s.per : 0, held: null, slip: 0, pre: null, probe: false });
@@ -276,10 +277,10 @@
       return log({ e: "place_failed", nearest_group: near[1], held: S.held });
     }
     if (S.held) return place(part);          // a held plank always places, even on an existing rail
-    // Empty hand: a tap counts the part. A plank leaves only when it is the one sticking out over the
-    // post, or when she taps the same part again while the pips are still up (D-066).
-    const overRail = i !== null && e.target.classList.contains("over");
-    if (overRail || S.counting === part) return remove(part);
+    // Empty hand: a tap counts the part. A plank leaves only when the part has one sticking out over
+    // the post (a tap anywhere on that part: she cannot aim at a plank), or when she taps the same
+    // part again while the pips are still up (D-066).
+    if (S.parts[part] > sh().per || S.counting === part) return remove(part);
     count(part);
   });
 
@@ -353,7 +354,7 @@
   }
   function finish(r) {
     S.done = true; S.last = r; clearTimeout(S.idle);
-    const L = lvl(), s = sh(), node = S.node, hinted = S.retry || L.some(e => e.e === "hint");
+    const L = lvl(), s = sh(), node = S.node, hinted = S.retry || L.some(e => e.e === "hint"), wasGold = S.mastery[node] >= 1;
     S.mastery[node] = hinted ? 0.5 : 1; save();
     stripNow();
     pip.star(!hinted, hinted ? "Fence done. A silver star." : "Fence done. A gold star!");
@@ -361,8 +362,11 @@
     // Pip cheers (docs/MODES.md): booleans only, nothing from the build. Not called when a hint with no
     // count-then-fix is the only fact; the card then says what it always said.
     const h = L.findLast(e => e.e === "hint"), mid = Math.floor(s.groups / 2);
-    const sum = { first_try: !hinted && L.filter(e => e.e === "commit").length === 1, used_hint: !!h, fixed_after_count: !!h && L.some(e => e.e === "tap_count" && e.t > h.t) && !L.some(e => e.e === "show" && e.t > h.t),   // Pip's own count is not hers
-      mode: s.mode === "concrete" ? "build" : s.mode, chapter_done: GRAPH.every(g => g.chapter !== s.chapter || S.mastery[g.node] > 0) };
+    // "counted a full part, then fixed the short part" is claimed only when the hint was about a short part and her own tap-count followed it
+    const sum = { first_try: !hinted && L.filter(e => e.e === "commit").length === 1, used_hint: !!h, fixed_after_count: !!h && SHORT.includes(h.id) && L.some(e => e.e === "tap_count" && e.t > h.t) && !L.some(e => e.e === "show" && e.t > h.t),   // Pip's own count is not hers
+      mode: s.mode === "concrete" ? "build" : s.mode,
+      // this fence made the chapter all gold, and there is a chapter after it; the last chapter ends in end() instead
+      chapter_done: !wasGold && s.chapter < CHAPTERS.length - 1 && GRAPH.every(g => g.chapter !== s.chapter || S.mastery[g.node] >= 1) };
     // The card waits for the star moment to pass, so the two never sit on top of each other.
     const after = fn => setTimeout(fn, matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : 2300);
     if (typeof buddy.cheer === "function" && (sum.first_try || sum.fixed_after_count || sum.chapter_done))
@@ -378,7 +382,7 @@
     for (const e of S.events) {
       if (e.e === "level_start") { cur = { node: e.node, ids: [], hints: 0, first_try: false, fixed_after_count: false, commits: 0, lastHint: -1 }; out.push(cur); continue; }
       if (!cur) continue;
-      if (e.e === "hint") { cur.hints++; if (!cur.ids.includes(e.id) && cur.ids.length < 4) cur.ids.push(e.id); cur.lastHint = e.t; }
+      if (e.e === "hint") { cur.hints++; if (!cur.ids.includes(e.id) && cur.ids.length < 4) cur.ids.push(e.id); cur.lastHint = SHORT.includes(e.id) ? e.t : -1; }
       if (e.e === "commit") cur.commits++;
       if (e.e === "tap_count" && cur.lastHint >= 0 && e.t > cur.lastHint) cur.fixed_after_count = true;
     }
@@ -392,17 +396,19 @@
     $("done").disabled = true; $("done").textContent = "Pip is picking";
     const p = typeof buddy.plan === "function" ? await buddy.plan({ mastery: S.mastery, history: recent(), last }) : null;
     $("done").disabled = false;
-    const valid = cands.includes(p?.node), node = valid ? p.node : (next(S.mastery, last) ?? cands[0]);
+    const valid = cands.includes(p?.node), node = valid ? p.node : cands[0];
     S.plan = { node, valid, source: valid ? p.source : "code", why: valid ? p.why : "", reason: p?.reason, choices: cands }; J?.update();
     start(node);
     if (valid && p.why && guided()) bubble(p.why, p.source, 0);   // never over Pip's own demo on a chapter's first level
   }
-  // Every plot fenced. Mastery stays (the parent screen reads it) until she taps Start again.
-  function end() {
+  // Every plot fenced: a gold star and Pip's last line, once. Mastery stays (the parent screen reads
+  // it) until she taps Start again; a reload shows the finished farm without replaying the moment.
+  function end(fresh = true) {
     S.done = S.ended = true; save(); clearTimeout(S.idle); hideBubble();
     $("task").textContent = "Every fence is done!";
     for (const id of ["cart", "slip", "deliver", "done", "again"]) $(id).hidden = true;
     $("restart").hidden = false;
+    if (fresh) { pip.star(true, "Every fence is done!"); setTimeout(() => bubble("Every fence on the farm is done. You built them all, and the goat never got the corn.", "", 0), matchMedia("(prefers-reduced-motion:reduce)").matches ? 0 : 2300); }
   }
 
   // --- bubble ----------------------------------------------------------------------------------
@@ -524,7 +530,7 @@
               "Tap the cart. You pick up a plank. Tap a part. The plank goes on.",
               "Tap Done. If a part is short, the goat gets in. Fix it."] },
     packs: { key: "pip.howto.packs", title: "How to play: Packs", sub: "Now the planks come in packs. Get the packs first.",
-      steps: ["A pack holds more than one plank. Look inside a pack.",
+      steps: ["A pack holds more than one plank. Count the planks in a pack.",
               "Tap the pack once for each pack you need. Then tap Bring it.",
               "Tap the cart, then a part. A whole pack goes on. Tap Done when every part is full."] },
     fix: { key: "pip.howto.fix", title: "How to play: Fix", sub: "The wind blew some planks out. Fill the gaps.",
@@ -566,7 +572,7 @@
       for (let k = 0; k < s.pack; k++) { await speakNow(COUNT[k] || ""); await sl(300); }
       await say("A pack is more than one plank. I tap the pack once. That gets me a whole pack.", 0, 3200);
       S.slip = 1; render(); await sl(1200);
-      bubble("Now you get the rest. How many planks does a part need? Tap the pack for each pack you need. Then tap Bring it.", "", 0);
+      bubble("Now you get the packs. How many planks does a part need? Tap the pack for each pack you need. Then tap Bring it.", "", 0);
     } else if (s.mode === "fix") {
       const p = Math.max(0, S.parts.findIndex(n => n < s.per)), gaps = s.per - S.parts[p];
       await say("The wind blew some planks out. This part has empty spaces at the top. I count the spaces, not the planks.", p, 3800);
@@ -590,7 +596,7 @@
   // --- boot: restore the in-progress fence exactly, else the first plot ----------------------------
   const saved = load(); S.mastery = saved.mastery || {}; S.events = saved.events || [];   // history survives every branch below, ?node= included
   const ls = saved.events?.findLast?.(e => e.e === "level_start");
-  const finale = () => { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(); };
+  const finale = () => { Object.assign(S, { node: "3x4_concrete", parts: [4, 4, 4] }); mount(); end(false); };
   if (Q.get("node") && shape(Q.get("node"))?.chapter <= unlocked(S.mastery)) start(Q.get("node"));   // a locked chapter is not reachable by URL either
   else if (saved.ended) finale();
   else if (saved.build?.node && ls?.node === saved.build.node && shape(saved.build.node)) {

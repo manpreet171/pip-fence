@@ -14,7 +14,7 @@ flowchart LR
     SC["fence.mjs Part 2<br/>isometric scene"]
     BD["buddy.mjs (client side)<br/>redacted payloads, fetch, fallbacks"]
     LS[("localStorage rung.v1<br/>mastery, events, build")]
-    VO["voice clips<br/>100 mp3 + manifest"]
+    VO["voice clips<br/>103 mp3 + manifest"]
     UI --> FX
     UI --> SC
     UI --> BD
@@ -119,7 +119,10 @@ sees it. Nothing leaves the device except the redacted payloads above.
 **The level graph** is 24 nodes: six shapes (2x3, 3x3, 3x4, 4x3, 4x5, 2x5) in four modes (build,
 packs, fix, share). A chapter unlocks when the previous one holds three gold stars. Mastery 1 is a
 fence finished with no hint, 0.5 with one. `next()` is code's fixed order; the planner may choose
-any unmastered node that exercises the last mistake, and nothing else.
+any unmastered node in her current chapter that exercises the last mistake, and nothing else. She
+leaves a chapter only when every fence in it is gold (D-091), so the home page's "Next" and the game
+always agree. The last gold of a chapter is cheered as "a new chapter is open"; the last of all is
+`end()`: a gold star, Pip's last line, Start again, and the home page says "Play again".
 
 ## 5. Failure modes
 
@@ -135,7 +138,7 @@ any unmastered node that exercises the last mistake, and nothing else.
 | Daily cap reached | Templates until midnight UTC | the server stops calling the model |
 | No speech key, or the voice cap reached | Fixed lines still play from the clips; fresh model lines are read by the browser's own voice | `/api/say` answers 404 |
 | Storage blocked (private window, cleared) | The game runs; progress does not persist | every read and write is wrapped |
-| Two mistakes make the same fence | A probe: "Tap a part you think is finished." The parts glow; her tap decides. After 20 s with no tap, the likelier hint, marked unconfirmed | id `ambiguous`, 25 of 162 fixtures; commit reason `probe_timeout` |
+| Two mistakes make the same fence | A probe: "Tap a part you think is finished." The parts glow; her tap decides, in Build and in Share. After 20 s with no tap, the likelier hint, marked unconfirmed | id `ambiguous`, 28 of 169 fixtures; commit reason `probe_timeout` |
 | No taps for 45 s on a wrong fence | The level commits itself and the hint appears | reason `idle` |
 
 Press **J** in the game and every row above is visible as it happens: the last hint's source and
@@ -160,10 +163,10 @@ reason, the payload as sent, who chose the next fence, who wrote the moves.
                  live measurements (need a key, run by hand, written up in docs/results)
                  judge_eval · latency_cost · redteam_leak · plan_eval · show_eval
               ───────────────────────────────────────────────────────────────────
-         integration: buddy_test.mjs, 80 checks with an injected fake fetch
+         integration: buddy_test.mjs, 81 checks with an injected fake fetch
          (no integer crosses the wire; every gate reason; every fallback; the judge; the simulator)
     ──────────────────────────────────────────────────────────────────────────────────
-  unit, pure: classifier_eval.mjs over 162 hand-written sequences → confusion matrix, 0 mismatches
+  unit, pure: classifier_eval.mjs over 169 hand-written sequences → confusion matrix, 0 mismatches
   readinglevel.py --assert over every template → 0 violations
 ```
 

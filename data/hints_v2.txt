@@ -1,10 +1,10 @@
 off_by_one_in_one_group	1	That part of the fence is short. Count a full part again.
 off_by_one_in_one_group	2	Look at the top of every part. Which part is not as tall as the other parts?
 off_by_one_in_one_group	3	Find the part that is not as tall as the others. Put a plank on it.
-off_by_one_per_group	1	Every part of the fence is a little short. Look at how tall a full part is.
+off_by_one_per_group	1	Every part of the fence is a little short. Look at how tall a post is.
 off_by_one_per_group	2	Look at the top of each post. Every part stops before the top of its post.
 off_by_one_per_group	3	Each part needs a plank more. Put a plank on every part, up to the top of its post.
-counted_groups_as_group_size	1	Each part needs the same planks. Look at what is in a full part.
+counted_groups_as_group_size	1	Each part stops before the top of its post. Look at the sign again.
 counted_groups_as_group_size	2	The number of parts is not the number of planks in a part. Look how tall a post is.
 counted_groups_as_group_size	3	Put planks on a part up to the top of its post. Then make every part look just like it.
 one_group_only	1	Only the first part is built. The other parts are still empty.
@@ -16,9 +16,9 @@ over_count	3	Find the plank that sticks out over the post. Put it back in the ca
 right_total_wrong_grouping	1	A part is still empty, but some parts are too tall. Look at the top of each post.
 right_total_wrong_grouping	2	A part stops at the top of its post. Move the extra planks to the empty part.
 right_total_wrong_grouping	3	Take a plank that sticks out over a post. Put it on the empty part.
-pack_unit_confusion	1	A pack holds many planks. Look inside a pack.
-pack_unit_confusion	2	Open a pack and count the planks inside. A pack is more than a plank.
-pack_unit_confusion	3	Count the planks in a pack. Then think how many packs a part needs.
+pack_unit_confusion	1	A pack is more than a plank. Count the planks in a pack.
+pack_unit_confusion	2	Look at the fence and the cart. Count the planks in a pack, then the packs a part needs.
+pack_unit_confusion	3	Count the planks in a pack. Then count how many packs make a part.
 ambiguous	1	Tap a part you think is finished.
 ambiguous	2	Tap the part you think is done. Look at the top of its post.
 ambiguous	3	Tap a part you think is done. Does it reach the top of the post?

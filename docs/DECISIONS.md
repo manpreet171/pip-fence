@@ -1944,3 +1944,31 @@ it is full, and disappears after her first plank. The sheet's first step now say
 Verified with real clicks at every step. Rejected: a pointing hand sprite (one more thing to read);
 arrows on every move (noise after the first).
 
+
+
+---
+
+## D-091 — One chapter at a time, and the probe decides in Share too
+18 Sep 2026 · **Decided**
+
+A simulated seven-year-old played all 24 levels with real pointer input (docs/MASTER-TEST.md, local)
+and was stuck once: in Share, "Tap a part you think is finished" accepted no tap. The tap was logged;
+the classifier's Share branch never read it, so the card stayed up until she found Try again. Now the
+Share collision (as many parts as planks in a part, which is also a part too many or too few) goes
+through the same probe rule as the Build one: a full part tapped means she knows a part and is out by
+a part; a bare or short one means she read the sign's planks as parts; no tap in twenty seconds, the
+sign reading, unconfirmed. Seven fixtures cover it.
+
+The same run was sent back to Build levels in the middle of Packs, with no card saying why, and told
+"a new chapter is open" when it had been open for six levels, and again at the very end when no
+chapter follows. The planner keeps its freedom inside her chapter and never leaves it while a fence
+there is not gold: the map's "Next" and the game now name the same chapter, the strip never restarts
+mid-chapter, and "a new chapter is open" is said once, on the gold that makes the chapter whole. The
+last gold of all ends with a star, Pip's last line, and Start again; the home page says Play again.
+
+Rejected: letting the planner roam every open chapter (it did, and the child called it homework with
+no reason given); opening a chapter only when the last is all gold (three gold stars on the map is a
+reachable promise; the move happens when she is ready); a new classifier id for the pack-per-plank
+case with packs left in the cart (the tiers now hold whether the surplus is in the cart or the fence
+is short, and no id or fixture had to move); saying "fixed the short part" whenever a count followed a
+hint (it followed an over-count once, and was wrong; now only a hint about a short part counts).

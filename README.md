@@ -85,7 +85,8 @@ until 17 September, the day before the deadline. We kept the dates and the mista
   decides. If she does not tap, Pip gives the likelier hint after twenty seconds.
 - **Four chapters on one board.** Build, Packs, Fix and Share. Same fence, and it quietly becomes
   multiplication, units inside units, subtraction and addition, and division. A chapter opens when
-  she has three gold stars in the one before.
+  she has three gold stars in the one before, and she moves on to it once every fence in hers is gold.
+  The last fence of all ends with a star and Pip's last line.
 - **Pip counts with her.** Every plank she places, Pip says the number that part now has, in her
   own voice. The cart pulses when her hand is empty, the parts glow when it is full, and on her first move an
   arrow sits on the next thing to tap, so there is never a question of what to tap next.
@@ -104,7 +105,7 @@ before the child hears it.
 |---|---|---|
 | Hint | Puts a written hint into fresh words for a child of six | No digits, no number words, only simple words. A second call, at temperature zero, checks the meaning is the same. If anything fails, the written line is used |
 | Cheer | Says what she did right when a fence is done | Gets only yes/no facts. A judge rejects anything not in the facts. If there is nothing specific to praise, no call is made |
-| Plan | Picks her next fence from her last eight, and says why | Code lists the fences that practise her mistake. The pick has to be on that list, and the reason line is checked like a hint |
+| Plan | Picks her next fence from her last eight, and says why | Code lists the fences in her chapter that practise her mistake. The pick has to be on that list, and the reason line is checked like a hint |
 | Show | Writes a worked example as moves: point, count, place, take back, say | Code runs the moves in a simulator first. Illegal or useless scripts are replaced by code's own. Pip fixes one part and hands the rest back |
 | Parent note | Writes a short weekly note and one question to ask out loud | Gets a checked summary. Blame words, made-up claims and internal labels are rejected |
 
@@ -116,7 +117,7 @@ child never types or speaks, so nothing personal ever leaves the device.
 
 **Why code names the mistake, not the model.** A model reading the fence would be right more often
 on strange builds and wrong in ways nobody could check. The classifier is a small pure function,
-tested on 162 hand-written sequences, and it is right whenever it commits.
+tested on 169 hand-written sequences, and it is right whenever it commits.
 
 ![Press J: the event log, the classifier's verdict, the payload with no digits, who chose the next fence](docs/shots/judge.png)
 
@@ -129,8 +130,8 @@ python evals/run_all.py
 | Check | What it proves |
 |---|---|
 | `readinglevel.py --assert` | All 48 hint lines: two sentences at most, no digits or number words, words from the early-reader list |
-| `classifier_eval.mjs` | 162 hand-written builds. Right whenever it commits, silent when two mistakes look the same |
-| `buddy_test.mjs` | 80 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
+| `classifier_eval.mjs` | 169 hand-written builds. Right whenever it commits, silent when two mistakes look the same |
+| `buddy_test.mjs` | 81 checks: no number crosses the wire, the gate rejects what it must, every failure falls back to a written line |
 
 With a live model, measured and written up in `docs/results/`:
 
@@ -139,7 +140,7 @@ With a live model, measured and written up in `docs/results/`:
 | [Latency and cost](docs/results/LATENCY-RESULTS.md) | 20 live hints: under a second, about a hundredth of a cent each |
 | [The judge](docs/results/JUDGE-RESULTS.md) | 20 rephrases: 12 shipped, 6 stopped by the gate, 2 caught by the judge |
 | [Red team](docs/results/REDTEAM-RESULTS.md) | An attacker shown everything the model sees guesses the answer no better than always saying the commonest one |
-| [The planner](docs/results/PLAN-RESULTS.md) | 8 learner records: every pick inside code's list, half different from the fixed order, for sensible reasons |
+| [The planner](docs/results/PLAN-RESULTS.md) | 8 learner records: every pick inside code's list, six of eight different from the fixed order, for sensible reasons |
 | [Worked examples](docs/results/SHOW-RESULTS.md) | 6 fence states: 5 scripts passed the simulator and ran, 1 replaced by code's own |
 
 ![The grown-ups page: the week, the note, one question to ask](docs/shots/parent.png)

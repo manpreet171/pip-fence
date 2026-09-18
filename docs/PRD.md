@@ -47,7 +47,8 @@ And an AI that hands over answers makes them worse at working alone once it is g
   is done. If not, the goat walks through the gap and a hint lands on the gap.
 - R4. Four chapters on one board: Build, Packs (order packs first), Fix (count the gaps, order
   exactly that many), Share (choose how many parts). Six shapes each. A chapter opens on three gold
-  stars in the one before.
+  stars in the one before; she moves on once every fence in hers is gold, and is never sent back.
+  The last fence of all ends with a star, Pip's last line and Start again.
 - R5. How to play is three steps per chapter, read aloud, followed by Pip showing the new move on
   the real board once, pointing with an arrow at what she names. The first sheet says what a part is.
 - R6. Every child-facing word passes an early-reader word list (Dolch and Fry sight words plus the game's own nouns). Fixed lines are spoken in a
@@ -64,7 +65,7 @@ And an AI that hands over answers makes them worse at working alone once it is g
   show her on her own fence. Pip fixes one part and hands the rest back.
 - R11. When a fence is finished, praise names what she actually did, from facts, or says nothing
   specific.
-- R12. The next fence is chosen from her record, only among fences code says exercise her mistake.
+- R12. The next fence is chosen from her record, only among fences in her chapter that code says exercise her mistake.
 
 ### The parent
 - R13. A page with the week's fences, a short note written from the child's mistakes and never from
@@ -78,7 +79,7 @@ And an AI that hands over answers makes them worse at working alone once it is g
 ## Success metrics
 
 What we can measure now, and have:
-- Classifier: right whenever it commits over 162 hand-written builds; silent, never wrong, when two
+- Classifier: right whenever it commits over 169 hand-written builds; silent, never wrong, when two
   mistakes make the same fence.
 - Gate and judge: overturn rates published per run, with the rejected lines.
 - Leakage: an attacker given everything the model sees does no better than the majority guess.
@@ -104,7 +105,8 @@ What would show it teaches, and has not been run yet:
 ## Open questions
 
 - Does the probe ("Tap a part you think is finished") resolve ambiguity for a seven-year-old, or
-  does she tap at random? Only a child can answer.
+  does she tap at random? A simulated seven-year-old, driven by real taps, tapped the part she meant;
+  only a real one can answer.
 - Is Fix easier or harder than Packs for this age? The chapter order is a guess from the maths, not
   from data.
 - Does Pip's worked example transfer, or does the child wait for Pip every time? Silver stars for

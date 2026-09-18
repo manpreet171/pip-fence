@@ -21,8 +21,10 @@ the words and the voice are pitched at six so the younger end can play too.
 | Fix | The wind blew planks out; count the gaps, order exactly that many, repair | Subtraction per part, addition across parts |
 | Share | You have 12 planks and 4 go in each part; you decide how many parts | Division |
 
-Six fence shapes per chapter, 24 levels. A chapter opens on three gold stars in the one before.
-Gold is a fence finished without a hint; silver, with one.
+Six fence shapes per chapter, 24 levels. A chapter opens on three gold stars in the one before;
+she is sent there once every fence in her chapter is gold, never earlier and never back (D-091).
+Gold is a fence finished without a hint; silver, with one. The last gold of a chapter says a new
+chapter is open; the last gold of all ends with a star, Pip's last line and Start again.
 
 ## How Pip knows what went wrong
 
@@ -35,10 +37,12 @@ the misconception from the shape of the wrong build:
   fixed one part only;
 - in Share: a part per plank, as many parts as planks in a part, a part too few, a part too many.
 
-When two mistakes make the same fence, it says so and asks her to tap a part she thinks is
-done; the parts glow until she does. That tap decides. If she does not tap within twenty seconds,
-Pip gives the likelier hint, marked as unconfirmed. The classifier is tested on 162 hand-written sequences and is right
-whenever it commits.
+When two mistakes make the same fence (in Build, every part one short on a fence with one more
+plank per part than parts; in Share, as many parts as planks in a part), it says so and asks her to
+tap a part she thinks is done; the parts glow until she does. That tap decides: a full part means she
+knows what a part is, a short or bare one means she mixed the two numbers up. If she does not tap
+within twenty seconds, Pip gives the likelier hint, marked as unconfirmed. The classifier is tested
+on 169 hand-written sequences and is right whenever it commits.
 
 ## Where the AI is
 
@@ -49,7 +53,7 @@ judgment about words and about practice, and code checks every one before the ch
 |---|---|---|
 | Hint | Rephrases a template for a child of six | No digits, no number words, an early-reader word list (Dolch and Fry sight words plus the game's own nouns). A second call at temperature zero judges that the meaning is the same. Template on any failure |
 | Cheer | Says what she did right | Booleans in. A judge rejects any claim not in the facts. No call when there is nothing specific to praise |
-| Plan | Picks the next fence from her last eight, says why | Code lists the fences that exercise her mistake. The pick must be on that list; the reason line passes the same gate and a facts judge |
+| Plan | Picks the next fence from her last eight, says why | Code lists the fences in her chapter that exercise her mistake. The pick must be on that list; the reason line passes the same gate and a facts judge |
 | Show | Writes a worked example as moves: point, count, place, remove, say | Code simulates the moves first. Illegal, over-filling or unhelpful scripts are replaced by code's own. Pip fixes one part and hands the rest back |
 | Parent note | Writes a weekly note and one question to ask | Validated summary in. Blame words, invented claims and internal labels rejected |
 
@@ -66,14 +70,16 @@ Progress lives in one key in the browser's local storage.
 ## What she sees
 
 - **How to play** per chapter, three steps, read aloud, then Pip shows the new move on the real
-  board and hands over.
+  board and hands over. The sheet has a close, so Home is never out of reach.
 - **Pip counts with her.** Each plank she places, Pip says the number that part now holds. The
   cart pulses while her hand is empty and the parts glow while it is full. On her first move of a
   level a bouncing arrow sits on the next thing to tap, and while Pip talks about the cart or a
   part in her demo, the arrow points at it. The demo says what a part is: the fence from one post
   to the next.
 - **Hints on the gap**, spoken. **Say it a new way** asks for a fresh phrasing. **Show me, Pip**
-  appears after the second hint.
+  appears after the second hint. A plank over the post comes back with a tap anywhere on that part.
+- **Pip cheers** what she did: first try, a count that fixed a short part, the chapter finished. Only
+  what the log shows; a plank taken back after an over-count is not "the short part fixed".
 - **Stars, badges, and a farm that greens up** on the home page as she masters levels.
 - Every word she reads was checked against an early-reader word list (Dolch and Fry sight words plus the game's own nouns). Pip's fixed lines are
   audio clips made once from one child's voice; with a voice key on the server, the model's fresh
@@ -82,7 +88,7 @@ Progress lives in one key in the browser's local storage.
 ## What is measured
 
 `python evals/run_all.py` runs the reading-level gate over all 48 hint templates, the classifier
-over its 162 sequences, and 80 checks on the hint layer. With a live key, the scripts in `evals/`
+over its 169 sequences, and 81 checks on the hint layer. With a live key, the scripts in `evals/`
 measure latency and cost, the judge's overturn rate, a red-team attack on the payload, the
 planner's picks and the worked examples. Results are in `docs/results/`.
 

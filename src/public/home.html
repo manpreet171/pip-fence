@@ -92,7 +92,7 @@
   let f = { GRAPH: [], CHAPTERS: [], unlocked: () => 0, next: () => null }; try { f = await import("/fence.mjs"); } catch {}
   const m = fence.mastery || {}, ev = fence.events || [], nodes = f.GRAPH.map(g => g.node);
   const gold = Object.values(m).filter(v => v >= 1).length, silver = Object.values(m).filter(v => v === 0.5).length;
-  const open = f.unlocked(m), nextNode = f.next(m), chapterDone = ch => f.GRAPH.filter(g => g.chapter === ch).every(g => m[g.node] > 0);
+  const open = f.unlocked(m), nextNode = f.next(m), chapterDone = ch => f.GRAPH.filter(g => g.chapter === ch).every(g => m[g.node] >= 1);   // done = every fence gold, the game's own rule for moving on
   // The farm is the game's own scene with a fence already up: the same art she will build with.
   if (f.mountScene) {
     document.head.insertAdjacentHTML("beforeend", `<style>${f.FENCE_CSS}</style>`);
@@ -102,7 +102,7 @@
     scene.querySelectorAll(".hit").forEach(h => h.remove());
   }
   document.getElementById("yours").textContent = gold + silver ? `Your farm: ${gold} gold, ${silver} silver` : "Your farm";
-  document.getElementById("play").textContent = Object.keys(m).length ? "Keep building" : "Play";
+  document.getElementById("play").textContent = fence.ended ? "Play again" : Object.keys(m).length ? "Keep building" : "Play";
   const DO = ["Put the planks up.", "Get packs first.", "Fill the gaps.", "Pick how many parts."];
   const dot = n => `<i class="${(m[n] || 0) >= 1 ? "full" : m[n] ? "half" : ""}${n === nextNode ? " now" : ""}"></i>`;
   document.getElementById("map").innerHTML = f.CHAPTERS.map((name, ch) => {

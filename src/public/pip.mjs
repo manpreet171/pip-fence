@@ -18,6 +18,8 @@ const CSS = `
 #howto .head{display:flex;align-items:center;gap:14px;padding:16px 20px;color:#f8f1e3;text-shadow:0 1px 0 rgba(0,0,0,.4);border-bottom:3px solid #7d5122;
   background:linear-gradient(180deg,rgba(255,240,210,.22),rgba(255,255,255,0) 38%,rgba(0,0,0,.10)),repeating-linear-gradient(90deg,rgba(0,0,0,0) 0 46px,rgba(60,30,10,.28) 46px 48px),linear-gradient(180deg,#b97b3a,#a9702f)}
 #howto .head .pipface{width:44px;height:52px}
+#howto .head>div{flex:1}
+#howto .x{flex:none;width:44px;height:44px;border-radius:50%;border:3px solid #7d5122;background:#f8f1e3;color:#7d5122;font:700 26px/1 inherit;cursor:pointer;box-shadow:0 3px 0 #7d5122}
 #howto h2{margin:0;font-size:24px;line-height:1.1}
 #howto .sub{margin:2px 0 0;font-size:15px;opacity:.92}
 #howto ol{padding:18px 22px 0}
@@ -56,9 +58,10 @@ export function howto({ key, title, sub, steps, go = "Let's play", say, quiet })
   const seen = () => { try { return localStorage.getItem(key) === "1"; } catch { return false; } };
   const show = () => {
     document.getElementById("howto")?.remove();
-    document.body.insertAdjacentHTML("beforeend", `<div id="howto" role="dialog" aria-modal="true"><div class="card"><div class="head">${face()}<div><h2>${title}</h2><p class="sub">${sub}</p></div></div>
+    document.body.insertAdjacentHTML("beforeend", `<div id="howto" role="dialog" aria-modal="true"><div class="card"><div class="head">${face()}<div><h2>${title}</h2><p class="sub">${sub}</p></div><button class="x" aria-label="Close">&times;</button></div>
       <ol>${steps.map((s, i) => `<li><span class="n">${i + 1}</span><span>${s}</span></li>`).join("")}</ol><button class="go">${go}</button></div></div>`);
-    document.querySelector("#howto .go").onclick = () => { document.getElementById("howto").remove(); quiet?.(); try { localStorage.setItem(key, "1"); } catch {} };
+    // the big button and the round close do the same thing; the close is there so the sheet never traps her (Home is under it)
+    for (const b of document.querySelectorAll("#howto .go, #howto .x")) b.onclick = () => { document.getElementById("howto").remove(); quiet?.(); try { localStorage.setItem(key, "1"); } catch {} };
     say?.([sub, ...steps]);
   };
   if (!seen()) show();
