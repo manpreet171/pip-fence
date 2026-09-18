@@ -14,46 +14,7 @@ Date · Status: Decided | Superseded by D-NNN | Open
 
 ---
 
-## D-001 — Mission is the job, not the prize
-3 Sep 2026 · Status: **Decided**
-
-**Decision:** Every decision optimises for *"a Nerdy engineering leader wants to interview
-this person"*. Prize money is explicitly not an objective.
-
-**Why:** The hackathon page says it outright — the reviewers are the hiring managers, and
-the compensation on offer (US $200K+ / LatAm $100K / India ₹1 Cr) dwarfs the $10K prize.
-Optimising for the prize and optimising for the job produce different builds: the prize
-rewards polish and delight, the job rewards judgment, depth and measurement.
-
-**Rejected:** Building the most crowd-pleasing demo. Crowd-pleasing is table stakes, not
-a differentiator.
-
----
-
-## D-002 — No tool attribution anywhere in the repo
-3 Sep 2026 · Status: **Decided**
-
-**Decision:** No co-author trailers, no "generated with" badges, no tooling credits in commits,
-PRs, README, comments or docs. The repo carries one author.
-
-**Why:** This is a hiring artefact. It represents the author's engineering judgment and
-should read that way end to end.
-
-**Rejected:** Default tooling attribution.
-
----
-
-## D-003 — All documentation lives in `docs/`
-3 Sep 2026 · Status: **Decided**
-
-**Decision:** Root holds only `CONSTITUTION.md` and (later) `README.md`. Everything else that is
-prose goes in `docs/`. Code folders (`src/`, `evals/`, `data/`, `scripts/`) are created only
-when their first real file exists.
-
-**Why:** Reviewers read the repo. A clean tree is a free signal. Structure decided once, at
-the start, costs nothing; retrofitted later it costs a day.
-
-**Rejected:** Creating an empty scaffold up front — YAGNI (CONSTITUTION.md R5).
+> D-001 to D-003 were housekeeping about the repository itself and are left out here. The log starts with the product.
 
 ---
 
@@ -704,7 +665,7 @@ warm learner-facing moment, no rigged benchmark, nothing resting on a failed kil
 **This is the final selection round.** After the pick: build and polish only, no more ideation.
 
 **Process note (the meta-lesson):** 4 days spent, 0 build. The novelty veto cost the time.
-Recorded so it is not repeated: for a 15-day hiring-signal build, pick fast on
+Recorded so it is not repeated: for a 15-day build, pick fast on
 execution+demo and spend the days shipping.
 
 ---
