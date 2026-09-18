@@ -76,6 +76,18 @@ async function sayRoute(req, res) {
 const WORDLIST = parseWordlist(await readFile(join(HERE, "..", "data", "wordlist.txt"), "utf8"));
 for (const id in TEMPLATES) for (const t in TEMPLATES[id]) allow(TEMPLATES[id][t]);
 try { allow(...Object.keys(JSON.parse(await readFile(join(HERE, "public", "assets", "voice", "manifest.json"), "utf8")))); } catch {}
+// The page's own fixed lines (sheets, demos, counting, the card's stock lines) are read from the page
+// at startup, so a line added to the page is voiced without anyone remembering to list it here.
+try {
+  const page = await readFile(join(HERE, "public", "build.html"), "utf8");
+  for (const m of page.matchAll(/(?:say|bubble)\("([^"]+)"/g)) allow(m[1]);
+  for (const m of page.matchAll(/(?:sub|title): "([^"]+)"/g)) allow(m[1]);
+  for (const m of page.matchAll(/steps: \[([^\]]+)\]/g)) for (const x of m[1].matchAll(/"([^"]+)"/g)) allow(x[1]);
+  for (const m of page.matchAll(/pip\.star\([^,]+, [^"]*"([^"]+)" : "([^"]+)"\)/g)) allow(m[1], m[2]);
+  allow("one", "two", "three", "four", "five", "six", "The fence is done.", "Look at this part.", "Every fence is done!");
+  for (const b of [{ first_try: true, mode: "fix" }, { first_try: true, mode: "share" }, { first_try: true, mode: "build" }, { fixed_after_count: true }, { chapter_done: true }, {}]) allow(cheerFallback(b));
+  for (const st of [{ per: 3, parts: [3, 1, 3], cart: 2 }, { per: 3, parts: [3, 5, 1], cart: 0 }]) for (const x of codeShow(st)) if (x.op === "say") allow(x.text);
+} catch {}
 const BODY_KEYS = ["age", "reading_level", "misconception_id", "tier", "shape", "nouns", "template", "constraint"];
 
 // The trust boundary. The body is payload(result) from the browser; we keep only {id, tier, shape},
