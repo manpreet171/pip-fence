@@ -11,7 +11,6 @@ CHECKS = [
     ("readinglevel --assert", [sys.executable, "evals/readinglevel.py", "--assert"]),
     ("classifier_eval",       ["node", "evals/classifier_eval.mjs"]),
     ("buddy_test",            ["node", "evals/buddy_test.mjs"]),
-    ("engine_eval2 (frozen)", ["node", "evals/engine_eval2.mjs"]),
 ]
 
 def templates_equal():

@@ -1,21 +1,12 @@
 # docs
 
-Rung was the working name until 17 Sep; the product is Pip. Older documents keep the old name.
-
 | File | What it is |
 |---|---|
-| **CONCEPT-V3.2.md** | The product as designed, with a banner on what shipped differently |
-| **MODES.md** | The Fix and Share chapters, chapter unlocks, Pip cheers: the contract the build followed |
-| **RESEARCH-LEARNER.md** | Who the 7 to 11 learner is, with confidence flags. The evidence base |
+| **DESIGN.md** | How Pip works: the mechanic, the four chapters, how mistakes are named, where the AI is and how it is checked |
+| **RESEARCH-LEARNER.md** | The evidence on how 7 to 11 year olds learn, with every confidence flag kept. Why the design is what it is |
 | **MARKET.md** | What already exists and how this differs |
-| **BUDDY-CONTRACT.md** | The interface between the game and the hint layer |
-| **DECISIONS.md** | Every decision with its rejected alternatives, append-only, D-001 to D-085 |
-| **TEST-REPORT-2.md** | QA pass with real pointer input: defects found and closed |
-| **DEMO-V2.md** | The three-minute shot list and what is never said |
-| **TRANSFER-TEST.md** | The paper instrument for a child pilot, with the pre-registered null |
-| **CREDITS.md** | Art, font and voice credits |
-| **results/** | Measured runs: latency, judge, red-team, plans, worked examples |
+| **DECISIONS.md** | Every decision from the first day to the last, with what was rejected and why. Five concepts were killed before this one; the log says how |
+| **results/** | Measured runs with a live model: latency and cost, the judge, a red-team attack, the planner, the worked examples |
+| **CREDITS.md** | Art, font and voice |
 
-Everything older, including the five concepts killed before this one and the second concept built
-and dropped, is in git history up to commit `9533298`. Decisions before D-078 refer to files at
-their old paths; the log is append-only and was not rewritten.
+Rung was the working name until 17 September; the product is Pip. Older entries keep the old name.

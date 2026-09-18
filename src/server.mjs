@@ -1,12 +1,10 @@
 // Zero-dependency server: static files plus the two model endpoints, /api/buddy (a hint from a
 // redacted payload) and /api/note (the parent's weekly note from a validated summary). The key stays
-// here. Node 22 global fetch, no framework. The frozen control arm mounts only with CONTROL_ARM=1.
+// here. Node 22 global fetch, no framework.
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname, resolve, sep } from "node:path";
-import { coach } from "./control/coach.mjs";
-import { makeStory, narrateBuild } from "./control/story.mjs";
 import { IDS, SHAPE_KEYS, TEMPLATES, redact, phrase, parseWordlist, validNote, writeNote, noteFallback, PROVIDERS, validCheer, writeCheer, cheerFallback, validPlan, writePlan, validShowBody, writeShow } from "./engine/buddy.mjs";
 import { candidates, validShow, codeShow } from "./public/fence.mjs";
 
@@ -86,17 +84,13 @@ async function showRoute(req, res) {
 const TYPES = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript", ".css": "text/css",
   ".svg": "image/svg+xml", ".png": "image/png", ".ttf": "font/ttf", ".ico": "image/x-icon", ".json": "application/json", ".txt": "text/plain" };
 // Static routing: short URLs map to real files (no duplication). Only these files plus src/public/** are servable.
-const CONTROL_ARM = process.env.CONTROL_ARM === "1";
-const ROUTES = { "/": CONTROL_ARM ? "/control/index.html" : "/public/home.html", "/fence": "/public/build.html", ...(CONTROL_ARM && { "/measure": "/control/measure.html", "/engine.mjs": "/control/engine.mjs" }), "/build": "/public/build.html",
+const ROUTES = { "/": "/public/home.html", "/fence": "/public/build.html", "/build": "/public/build.html",
   "/buddy.mjs": "/engine/buddy.mjs", "/fence.mjs": "/public/fence.mjs", "/village.mjs": "/public/village.mjs" };
 const PUBLIC = join(HERE, "public");
 
 const send = (res, code, body, type = "text/plain") =>
   res.writeHead(code, { "Content-Type": type, "Cache-Control": "no-store" }).end(body);
 
-// The frozen control arm's LLM routes (index.html) only exist when explicitly switched on, so the
-// shipping server exposes exactly one model endpoint: /api/buddy.
-const readBody = async req => { let raw = ""; for await (const c of req) { raw += c; if (raw.length > 4096) throw new Error("body too large"); } return raw; };
 
 // ponytail: fixed window per IP, in memory; enough to stop a script spending the key, not a DDoS answer
 const HITS = new Map(), LIMIT = 60, WINDOW = 60_000;
@@ -111,29 +105,11 @@ function limited(req) {
 const server = createServer(async (req, res) => {
   try {
     if (req.method === "POST" && req.url.startsWith("/api/") && limited(req)) return send(res, 429, "slow down");
-    if (req.method === "POST" && /^\/api\/(coach|narrate|story)$/.test(req.url) && !CONTROL_ARM) return send(res, 404, "not found");
-    if (req.method === "POST" && req.url === "/api/coach") {
-      const raw = await readBody(req);
-      const { problem, history, message } = JSON.parse(raw || "{}");
-      const out = await coach(problem, history || [], message, {});
-      return send(res, 200, JSON.stringify(out), "application/json");
-    }
-    if (req.method === "POST" && req.url === "/api/narrate") {
-      const raw = await readBody(req);
-      const out = await narrateBuild(JSON.parse(raw || "{}"), {});
-      return send(res, 200, JSON.stringify(out), "application/json");
-    }
     if (req.method === "POST" && req.url === "/api/buddy") return buddy(req, res);
     if (req.method === "POST" && req.url === "/api/note") return noteRoute(req, res);
     if (req.method === "POST" && req.url === "/api/cheer") return cheerRoute(req, res);
     if (req.method === "POST" && req.url === "/api/plan") return planRoute(req, res);
     if (req.method === "POST" && req.url === "/api/show") return showRoute(req, res);
-    if (req.method === "POST" && req.url === "/api/story") {
-      const raw = await readBody(req);
-      const { problem, theme } = JSON.parse(raw || "{}");
-      const out = await makeStory(problem, theme, {});
-      return send(res, 200, JSON.stringify(out), "application/json");
-    }
     const path = req.url.split("?")[0];
     const file = resolve(HERE, (ROUTES[path] || path.replace(/^\/assets\//, "/public/assets/")).replace(/^\/+/, ""));
     const routed = Object.values(ROUTES).some(p => file === join(HERE, p));
@@ -146,4 +122,4 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => console.log(`Rung running on http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Pip running on http://localhost:${PORT}`));

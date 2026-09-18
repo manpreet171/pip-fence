@@ -13,7 +13,7 @@ Built for the Nerdy AI Hackathon Challenge, September 2026.
 node src/server.mjs
 ```
 
-Open http://localhost:5177. No dependencies, Node 22. Set `DEEPSEEK_API_KEY` or
+Open http://localhost:5177. No dependencies, Node 22. How it works: [docs/DESIGN.md](docs/DESIGN.md). Set `DEEPSEEK_API_KEY` or
 `ANTHROPIC_API_KEY` for the model; without a key every line falls back to a template and the game
 still works. Press **J** in the game to watch the AI pipeline live.
 
@@ -57,7 +57,6 @@ python evals/run_all.py
 | `readinglevel.py --assert` | All 48 hint templates: two sentences at most, no digits or number words, a named word list |
 | `classifier_eval.mjs` | 162 hand-written placement sequences. Right whenever it commits, silent when two mistakes make the same fence |
 | `buddy_test.mjs` | 57 checks: no integer crosses the wire, the gate rejects what it must, every failure falls back to a template |
-| `engine_eval2.mjs` | The frozen comparison build's selector, kept so it is not lost |
 
 Measured with a live key, results in `docs/results/`: hints ([latency](docs/results/LATENCY-RESULTS.md),
 [judge](docs/results/JUDGE-RESULTS.md), [red-team](docs/results/REDTEAM-RESULTS.md)),
@@ -65,8 +64,7 @@ Measured with a live key, results in `docs/results/`: hints ([latency](docs/resu
 
 ## What is not claimed
 
-- No child has been tested. The pilot instrument with its pre-registered null is in
-  [docs/TRANSFER-TEST.md](docs/TRANSFER-TEST.md).
+- No child has been tested yet.
 - This teaches grouping for Year 2 to 4. It is not a general arithmetic tutor.
 - The mechanic is Zombie Division's intrinsic integration, 2011, credited.
 
@@ -76,11 +74,10 @@ Measured with a live key, results in `docs/results/`: hints ([latency](docs/resu
 src/server.mjs        zero-dependency server; the model endpoints are the trust boundary
 src/public/           the game (build.html, fence.mjs), home, parent page, judge overlay, Pip's shared pieces, assets
 src/engine/buddy.mjs  every model job: payloads, gate, judge, simulator hooks, template fallbacks
-src/control/          the frozen earlier build, served only with CONTROL_ARM=1, for the side-by-side
 data/                 hint templates and the word list
 evals/                the checks above; results/ holds measured runs
 scripts/              sprite cut-outs and Pip's voice clips
-docs/                 concept, research, decisions, reviews, demo script, results
+docs/                 how it works, the research, every decision, measured results
 ```
 
 Art is Kenney's CC0 isometric packs. Font is Fredoka, OFL. Pip's voice clips were made once with
