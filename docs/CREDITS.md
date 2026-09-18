@@ -13,9 +13,9 @@ credited here as good practice. Licence text ships beside the assets.
 (`src/public/assets/fonts/`).
 
 ## Voice
-Pip's fixed lines are audio clips made once from Microsoft's Ana neural voice through the
-`edge-tts` package (`scripts/make_voice.py`). Lines the model phrases at run time use the
-browser's own voice.
+Pip's fixed lines are audio clips generated once from Microsoft's Ana neural text-to-speech
+voice and included as files in `src/public/assets/voice/`. Lines the model phrases at run time use
+the browser's own voice.
 
 ## Everything else
 Game, classifier, hint layer, evaluation harness and application code: Manpreet Singh.

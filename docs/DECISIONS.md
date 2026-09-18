@@ -1830,8 +1830,8 @@ allowed, one idea each, no trade words. "Deliver" is "Bring it", "Order" is "I n
 "Next fence", "Say it another way" is "Say it a new way", "fix the fence" is "fill the gaps". Sixteen
 hint templates were shortened with the same meaning; the gate still passes all forty-eight. **Voice.**
 The browser's built-in voices are adult and flat. Every fixed line Pip says, one hundred of them,
-now ships as a small audio file made once from one child's voice (`scripts/make_voice.py`, Microsoft's
-Ana neural voice through the edge-tts package), keyed by the line's text in a manifest. A line the
+now ships as a small audio file made once from one child's voice (Microsoft's Ana neural voice, generated once and
+bundled as files), keyed by the line's text in a manifest. A line the
 model phrased has no file and is spoken by the browser's friendliest voice, which in Edge on Windows
 is the same Ana. The How-to sheet is read aloud line by line, since the child it is for cannot read
 it yet. Rejected: a paid text-to-speech call at run time for every line (a key, a cost and a network
