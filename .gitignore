@@ -5,3 +5,8 @@ node_modules/
 .DS_Store
 Thumbs.db
 __pycache__/
+
+# kept on disk for the record, not in the tree (D-085)
+heritage/
+docs/history/
+evals/history/
