@@ -1,6 +1,6 @@
-# TEST REPORT 2 — Rung after the scene rebuild and the three AI additions (7 Sep 2026, 11 days to 18 Sep)
+# TEST REPORT — QA pass on the scene rebuild and the AI additions (7 Sep 2026)
 
-Independent QA pass, round 2. Build under test: the committed tree at `e104a9a` ("Parent note: the thing to ask may be an
+QA pass, round two, by real pointer input in a clean clone. Build under test: the committed tree at `e104a9a` ("Parent note: the thing to ask may be an
 instruction; fallback counts fences plainly"); the working tree differs from it only by line endings and one local, untracked file.
 Server under test: the running `node src/server.mjs` on :5177 with a DeepSeek key live (every `/api/buddy`
 answer below is `source:"model"`). No source, data or eval file was edited; no git command other than the one clone.

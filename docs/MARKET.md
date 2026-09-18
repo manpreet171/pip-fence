@@ -1,3 +1,5 @@
+> Written 4 Sep 2026 under the working name Rung. The product is Pip.
+
 # MARKET — competitive landscape for kids' maths edtech (Sept 2026)
 
 Produced 4 Sep 2026 as the competitive-landscape review, grounded in `docs/RESEARCH-LEARNER.md`.

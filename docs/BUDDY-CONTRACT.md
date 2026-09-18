@@ -1,3 +1,5 @@
+> The hint contract. The cheer, plan and worked-example jobs added later follow the same shape (validated input, gated output, template fallback); their payloads are in src/engine/buddy.mjs and their decisions are D-079, D-081, D-082.
+
 # BUDDY CONTRACT — the one interface the frontend and the AI/backend share
 
 Authority: CONCEPT-V3.2 §3, TECH-STACK §1.1 / §4. Both engineers code to this file. Change it only by

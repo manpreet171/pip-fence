@@ -1,3 +1,5 @@
+> The design as approved on 5 Sep 2026, under the working name Rung. What shipped as Pip differs in four ways: four chapters instead of two (docs/MODES.md), three more model jobs (DECISIONS D-079 to D-082), a child's voice and a six-year-old's vocabulary (D-084), and no pilot yet. The plan and demo sections here are superseded by docs/DEMO-V2.md.
+
 # CONCEPT v3.2 — "the plot is the problem", final revision
 
 4 Sep 2026. Day 1 of 14. Answers `docs/REVIEW-R2.md` completely. Nothing marked CLOSED is

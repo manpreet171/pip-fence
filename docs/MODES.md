@@ -23,8 +23,8 @@ places. Events: `order{planks}` then the usual `place`. Ids, evaluated at commit
 - `ambiguous` — none uniquely.
 Templates (tier 1): "Count the empty spaces in each part, not the planks that are there." /
 "You ordered more than the gaps. Count the gaps again." / "You counted the planks that are there.
-Count the gaps." / "Only that part is fixed. Look at the other parts." (Backend writes the final
-gate-checked lines; these are the meanings.)
+Count the gaps." / "Only that part is fixed. Look at the other parts." (The final
+gate-checked lines are in the table below; these are the meanings.)
 
 ## Share it out (`<g>x<p>_share`) — division
 The sign says "12 planks · parts of 4 · how many parts?" The frame starts with NO parts: two end
